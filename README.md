@@ -10,8 +10,8 @@ enabled and a general (Webpack) frontend module.
 
 ## Prerequisites
 
-- JDK and **Maven 3** suitable for your AEM SDK / 6.5+ target
-- Local **Author** at `http://localhost:4502` (default); Publish at
+- **JDK 21** and **Maven 3.3.9+**
+- Local **AEM 6.5 LTS SP2** **Author** at `http://localhost:4502` (default); Publish at
   `http://localhost:4503` when the POC needs it
 - Adobe Maven repositories configured in `~/.m2/settings.xml` — see
   [Set up the Adobe Maven repository](https://helpx.adobe.com/experience-manager/kb/SetUpTheAdobeMavenRepository.html)

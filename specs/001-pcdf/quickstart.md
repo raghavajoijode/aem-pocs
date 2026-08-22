@@ -11,7 +11,7 @@ Contract: [contracts/delivery-api.yaml](./contracts/delivery-api.yaml). Sample I
 ## Prerequisites
 
 - **JDK 21** and Maven 3.3.9+
-- Local **AEM LTS** **Author** `http://localhost:4502` and **Publish** `http://localhost:4503`
+- Local **AEM 6.5 LTS SP2** **Author** `http://localhost:4502` and **Publish** `http://localhost:4503`
 - Adobe Maven repo in `~/.m2/settings.xml`
 - Local credentials: POM default `admin` / `admin` (do not commit real secrets)
 

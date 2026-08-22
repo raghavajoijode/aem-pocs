@@ -22,7 +22,8 @@ This proof of concept proves that hypothesis: Author for authoring, Publish for 
 - Q: Must schedule fields carry timezone (global application)? → A: Desired for a global product, but **out of scope for this POC**.
 - Q: When previewing on Author, is the preview value a date-time with timezone or a calendar date? How are start and end stored? → A: For this POC, `startDate` and `endDate` are **dates only (no time)**. Preview uses a **calendar date** (no time).
 - Q: Should this POC’s Java live in a separate Maven module and bundle (`core.pcdf`) or inside the existing `core` module? → A: Separate `core.pcdf` module and bundle (`com.aem.poc.pcdf`); default `core` stays free of PCDF.
-- Q: Runtime and workstream scope? → A: **Java 21**. Local **AEM LTS** (Author `localhost:4502`, Publish `localhost:4503`). **This workstream does not implement the feature** (specify / plan / checklist only). Delivery location is defined in `docs/programmatic-content-delivery-requirements.md` (feature description): Publish delivery API under the PCDF identity, example path `/services/aem-pocs/pcdf`.
+- Q: Runtime and workstream scope? → A: **Java 21** (parent POM). Local **AEM 6.5 LTS SP2** (Author `localhost:4502`, Publish `localhost:4503`). Delivery: Publish `GET /services/aem-pocs/pcdf` per `docs/programmatic-content-delivery-requirements.md`. PCDF feature modules are a **backlog** (`tasks.md`); `/speckit-implement` is opt-in.
+- Q: Unknown locale folder, unpublished preview, OSGi config module, `promotionId` uniqueness? → A: Missing DAM folder for `locale` → no-match (`contentFound` false). Author preview uses **published** fragments only. OSGi runmode config in **`ui.config.pcdf`**. Same `promotionId` **may** be reused across locales; uniqueness is **per locale folder**.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -75,7 +76,7 @@ A teammate receives a single named PCDF package (`com.aem.poc.pcdf`) and install
 
 ### User Story 4 - Preview by date and context (Priority: P2)
 
-A marketing or operations reviewer who is signed in on Author previews which promotion would win for a locale, context, and a chosen calendar date (including dates in the future or past relative to today). Preview uses the same eligibility and targeting rules as live delivery, substituting the preview date for today’s date. Preview does not change live eligibility on Publish.
+A marketing or operations reviewer who is signed in on Author previews which promotion would win for a locale, context, and a chosen calendar date (including dates in the future or past relative to today). Preview uses the same eligibility and targeting rules as live delivery, substituting the preview date for today’s date. Preview does not change live eligibility on Publish. Only **published** fragments may win on Author preview.
 
 **Why this priority**: Campaigns need scheduled activation and expiration confidence before go-live, without exposing future windows on the public Publish surface.
 
@@ -110,7 +111,9 @@ Promotions live in locale folders and are not attached to individual pages. Many
 - Request missing locale: reject as invalid (do not invent a default locale).
 - Optional context fields omitted: those dimensions do not constrain matching.
 - Empty targeting list on a promotion for a dimension: that dimension matches all request values.
-- Promotion status not ACTIVE: excluded even if dates and targeting match.
+- Promotion status not `ACTIVE` (including `INACTIVE`): excluded even if dates and targeting match.
+- Request `locale` whose DAM folder does not exist: explicit no-match (`contentFound` false); do not substitute another locale.
+- Author preview: only **published** Content Fragments (unpublished drafts never win).
 - Current or preview calendar date before `startDate` or after `endDate` (inclusive date comparison, no time of day): excluded.
 - Expired content is never returned on live Publish requests.
 - Preview supplied on Publish (anonymous or otherwise): reject as invalid; do not evaluate as a preview.
@@ -133,6 +136,7 @@ This proof of concept lives under the shared POCs umbrella, not under the defaul
 | This POC (apps / nodes) | `/apps/aem-pocs/pcdf` |
 | Shareable package and code identity | `com.aem.poc.pcdf` |
 | PCDF Java / OSGi bundle | Dedicated `core.pcdf` module (not the default `core` module) |
+| PCDF OSGi runmode config | Dedicated `ui.config.pcdf` module (not default `ui.config`) |
 | Promotions | `/content/dam/aem-pocs/pcdf/{locale}/…` |
 | Models / configuration | `/conf/aem-pocs/pcdf` |
 | Delivery surface | Same POC identity on **Publish** (example: `/services/aem-pocs/pcdf`). Source: `docs/programmatic-content-delivery-requirements.md` feature description. Not a public Author campaign engine. |
@@ -146,7 +150,7 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 - **FR-001**: Authors MUST be able to create and edit a promotion under a locale folder with content fields: headline, body, image, call-to-action text, call-to-action link.
 - **FR-002**: Authors MUST be able to set scheduling fields `startDate` and `endDate` as **calendar dates only** (no time of day) for this POC.
 - **FR-003**: Authors MUST be able to set targeting: countries, markets, brands, properties, page types, URL parameters.
-- **FR-004**: Authors MUST be able to set administration fields: promotion id, status, priority, tags.
+- **FR-004**: Authors MUST be able to set administration fields: promotion id, status (`ACTIVE` or `INACTIVE`), priority (integer, **larger number wins**), tags. `promotionId` MUST be unique within a locale folder; the same `promotionId` MAY appear in other locale folders.
 - **FR-005**: The system MUST treat one Content Fragment as one promotion; it MUST NOT require Content Fragment variations (or other variant sets) of the same item for this proof of concept.
 - **FR-006**: Locale MUST be expressed by folder topology, not by variant sets.
 - **FR-007**: Promotions MUST NOT be attached to individual pages as the way campaigns are configured.
@@ -155,19 +159,19 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 - **FR-010**: The delivery request MAY include country, brand, market, property, page type, promo, and tag.
 - **FR-011**: A promotion is eligible only when status is ACTIVE AND `startDate` is on or before the evaluation date AND `endDate` is on or after the evaluation date (inclusive calendar dates, no time).
 - **FR-012**: Live delivery on Publish MUST use today’s calendar date as the evaluation date and MUST NOT accept a preview value.
-- **FR-013**: Preview MUST be available only to a signed-in user on Author. Preview MUST accept an optional preview **date** (no time) and use it as the evaluation date; all other rules MUST match live delivery. Preview MUST NOT change which promotions are eligible on Publish.
+- **FR-013**: Preview MUST be available only to a signed-in user on Author. Preview MUST accept an optional preview **date** (no time) and use it as the evaluation date; all other rules MUST match live delivery, and only **published** fragments MAY win. Preview MUST NOT change which promotions are eligible on Publish. Unpublished drafts MUST NOT win on Author preview.
 - **FR-014**: For each targeting dimension that has a non-empty list on the promotion, the request value for that dimension MUST be present in the list for the promotion to match. Empty list means match-all for that dimension. Omitted request parameters MUST NOT constrain that dimension.
-- **FR-015**: Among eligible matching promotions, the system MUST return the one with the highest priority.
-- **FR-016**: If two or more eligible matches share the highest priority, the system MUST return the one with the lexicographically lower promotion id.
-- **FR-017**: If no promotion is eligible and matching, the system MUST return an explicit no-match result and MUST NOT return a substitute promotion.
-- **FR-018**: A successful match result MUST include: an indication that content was found, promotion id, headline, body, image, call-to-action text, and call-to-action link.
+- **FR-015**: Among eligible matching promotions, the system MUST return the one with the **highest integer priority** (larger number wins).
+- **FR-016**: If two or more eligible matches share the highest priority, the system MUST return the one with the lexicographically lower `promotionId` (compared within that locale’s candidates).
+- **FR-017**: If no promotion is eligible and matching, **or** the requested `locale` folder does not exist, the system MUST return an explicit no-match result and MUST NOT return a substitute promotion or locale.
+- **FR-018**: A successful match result MUST include: an indication that content was found, promotion id, headline, body, image, call-to-action text, and call-to-action link. Optional content fields that are empty MUST still be present as empty strings.
 - **FR-019**: Publish delivery MUST allow anonymous read access.
 - **FR-020**: Author MUST require authenticated access for authoring and Author-side use of the capability.
 - **FR-021**: The public delivery capability MUST be exposed on Publish, not as the primary public surface on Author.
 - **FR-022**: Sample promotions MUST exist under locale folders sufficient to demo match, priority winner, and no-match.
 - **FR-023**: Documentation MUST include hypothesis, non-goals, install and demo steps, paths to look at, how to obtain and install the PCDF-only package, and expected output (visible outcome).
 - **FR-024**: Future targeting dimensions (membership, audience, segment, device, and similar) are out of scope for this proof of concept, but the delivery contract MUST remain usable if those fields are added later via the promotion model and rule configuration without changing the existing request and result fields defined here.
-- **FR-025**: All PCDF application nodes MUST live under `/apps/aem-pocs/pcdf`. Sample promotions MUST live under `/content/dam/aem-pocs/pcdf`. Models and configuration MUST live under `/conf/aem-pocs/pcdf`. PCDF Java MUST live in a dedicated `core.pcdf` module whose bundle identity is `com.aem.poc.pcdf`. PCDF MUST NOT be mixed into `/apps/aem-poc` or into the default `core` module.
+- **FR-025**: All PCDF application nodes MUST live under `/apps/aem-pocs/pcdf`. Sample promotions MUST live under `/content/dam/aem-pocs/pcdf`. Models MUST live under `/conf/aem-pocs/pcdf`. OSGi runmode config MUST live in a dedicated **`ui.config.pcdf`** module (PCDF-only; not default `ui.config`). PCDF Java MUST live in a dedicated `core.pcdf` module whose bundle identity is `com.aem.poc.pcdf`. PCDF MUST NOT be mixed into `/apps/aem-poc` or into the default `core` module.
 - **FR-026**: The proof of concept MUST produce one shareable package identified as `com.aem.poc.pcdf` that a teammate can install without the default site package and without the default `core` bundle. That package MUST keep repository nodes and the `core.pcdf` bundle as separate parts (not fused with other proofs of concept or the default site).
 - **FR-027**: A delivery request on Publish that includes a preview value MUST be rejected as invalid.
 
@@ -201,7 +205,7 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 - Production hardening, observability stacks, and treating a test suite as acceptance.
 - Redesigning the delivery contract for future targeting dimensions.
 - Time-of-day scheduling and timezone-aware instants (a global product may need them later; this POC uses calendar dates only).
-- **Implementing this feature in the repository** (modules, servlet, sample content, package) is **not in this workstream**. Spec, plan, and checklists describe what a later implementation would build.
+- Building PCDF modules/servlet/sample content remains **opt-in** (`/speckit-implement`); this workstream maintains spec, plan, tasks, and repo Java 21 settings.
 
 ## Assumptions
 
@@ -213,10 +217,10 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 - Eligibility compares calendar dates only: `startDate` ≤ evaluation date ≤ `endDate`. Live evaluation date is today’s date on the instance used for the demo (Author preview uses the supplied date). Time of day and per-field timezone are out of scope for this POC.
 - One promotion equals one Content Fragment; Content Fragment variations are out of scope.
 - Edge caching is out of scope for implementation; cache-key guidance of locale, country, brand, and promo may be documented as an external recommendation only.
-- Default local Author is `localhost:4502` and Publish is `localhost:4503` on an **AEM LTS** instance. Credentials follow the project’s local demo convention only.
-- Target language is **Java 21**. (The archetype parent POM may still declare an older compiler until an implementation change is explicitly in scope.)
+- Default local Author is `localhost:4502` and Publish is `localhost:4503` on **AEM 6.5 LTS SP2**. Credentials follow the project’s local demo convention only. Live “today” is that instance’s calendar date.
+- Target language is **Java 21** at the parent POM (`release` 21).
 - Automated tests are optional; the proof of concept is accepted via visible demo and documentation, not coverage gates.
 - Targeting dimensions in this proof of concept are country, market, brand, property, page type, URL parameter (promo), and tag.
 - The shareable package is the hand-off unit; teammates are not expected to assemble PCDF from the full multi-module site install unless they choose to.
 - Placement paths and package identity are isolation constraints for independent install, not a mandate for a particular matching implementation inside those locations.
-- PCDF Java is a dedicated `core.pcdf` module/bundle. The existing default `core` module is not used for this POC’s services.
+- PCDF Java is a dedicated `core.pcdf` module/bundle. OSGi runmode config is `ui.config.pcdf`. The existing default `core` and `ui.config` modules are not used for this POC’s PCDF-specific services or configs.

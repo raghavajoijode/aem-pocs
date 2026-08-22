@@ -11,7 +11,7 @@
 
 | Field | Role | Type | Rules |
 | --- | --- | --- | --- |
-| `promotionId` | Administration | String | Required. Tie-break key (lexicographically lower wins). Unique per locale folder for the sample set. |
+| `promotionId` | Administration | String | Required. Tie-break key (lexicographically lower wins). Unique **within a locale folder**; the same id MAY be used in other locales. |
 | `status` | Administration | Enumeration | Required. At least `ACTIVE` and `INACTIVE`. Only `ACTIVE` is eligible. |
 | `priority` | Administration | Integer | Required. Higher number wins. |
 | `tags` | Administration | String[] | Optional. If the request includes `tag`, the fragment must contain that exact value. |
@@ -37,7 +37,7 @@ created (status typically INACTIVE or ACTIVE)
   → INACTIVE: never eligible, even if dates and targeting match
 ```
 
-Unpublished fragments are not visible on Publish. Author preview queries Author’s repository (including unpublished if the signed-in user can read them — demo sample should be published so Author vs Publish comparison is fair except for `previewDate`).
+Unpublished fragments are not visible on Publish. Author preview uses the same rule: **only published** fragments may win (plus `previewDate` for the calendar window).
 
 ## Locale folder
 
@@ -76,4 +76,4 @@ No-match demo: `locale=en_US&country=CA` (US-targeted fragments do not match; fu
 - Omitted request parameter → dimension does not constrain.
 - Request `promo` matches `urlParameters`.
 - Request `tag` requires exact inclusion in `tags`.
-- Ranking: highest `priority`, then lowest `promotionId`.
+- Ranking: highest integer `priority` (larger wins), then lowest `promotionId` within that locale.

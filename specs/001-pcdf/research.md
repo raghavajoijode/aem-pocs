@@ -66,8 +66,8 @@
 
 ## AEM stack
 
-**Decision**: **Java 21** and a local **AEM LTS** Author/Publish pair (`localhost:4502` / `localhost:4503`). Delivery is **Publish** `GET /services/aem-pocs/pcdf` as in `docs/programmatic-content-delivery-requirements.md` (identity: same POC, not `/apps/aem-poc`). OSGi DS, Sling servlets, Content Fragments, FileVault when built. No dispatcher/CDN implementation.
+**Decision**: **Java 21** at the parent POM (`release` 21). Local **AEM 6.5 LTS SP2** Author/Publish (`localhost:4502` / `localhost:4503`). Delivery is **Publish** `GET /services/aem-pocs/pcdf`. OSGi runmode config in **`ui.config.pcdf`**. Unknown locale folder → no-match. Author preview → published fragments only. `promotionId` unique per locale; reusable across locales.
 
-**Rationale**: Runtime stated by the project (Java 21, AEM LTS), not the archetype parent POM’s current Java 8 / uber-jar `6.6.2` pins. Those pins are repo lag and are not the target for a future PCDF implementation.
+**Rationale**: Project-stated runtime. Constitution config split preserved without putting PCDF PIDs in default `ui.config`.
 
-**Alternatives considered**: Follow parent POM Java 8 / uber-jar 6.6.2 as the product target — rejected. Cloud-only AEMaaCS as the only runtime — rejected (local LTS).
+**Alternatives considered**: Java 21 only on `core.pcdf` — rejected (parent bump chosen). OSGi config under `ui.apps.pcdf` — rejected. Unpublished drafts on Author preview — rejected.

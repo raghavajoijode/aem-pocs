@@ -6,27 +6,27 @@
 
 ## Summary
 
-**Design only** — this plan is not a commitment to implement in this workstream (`/speckit-tasks` / `/speckit-implement` are out of scope until explicitly requested).
+Authors would manage locale-scoped promotions as **one Content Fragment each** (no variations). Consumer apps call **Publish** `GET /services/aem-pocs/pcdf`. Response is **one winner** or `{ "contentFound": false }`. Preview with `previewDate` is **signed-in Author only** and considers **published** fragments only. Java is **21** at the parent POM; runtime is local **AEM 6.5 LTS SP2**. Code in **`core.pcdf`**; OSGi runmode config in **`ui.config.pcdf`**; teammates install **`com.aem.poc.pcdf`** without default `core` or `/apps/aem-poc`.
 
-Authors would manage locale-scoped promotions as **one Content Fragment each** (no variations). Consumer apps call **Publish** at the PCDF delivery surface from `docs/programmatic-content-delivery-requirements.md`: **`GET /services/aem-pocs/pcdf`**. Response is **one winner** or `{ "contentFound": false }`. Preview with `previewDate` is **signed-in Author only**. Java would live in **`core.pcdf`** (Java 21) on **local AEM LTS**; teammates would install **`com.aem.poc.pcdf`** without default `core` or `/apps/aem-poc`.
+**Backlog:** [tasks.md](./tasks.md) is the implementation list. `/speckit-implement` stays opt-in (does not start until requested).
 
 ## Technical Context
 
-**Language/Version**: **Java 21**; Maven 3.3.9+ (parent POM may still list older `source`/`target` until implementation is in scope)
+**Language/Version**: **Java 21** (parent POM `maven-compiler-plugin` `release` 21; enforcer JDK 21)
 
-**Primary Dependencies**: Local **AEM LTS**; OSGi DS, Sling servlets, Content Fragments, FileVault. Do not treat the archetype `uber-jar` `6.6.2` / Java 8 compiler settings as the runtime target.
+**Primary Dependencies**: Local **AEM 6.5 LTS SP2**; OSGi DS, Sling servlets, Content Fragments, FileVault
 
 **Storage**: JCR — CF model under `/conf/aem-pocs/pcdf`; fragments under `/content/dam/aem-pocs/pcdf/{locale}/`
 
-**Testing**: Optional; not an acceptance gate. Demo via [quickstart.md](./quickstart.md) **when/if implemented**
+**Testing**: Optional; not an acceptance gate. Demo via [quickstart.md](./quickstart.md) when implemented
 
-**Target Platform**: Local **AEM LTS** Author `localhost:4502` and Publish `localhost:4503` (not Cloud-only)
+**Target Platform**: Local **AEM 6.5 LTS SP2** Author `localhost:4502` and Publish `localhost:4503` (not Cloud-only)
 
-**Project Type**: AEM multi-module Maven POC (OSGi bundle + FileVault packages + JSON delivery) — **specified, not built in this workstream**
+**Project Type**: AEM multi-module Maven POC (OSGi bundle + FileVault packages + JSON delivery)
 
-**Performance Goals**: Winner selection for the documented sample set under 100ms on the local demo pair (SC-005), when implemented
+**Performance Goals**: Winner selection for the documented sample set under 100ms on the local demo pair (SC-005)
 
-**Constraints**: No PCDF in default `core` or `/apps/aem-poc`; no CF variations; date-only schedule; no CDN/Akamai implementation; no test-suite gate; secrets not committed; **no feature implementation in this workstream**
+**Constraints**: No PCDF in default `core` or `/apps/aem-poc`; OSGi config in `ui.config.pcdf` not default `ui.config`; no CF variations; date-only schedule; no CDN/Akamai implementation; no test-suite gate; secrets not committed
 
 **Scale/Scope**: Sample promotions for match / priority / no-match / future preview; not a production personalisation platform
 
@@ -41,7 +41,7 @@ Authors would manage locale-scoped promotions as **one Content Fragment each** (
 | III. Documentation first; tests optional | Pass | Spec, plan, quickstart (validation guide for a future build); no coverage gate |
 | IV. Install / demo / expected output | Pass | [quickstart.md](./quickstart.md) |
 | V. Simplicity and AEM fit | Pass with justified extra modules | See Complexity Tracking — isolation **is** the POC |
-| Content/code split | Pass | Java in `core.pcdf`; apps in `ui.apps.pcdf`; sample/conf in `ui.content.pcdf` |
+| Content/code split | Pass | Java in `core.pcdf`; apps in `ui.apps.pcdf`; sample/conf in `ui.content.pcdf`; runmode OSGi in `ui.config.pcdf` |
 | Prefer HTL / Sling Models / OSGi / clientlibs | Pass | Authoring uses stock CF editor; delivery is a Sling servlet. No new SPA. Deviation: extra modules + `/apps/aem-pocs` umbrella, documented |
 | AEMaaCS analyser not a release gate | Pass | Unused as gate |
 | No committed secrets | Pass | `admin`/`admin` as local convention in docs only |
@@ -66,31 +66,32 @@ specs/001-pcdf/
 ### Source Code (repository root)
 
 ```text
-pom.xml                          # add modules: core.pcdf, ui.apps.pcdf, ui.content.pcdf, pcdf
+pom.xml                          # Java 21; add modules: core.pcdf, ui.apps.pcdf, ui.content.pcdf, ui.config.pcdf, pcdf
 core/                            # UNCHANGED — no PCDF classes
 core.pcdf/
   src/main/java/com/aem/poc/pcdf/
-    # path servlet, query, eligibility/ranking (names not mandated)
-  src/main/resources/
 ui.apps.pcdf/
   src/main/content/jcr_root/apps/aem-pocs/pcdf/
-    config.author/               # auth required (default) if any
+ui.config.pcdf/
+  src/main/content/jcr_root/apps/aem-pocs/pcdf/osgiconfig/
     config.publish/              # anonymous GET for /services/aem-pocs/pcdf
+    config.author/               # no anonymous exemption
 ui.content.pcdf/
   src/main/content/jcr_root/conf/aem-pocs/pcdf/
   src/main/content/jcr_root/content/dam/aem-pocs/pcdf/{locale}/
 pcdf/                            # container package com.aem.poc.pcdf
-  embed: core.pcdf bundle + ui.apps.pcdf zip + ui.content.pcdf zip
-all/                             # optional: may also embed pcdf for full-repo install; must not be the isolation proof
+  embed: core.pcdf + ui.apps.pcdf + ui.content.pcdf + ui.config.pcdf
+all/                             # optional embed of pcdf; not the isolation proof
+ui.config/                       # default site configs — no PCDF PIDs
 ui.frontend/                     # not used for this POC
 ui.frontend.react/               # not used for this POC
 ```
 
-**Structure Decision**: Keep the archetype tree **when implementing later**. Intended add: four PCDF-specific Maven modules so the shareable container does not contain `aem-poc.core` or `/apps/aem-poc`. Logical processing: validate request → locale DAM path → load `ProgrammaticPromotion` fragments → ACTIVE + date → targeting → highest priority / lowest `promotionId` → JSON. Servlet class names are not a spec mandate. **Do not create these modules in this workstream.**
+**Structure Decision**: Keep the archetype tree. Add PCDF-specific modules so the shareable container does not contain `aem-poc.core` or `/apps/aem-poc`. Runmode config uses **`ui.config.pcdf`** (constitution `ui.config` split, PCDF-only zip). Logical processing: validate request → locale DAM path (missing folder = no-match) → load **published** `ProgrammaticPromotion` fragments → ACTIVE + date → targeting → highest integer priority / lowest `promotionId` → JSON.
 
 ## Complexity Tracking
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| Extra Maven modules (`core.pcdf`, `ui.apps.pcdf`, `ui.content.pcdf`, `pcdf`) | Spec requires a PCDF-only package and a dedicated bundle | Putting code in `core` or nodes in `ui.apps` (`/apps/aem-poc`) makes independent install impossible |
+| Extra Maven modules (`core.pcdf`, `ui.apps.pcdf`, `ui.content.pcdf`, `ui.config.pcdf`, `pcdf`) | PCDF-only zip + constitution config split | Putting PCDF in default `core` / `ui.apps` / `ui.config` prevents independent install |
 | `/apps/aem-pocs` umbrella instead of `/apps/aem-poc` | Isolation identity for this and future POCs | Mixing into `/apps/aem-poc` is an explicit spec failure |

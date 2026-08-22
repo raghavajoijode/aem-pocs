@@ -8,9 +8,9 @@ info:
     Path from docs/programmatic-content-delivery-requirements.md (PCDF identity).
 servers:
   - url: http://localhost:4503
-    description: Local AEM LTS Publish (live)
+    description: Local AEM 6.5 LTS SP2 Publish (live)
   - url: http://localhost:4502
-    description: Local AEM LTS Author (authenticated; optional preview)
+    description: Local AEM 6.5 LTS SP2 Author (authenticated; optional preview)
 paths:
   /services/aem-pocs/pcdf:
     get:
