@@ -1,0 +1,81 @@
+# PCDF quickstart
+
+Visible proof: author a Content Fragment (or use samples), then see one JSON winner on **Publish** — or explicit `contentFound: false`. Preview only on signed-in Author.
+
+**Where delivery lives**: Publish `GET /services/aem-pocs/pcdf`. Authenticated on Author.
+
+Locale folders: `en-us`, `en-gb`, `fr`, `it`, `de`, `hi` (lowercase, hyphenated).
+
+Contract: [contracts/delivery-api.yaml](./contracts/delivery-api.yaml). Samples: [data-model.md](./data-model.md). Install: [`docs/pcdf.md`](../../docs/pcdf.md). Executive / validation: [`docs/pcdf-executive.md`](../../docs/pcdf-executive.md). Slides: [`docs/pcdf-brief.html`](../../docs/pcdf-brief.html).
+
+## Prerequisites
+
+- **JDK 21** and Maven 3.3.9+
+- Local **AEM 6.5 LTS SP2** **Author** `http://localhost:4502` and **Publish** `http://localhost:4503`
+- Adobe Maven repo in `~/.m2/settings.xml`
+- Local credentials: POM default `admin` / `admin` (do not commit real secrets)
+
+## Build and deploy PCDF alone
+
+From the repository root (does **not** install the site `all` package):
+
+```bash
+mvn clean install -pl pcdf -am
+mvn clean install -pl pcdf -am -PautoInstallPcdf
+mvn clean install -pl pcdf -am -PautoInstallPcdfPublish
+```
+
+Shareable zip: `pcdf/target/aem-poc.pcdf-1.0.0-SNAPSHOT.zip`  
+FileVault group/name: `com.aem.poc.pcdf`.
+
+The zip embeds `core.pcdf`, `ui.apps.pcdf`, `ui.config.pcdf`, and `ui.content.pcdf` only — not `aem-poc.core` or `/apps/aem-poc`.
+
+Confirm `/apps/aem-pocs/pcdf`, `/conf/aem-pocs/pcdf`, `/content/dam/aem-pocs/pcdf` exist. Optional whole-repo install (`-PautoInstallSinglePackage`) still deploys site `all`; isolation reviews should use `-pl pcdf` only.
+
+## Demo path
+
+### Authoring
+
+1. Sign in on Author.
+2. Open DAM: `/content/dam/aem-pocs/pcdf/en-us` (also `en-gb`, `fr`, `it`, `de`, `hi`).
+3. Open sample fragment `pcdf-match-high` (or create a new `ProgrammaticPromotion` CF). Confirm `startDate` / `endDate` are dates without time.
+4. Publish the fragment if you changed it.
+5. Authors do not configure campaigns on individual pages.
+
+### Publish (live, anonymous)
+
+```bash
+# Winner (priority 20 beats 10)
+curl -s "http://localhost:4503/services/aem-pocs/pcdf?locale=en-us&country=US"
+
+# Same winner from a second experience
+curl -s "http://localhost:4503/services/aem-pocs/pcdf?locale=en-us&country=US&pageType=home"
+
+# No-match
+curl -s "http://localhost:4503/services/aem-pocs/pcdf?locale=en-us&country=CA"
+
+curl -s "http://localhost:4503/services/aem-pocs/pcdf?locale=en-gb&brand=TH"
+curl -s "http://localhost:4503/services/aem-pocs/pcdf?locale=fr"
+curl -s "http://localhost:4503/services/aem-pocs/pcdf?locale=it&tag=estate"
+curl -s "http://localhost:4503/services/aem-pocs/pcdf?locale=de&promo=SUMMER"
+curl -s "http://localhost:4503/services/aem-pocs/pcdf?locale=hi"
+
+# Preview must fail on Publish
+curl -s -o /dev/stderr -w "%{http_code}" \
+  "http://localhost:4503/services/aem-pocs/pcdf?locale=en-us&previewDate=2026-10-15"
+```
+
+**Expected**: `en-us&country=US` → `pcdf-match-high`; `country=CA` → `contentFound: false`; `en-gb&brand=TH` → `pcdf-gb-high`; `fr` → `pcdf-fr-welcome`; `it&tag=estate` → `pcdf-it-sale`; `de&promo=SUMMER` → `pcdf-de-summer`; `hi` → `pcdf-match-high` (Hindi). Preview on Publish → HTTP 400 `preview_not_allowed`. Full table: [`docs/pcdf-executive.md`](../../docs/pcdf-executive.md).
+
+### Author preview (signed in)
+
+```bash
+curl -s -u admin:admin \
+  "http://localhost:4502/services/aem-pocs/pcdf?locale=en-us&previewDate=2026-10-15"
+```
+
+**Expected**: `pcdf-future`. Publish without preview does not return that fragment before 2026-10-01.
+
+## Cleanup
+
+Uninstall the PCDF package from Package Manager on Author and Publish, or delete `/apps/aem-pocs/pcdf`, `/apps/aem-pocs-pcdf-packages`, `/conf/aem-pocs/pcdf`, `/content/dam/aem-pocs/pcdf`.

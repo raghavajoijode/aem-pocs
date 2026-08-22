@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>PCDF — executive brief</title>
+  <style>
+    :root {
+      --ink: #1a1814;
+      --paper: #f4efe6;
+      --panel: #fffdf8;
+      --rule: #c9bfae;
+      --accent: #9c2f1a;
+      --muted: #5c564c;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--paper); color: var(--ink); font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+    .deck { height: 100%; overflow: hidden; }
+    section {
+      display: none;
+      height: 100%;
+      padding: 6vh 8vw 10vh;
+      flex-direction: column;
+      justify-content: center;
+    }
+    section.on { display: flex; }
+    kicker { display: block; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+    h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 600; line-height: 1.1; margin: 0 0 1rem; max-width: 18ch; }
+    h2 { font-size: clamp(1.6rem, 3.5vw, 2.4rem); font-weight: 600; margin: 0 0 1rem; }
+    p, li { font-size: clamp(1.05rem, 1.6vw, 1.25rem); line-height: 1.45; color: var(--muted); }
+    p.lead { color: var(--ink); max-width: 42ch; }
+    ul { margin: 0; padding-left: 1.1em; }
+    li { margin: 0.35em 0; }
+    table { border-collapse: collapse; width: 100%; max-width: 52rem; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.92rem; background: var(--panel); }
+    th, td { text-align: left; padding: 0.45rem 0.65rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+    th { color: var(--accent); font-weight: 600; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; }
+    code { font-family: ui-monospace, Menlo, monospace; font-size: 0.88em; }
+    footer.bar {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.7rem 8vw; font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: 0.75rem; color: var(--muted); border-top: 1px solid var(--rule); background: var(--paper);
+    }
+    footer.bar button {
+      background: transparent; border: 1px solid var(--rule); color: var(--ink);
+      padding: 0.25rem 0.7rem; font: inherit; cursor: pointer;
+    }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start; max-width: 56rem; }
+    @media (max-width: 800px) { .two { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="deck" id="deck">
+    <section class="on">
+      <kicker>AEM POC · PCDF</kicker>
+      <h1>One promotion. One winner. No page campaigns.</h1>
+      <p class="lead">Authors write locale-scoped promotions as Content Fragments. Apps ask Publish for the winner — or an explicit empty result.</p>
+    </section>
+    <section>
+      <kicker>Problem</kicker>
+      <h2>Campaigns should not wait on developers or page wiring.</h2>
+      <ul>
+        <li>Today, launching promo copy often means a ticket, a component, or a page property.</li>
+        <li>Consumer apps need a stable contract: locale + context in, one JSON payload out.</li>
+        <li>If nothing qualifies, say so. Do not invent another language or a default banner.</li>
+      </ul>
+    </section>
+    <section>
+      <kicker>Authoring</kicker>
+      <h2>Marketers stay in the fragment editor.</h2>
+      <div class="two">
+        <ul>
+          <li>Open a locale folder under DAM: <code>en-us</code>, <code>en-gb</code>, <code>fr</code>, <code>it</code>, <code>de</code>, <code>hi</code>.</li>
+          <li>Create one Programmatic Promotion fragment — not a variation set, not a page.</li>
+          <li>Set copy, calendar dates (no time), targeting lists, status, and priority.</li>
+        </ul>
+        <ul>
+          <li>Publish. Drafts never win, including on Author preview.</li>
+          <li>Home, PDP, and mobile reuse the same fragment by calling the API.</li>
+          <li>No campaign field on the page.</li>
+        </ul>
+      </div>
+    </section>
+    <section>
+      <kicker>Locales</kicker>
+      <h2>Folder name is the locale code.</h2>
+      <p>Lowercase, hyphenated. <code>locale=en-us</code> reads <code>/content/dam/aem-pocs/pcdf/en-us</code>. <code>en_US</code> does not match. Unknown <code>ja</code> is no-match, not French.</p>
+      <p>The same <code>promotionId</code> may exist in Hindi and US English; uniqueness is per folder.</p>
+    </section>
+    <section>
+      <kicker>Decision</kicker>
+      <h2>Published → active → in date → targeting → highest priority.</h2>
+      <p>Ties go to the lexicographically lower id. Publish always uses today. Preview date is Author-only and is rejected on live.</p>
+    </section>
+    <section>
+      <kicker>Hand-off</kicker>
+      <h2>Install PCDF without the rest of the site.</h2>
+      <p><code>mvn clean install -pl pcdf -am -PautoInstallPcdf</code></p>
+      <p>Repeat with <code>-PautoInstallPcdfPublish</code>. Zip identity: <code>com.aem.poc.pcdf</code>. Default <code>core</code> and <code>/apps/aem-poc</code> are not in that zip.</p>
+    </section>
+    <section>
+      <kicker>Live checks</kicker>
+      <h2>Sample calls on Publish :4503</h2>
+      <table>
+        <thead><tr><th>Intent</th><th>Query</th><th>Winner</th></tr></thead>
+        <tbody>
+          <tr><td>US priority</td><td><code>locale=en-us&amp;country=US</code></td><td><code>pcdf-match-high</code></td></tr>
+          <tr><td>No-match</td><td><code>locale=en-us&amp;country=CA</code></td><td>empty</td></tr>
+          <tr><td>UK brand</td><td><code>locale=en-gb&amp;brand=TH</code></td><td><code>pcdf-gb-high</code></td></tr>
+          <tr><td>France reuse</td><td><code>locale=fr</code> twice, different pageType</td><td><code>pcdf-fr-welcome</code></td></tr>
+          <tr><td>Italy tag</td><td><code>locale=it&amp;tag=estate</code></td><td><code>pcdf-it-sale</code></td></tr>
+          <tr><td>Germany promo</td><td><code>locale=de&amp;promo=SUMMER</code></td><td><code>pcdf-de-summer</code></td></tr>
+          <tr><td>Hindi, same id</td><td><code>locale=hi</code></td><td><code>pcdf-match-high</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+    <section>
+      <kicker>Author vs Publish</kicker>
+      <h2>Preview is a signed-in Author tool.</h2>
+      <ul>
+        <li>Author without a session: 401. Publish: anonymous GET.</li>
+        <li>Author <code>previewDate=2026-10-15</code> on <code>en-us</code>: <code>pcdf-future</code>.</li>
+        <li>Same preview query on Publish: 400 <code>preview_not_allowed</code>.</li>
+      </ul>
+    </section>
+    <section>
+      <kicker>Ask</kicker>
+      <h2>Prove it in one install pass.</h2>
+      <p class="lead">Install only the PCDF zip, author or open a fragment, hit Publish, confirm winner vs no-match vs preview. Full scenario list: <code>docs/pcdf-executive.md</code>.</p>
+    </section>
+  </div>
+  <footer class="bar">
+    <span>PCDF executive brief · ← → or space</span>
+    <span>
+      <button type="button" id="prev">Prev</button>
+      <span id="pos"></span>
+      <button type="button" id="next">Next</button>
+    </span>
+  </footer>
+  <script>
+    const slides = [...document.querySelectorAll("section")];
+    let i = 0;
+    function show(n) {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, idx) => s.classList.toggle("on", idx === i));
+      document.getElementById("pos").textContent = (i + 1) + " / " + slides.length;
+    }
+    document.getElementById("prev").onclick = () => show(i - 1);
+    document.getElementById("next").onclick = () => show(i + 1);
+    document.addEventListener("keydown", (e) => {
+      if (["ArrowRight", " ", "PageDown"].includes(e.key)) { e.preventDefault(); show(i + 1); }
+      if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); show(i - 1); }
+    });
+    show(0);
+  </script>
+</body>
+</html>

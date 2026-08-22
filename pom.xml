@@ -23,11 +23,16 @@
   <modules>
     <module>all</module>
     <module>core</module>
+    <module>core.pcdf</module>
     <module>ui.frontend</module>
     <module>ui.frontend.react</module>
     <module>ui.apps</module>
     <module>ui.apps.structure</module>
     <module>ui.config</module>
+    <module>ui.config.pcdf</module>
+    <module>ui.apps.pcdf</module>
+    <module>ui.content.pcdf</module>
+    <module>pcdf</module>
     <module>ui.content</module>
     <module>dispatcher.ams</module>
     <module>dispatcher.cloud</module>
@@ -85,8 +90,8 @@
                   <version>[3.3.9,)</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
-                  <message>Maven must be executed with a Java 8 JRE or higher.</message>
-                  <version>1.8.0</version>
+                  <message>Maven must be executed with a Java 21 JDK.</message>
+                  <version>21</version>
                 </requireJavaVersion>
               </rules>
             </configuration>
@@ -98,8 +103,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <release>21</release>
         </configuration>
       </plugin>
     </plugins>
@@ -213,7 +217,7 @@ Bundle-DocURL:
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.1</version>
+          <version>3.13.0</version>
         </plugin>
         <!-- Maven Installer Plugin -->
         <plugin>

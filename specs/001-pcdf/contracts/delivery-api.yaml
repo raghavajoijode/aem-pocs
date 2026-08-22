@@ -1,0 +1,127 @@
+openapi: 3.0.3
+info:
+  title: PCDF delivery
+  version: 0.1.0
+  description: >
+    Single-winner promotion delivery. Public anonymous GET on Publish
+    (AEM LTS local). Authenticated GET on Author; previewDate allowed on Author only.
+    Path from docs/programmatic-content-delivery-requirements.md (PCDF identity).
+servers:
+  - url: http://localhost:4503
+    description: Local AEM 6.5 LTS SP2 Publish (live)
+  - url: http://localhost:4502
+    description: Local AEM 6.5 LTS SP2 Author (authenticated; optional preview)
+paths:
+  /services/aem-pocs/pcdf:
+    get:
+      operationId: getWinningPromotion
+      summary: Return the winning promotion or an explicit no-match
+      parameters:
+        - in: query
+          name: locale
+          required: true
+          schema:
+            type: string
+            example: en-us
+          description: DAM folder name under /content/dam/aem-pocs/pcdf (lowercase hyphenated, e.g. en-us, fr, hi)
+        - in: query
+          name: country
+          required: false
+          schema: { type: string, example: US }
+        - in: query
+          name: brand
+          required: false
+          schema: { type: string }
+        - in: query
+          name: market
+          required: false
+          schema: { type: string }
+        - in: query
+          name: property
+          required: false
+          schema: { type: string }
+        - in: query
+          name: pageType
+          required: false
+          schema: { type: string }
+        - in: query
+          name: promo
+          required: false
+          schema: { type: string }
+          description: Matched against the promotion urlParameters list
+        - in: query
+          name: tag
+          required: false
+          schema: { type: string }
+        - in: query
+          name: previewDate
+          required: false
+          schema:
+            type: string
+            format: date
+            example: "2026-10-15"
+          description: Author only. Calendar date YYYY-MM-DD. Rejected on Publish.
+      responses:
+        "200":
+          description: Valid request; either one winner or no-match
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeliveryResult"
+              examples:
+                match:
+                  value:
+                    contentFound: true
+                    promotionId: pcdf-match-high
+                    headline: Fall welcome
+                    body: Sample body
+                    image: /content/dam/aem-pocs/pcdf/en-us/welcome.png
+                    ctaText: Learn more
+                    ctaLink: /content/aem-pocs/pcdf
+                noMatch:
+                  value:
+                    contentFound: false
+        "400":
+          description: Invalid request (missing locale, previewDate on Publish, unparseable date)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResult"
+              examples:
+                missingLocale:
+                  value: { error: "locale_required" }
+                previewOnPublish:
+                  value: { error: "preview_not_allowed" }
+        "401":
+          description: Author request without a signed-in session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResult"
+components:
+  schemas:
+    DeliveryResult:
+      type: object
+      required: [contentFound]
+      properties:
+        contentFound:
+          type: boolean
+        promotionId:
+          type: string
+        headline:
+          type: string
+        body:
+          type: string
+        image:
+          type: string
+          description: DAM path of the image reference
+        ctaText:
+          type: string
+        ctaLink:
+          type: string
+    ErrorResult:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string

@@ -7,5 +7,9 @@
         <include pattern="/content/dam/aem-poc/jcr:content(/.*)?"/>
     </filter>
     <filter root="/content/dam/aem-poc/asset.jpg" mode="merge"/>
+    <filter root="/content/dam/aem-poc/wknd_logo.png" mode="merge"/>
+    <filter root="/content/dam/aem-poc/sample_logo.png" mode="merge"/>
+    <filter root="/content/dam/aem-poc/sample_terms.png" mode="merge"/>
     <filter root="/content/experience-fragments/aem-poc" mode="merge"/>
+    <filter root="/var/commerce/products/aem-poc-default" mode="merge"/>
 </workspaceFilter>

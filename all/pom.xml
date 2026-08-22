@@ -220,6 +220,11 @@
         </dependency>
         <dependency>
             <groupId>com.aem.poc</groupId>
+            <artifactId>aem-poc.core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aem.poc</groupId>
             <artifactId>aem-poc.ui.content</artifactId>
             <version>${project.version}</version>
             <type>zip</type>

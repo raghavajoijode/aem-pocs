@@ -1,0 +1,5 @@
+{
+  "scripts": [
+    "set ACL on /content/dam/aem-pocs/pcdf\n  allow jcr:read for everyone\nend"
+  ]
+}

@@ -81,7 +81,8 @@
                     <failOnError>true</failOnError>
                 </configuration>
             </plugin>
-
+            <!-- Validate HTL only. Compiling generated Java needs CIF model JARs
+                 that this project does not put on the ui.apps classpath. -->
             <plugin>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>htl-maven-plugin</artifactId>
@@ -93,7 +94,7 @@
                         </goals>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <generateJavaClasses>true</generateJavaClasses>
+                            <generateJavaClasses>false</generateJavaClasses>
                             <generatedJavaClassesPrefix>org.apache.sling.scripting.sightly</generatedJavaClassesPrefix>
                             <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
                             <allowedExpressionOptions>
