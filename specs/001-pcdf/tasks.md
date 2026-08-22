@@ -85,7 +85,7 @@ PCDF modules from plan.md: `core.pcdf/`, `ui.apps.pcdf/`, `ui.content.pcdf/`, `u
 ### Implementation for User Story 2
 
 - [ ] T019 [US2] Implement targeting (empty list = match-all; omitted request param unconstrained; `promo` → `urlParameters`; `tag` exact inclusion) in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/eligibility/TargetingRules.java` without adding new request/response fields (FR-024: later dimensions via model/rules only)
-- [ ] T020 [US2] Rank by highest `priority` then lexicographically lower `promotionId` in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/eligibility/Ranking.java`
+- [ ] T020 [US2] Rank by highest integer `priority` then lexicographically lower `promotionId` (per locale) in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/eligibility/Ranking.java`
 - [ ] T021 [US2] Return no-match body with `contentFound: false` and no substitute fields in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java` (including unknown locale folder)
 - [ ] T022 [P] [US2] Add samples `pcdf-match-low` and `pcdf-inactive` under `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-pocs/pcdf/en_US/` per `/workspace/specs/001-pcdf/data-model.md`
 - [ ] T023 [US2] Reject missing `locale` with HTTP 400 `locale_required` in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java`
@@ -102,7 +102,7 @@ PCDF modules from plan.md: `core.pcdf/`, `ui.apps.pcdf/`, `ui.content.pcdf/`, `u
 
 ### Implementation for User Story 3
 
-- [ ] T024 [US3] Embed only PCDF artifacts in `/workspace/pcdf/pom.xml` and `/workspace/pcdf/src/main/content/META-INF/vault/filter.xml`
+- [ ] T024 [US3] Embed only PCDF artifacts in `/workspace/pcdf/pom.xml` and `/workspace/pcdf/src/main/content/META-INF/vault/filter.xml` (include `ui.config.pcdf`)
 - [ ] T025 [US3] Confirm `/workspace/ui.apps.pcdf/src/main/content/META-INF/vault/filter.xml` and `/workspace/ui.content.pcdf/src/main/content/META-INF/vault/filter.xml` do not include `/apps/aem-poc`
 - [ ] T026 [US3] Document `mvn clean install -pl pcdf -am` and zip coordinates in `/workspace/docs/pcdf.md`
 - [ ] T027 [US3] Keep `/workspace/all/pom.xml` from making PCDF isolation depend on the site `all` package (optional embed is convenience only)

@@ -211,7 +211,7 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 
 - Empty targeting list for a dimension means match-all for that dimension.
 - Missing optional request parameters mean those dimensions are unconstrained.
-- Priority ties are broken by lexicographically lower promotion id.
+- Priority ties are broken by lexicographically lower promotion id within the locale. The same `promotionId` MAY be used in different locale folders.
 - Tag matching is exact inclusion of the requested tag when tag is provided.
 - Promo on the request maps to the promotion’s URL-parameter targeting list.
 - Eligibility compares calendar dates only: `startDate` ≤ evaluation date ≤ `endDate`. Live evaluation date is today’s date on the instance used for the demo (Author preview uses the supplied date). Time of day and per-field timezone are out of scope for this POC.
