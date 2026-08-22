@@ -1,123 +1,101 @@
-# Sample AEM project template
+# AEM POCs
 
-This is a project template for AEM-based applications. It is intended as a best-practice set of examples as well as a potential starting point to develop your own functionality.
+Multi-module Adobe Experience Manager project for **proofs of concept**, not a
+production product template. Goal: try an idea, show a visible result, and leave
+clear install / demo / usage steps for the next person.
+
+Artifact: `com.aem.poc:aem-poc` (`1.0.0-SNAPSHOT`). App id / title: **aem-poc** /
+**AEM POCs**. Generated from the AEM project archetype with example content
+enabled and a general (Webpack) frontend module.
+
+## Prerequisites
+
+- JDK and **Maven 3** suitable for your AEM SDK / 6.5+ target
+- Local **Author** at `http://localhost:4502` (default); Publish at
+  `http://localhost:4503` when the POC needs it
+- Adobe Maven repositories configured in `~/.m2/settings.xml` — see
+  [Set up the Adobe Maven repository](https://helpx.adobe.com/experience-manager/kb/SetUpTheAdobeMavenRepository.html)
+- Default local credentials in the POM are archetype `admin` / `admin`; do not
+  commit real secrets
 
 ## Modules
 
-The main parts of the template are:
+| Module | Role |
+| --- | --- |
+| `core` | OSGi services, servlets, filters, Sling Models, and other Java |
+| `ui.apps` | `/apps` components, templates, clientlibs |
+| `ui.content` | Sample content for demos |
+| `ui.config` | Runmode-specific OSGi configs |
+| `ui.apps.structure` | Repository structure package |
+| `ui.frontend` | General Webpack frontend → AEM clientlibs |
+| `ui.frontend.react` | Optional React SPA frontend (use only when the POC needs it) |
+| `all` | Single package embedding bundles and content packages |
+| `dispatcher.ams` | Dispatcher config for AMS-style setups |
+| `dispatcher.cloud` | Dispatcher config for AEMaaCS-style setups |
 
-* [core:](core/README.md) Java bundle containing all core functionality like OSGi services, listeners or schedulers, as well as component-related Java code such as servlets or request filters.
-* [it.tests:](it.tests/README.md) Java based integration tests
-* [ui.apps:](ui.apps/README.md) contains the /apps (and /etc) parts of the project, ie JS&CSS clientlibs, components, and templates
-* [ui.content:](ui.content/README.md) contains sample content using the components from the ui.apps
-* ui.config: contains runmode specific OSGi configs for the project
-* [ui.frontend:](ui.frontend.general/README.md) an optional dedicated front-end build mechanism (Angular, React or general Webpack project)
-* [ui.tests.cypress:](ui.tests.cypress/README.md) Cypress based UI tests
-* [ui.tests.wdio:](ui.tests.wdio/README.md) Selenium based UI tests
-* all: a single content package that embeds all of the compiled modules (bundles and content packages) including any vendor dependencies
-* analyse: this module runs analysis on the project which provides additional validation for deploying into AEMaaCS
+There is **no** `it.tests`, `analyse`, or UI-test module in this checkout.
+Tests are optional for POCs; prefer a visible Author/Publish outcome and written
+demo steps.
 
-## How to build
+## Build and install
 
-To build all the modules run in the project root directory the following command with Maven 3:
+From the project root:
 
-    mvn clean install
+```bash
+# Build everything
+mvn clean install
 
-To build all the modules and deploy the `all` package to a local instance of AEM, run in the project root directory the following command:
+# Build and deploy the `all` package to local Author (4502)
+mvn clean install -PautoInstallSinglePackage
 
-    mvn clean install -PautoInstallSinglePackage
+# Deploy to Publish (4503)
+mvn clean install -PautoInstallSinglePackagePublish
 
-Or to deploy it to a publish instance, run
+# Same idea with an explicit port
+mvn clean install -PautoInstallSinglePackage -Daem.port=4503
 
-    mvn clean install -PautoInstallSinglePackagePublish
+# Deploy only the `core` bundle to Author
+mvn clean install -PautoInstallBundle
 
-Or alternatively
+# Deploy a single content package from its module (e.g. ui.apps)
+cd ui.apps && mvn clean install -PautoInstallPackage
+```
 
-    mvn clean install -PautoInstallSinglePackage -Daem.port=4503
+Frontend clientlibs are produced during the Maven build when the frontend
+modules run. See `ui.frontend/README.md` (and `ui.frontend.react/README.md` if
+you use that module).
 
-Or to deploy only the bundle to the author, run
+## How we run POCs
 
-    mvn clean install -PautoInstallBundle
+For each POC, document in the root README (or a short note under the feature):
 
-Or to deploy only a single content package, run in the sub-module directory (i.e `ui.apps`)
+1. **Hypothesis** and non-goals  
+2. **Where the code lives** (modules / content paths)  
+3. **Install steps** (commands above, plus any extras)  
+4. **Demo path** (page, component, or console to open)  
+5. **Expected output** (what success looks like)  
+6. **Cleanup** if sample content or configs should be removed later  
 
-    mvn clean install -PautoInstallPackage
+Prefer patterns already in this repo (HTL, Sling Models, OSGi configs,
+clientlibs). Deviate only when the experiment requires it, and say so in the
+POC notes.
 
-## Documentation
+## Spec Kit (optional)
 
-The build process also generates documentation in the form of README.md files in each module directory for easy reference. Depending on the options you select at build time, the content may be customized to your project.
+This repo is set up with [GitHub Spec Kit](https://github.com/github/spec-kit)
+for structured specify → plan → tasks → implement flows. Cursor skills live
+under `.cursor/skills/`; Copilot skills under `.github/skills/`. Shared Spec Kit
+files are under `.specify/`.
 
-## Testing
+Agent orientation for any IDE: see [`AGENTS.md`](AGENTS.md).
 
-There are three levels of testing contained in the project:
+## Related docs
 
-### Unit tests
-
-This show-cases classic unit testing of the code contained in the bundle. To
-test, execute:
-
-    mvn clean test
-
-### Integration tests
-
-This allows running integration tests that exercise the capabilities of AEM via
-HTTP calls to its API. To run the integration tests, run:
-
-    mvn clean verify -Plocal
-
-Test classes must be saved in the `src/main/java` directory (or any of its
-subdirectories), and must be contained in files matching the pattern `*IT.java`.
-
-The configuration provides sensible defaults for a typical local installation of
-AEM. If you want to point the integration tests to different AEM author and
-publish instances, you can use the following system properties via Maven's `-D`
-flag.
-
-| Property | Description | Default value |
-| --- | --- | --- |
-| `it.author.url` | URL of the author instance | `http://localhost:4502` |
-| `it.author.user` | Admin user for the author instance | `admin` |
-| `it.author.password` | Password of the admin user for the author instance | `admin` |
-| `it.publish.url` | URL of the publish instance | `http://localhost:4503` |
-| `it.publish.user` | Admin user for the publish instance | `admin` |
-| `it.publish.password` | Password of the admin user for the publish instance | `admin` |
-
-The integration tests in this archetype use the [AEM Testing
-Clients](https://github.com/adobe/aem-testing-clients) and showcase some
-recommended [best
-practices](https://github.com/adobe/aem-testing-clients/wiki/Best-practices) to
-be put in use when writing integration tests for AEM.
-
-## Static Analysis
-
-The `analyse` module performs static analysis on the project for deploying into AEMaaCS. It is automatically
-run when executing
-
-    mvn clean install
-
-from the project root directory. Additional information about this analysis and how to further configure it
-can be found here https://github.com/adobe/aemanalyser-maven-plugin
-
-### UI tests
-
-They will test the UI layer of your AEM application using either Cypress or Selenium technology.
-
-Check README file in `ui.tests.cypress` or `ui.tests.wdio` module for more details.
-
-## ClientLibs
-
-The frontend module is made available using an [AEM ClientLib](https://helpx.adobe.com/experience-manager/6-5/sites/developing/using/clientlibs.html). When executing the NPM build script, the app is built and the [`aem-clientlib-generator`](https://github.com/wcm-io-frontend/aem-clientlib-generator) package takes the resulting build output and transforms it into such a ClientLib.
-
-A ClientLib will consist of the following files and directories:
-
-- `css/`: CSS files which can be requested in the HTML
-- `css.txt` (tells AEM the order and names of files in `css/` so they can be merged)
-- `js/`: JavaScript files which can be requested in the HTML
-- `js.txt` (tells AEM the order and names of files in `js/` so they can be merged
-- `resources/`: Source maps, non-entrypoint code chunks (resulting from code splitting), static assets (e.g. icons), etc.
-
-## Maven settings
-
-The project comes with the auto-public repository configured. To setup the repository in your Maven settings, refer to:
-
-    http://helpx.adobe.com/experience-manager/kb/SetUpTheAdobeMavenRepository.html
+- [`README-CIF.md`](README-CIF.md) — Commerce Integration Framework notes (CIF
+  not enabled in `archetype.properties`)
+- [`README-precompiled-scripts.md`](README-precompiled-scripts.md) — precompiled
+  scripts notes
+- Frontend: [`ui.frontend/README.md`](ui.frontend/README.md),
+  [`ui.frontend.react/README.md`](ui.frontend.react/README.md)
+- Dispatcher: [`dispatcher.ams/README.md`](dispatcher.ams/README.md),
+  [`dispatcher.cloud/README.md`](dispatcher.cloud/README.md)
