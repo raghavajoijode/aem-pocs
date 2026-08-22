@@ -21,6 +21,7 @@ This proof of concept proves that hypothesis: Author for authoring, Publish for 
 - Q: Should a Publish caller be allowed to pass a preview date on an unauthenticated delivery request, or is preview limited to signed-in Author users? → A: Preview is limited to a signed-in user on Author only. Publish live delivery always evaluates “now” and must not honor a preview date.
 - Q: Must schedule fields carry timezone (global application)? → A: Desired for a global product, but **out of scope for this POC**.
 - Q: When previewing on Author, is the preview value a date-time with timezone or a calendar date? How are start and end stored? → A: For this POC, `startDate` and `endDate` are **dates only (no time)**. Preview uses a **calendar date** (no time).
+- Q: Should this POC’s Java live in a separate Maven module and bundle (`core.pcdf`) or inside the existing `core` module? → A: Separate `core.pcdf` module and bundle (`com.aem.poc.pcdf`); default `core` stays free of PCDF.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -57,7 +58,7 @@ A consumer application sends locale plus optional context (country, brand, marke
 
 ### User Story 3 - Hand off only the PCDF package (Priority: P1)
 
-A teammate receives a single named PCDF package (`com.aem.poc.pcdf`) and installs it. They get PCDF application nodes, sample promotions, models and configuration, and the PCDF code bundle—without the default site (`/apps/aem-poc`) or other proofs of concept. Repository nodes and the code bundle remain separately identifiable parts inside that package so either part can be inspected or rebuilt without mixing them into the rest of the project.
+A teammate receives a single named PCDF package (`com.aem.poc.pcdf`) and installs it. They get PCDF application nodes, sample promotions, models and configuration, and a **dedicated PCDF code bundle** from the `core.pcdf` module—without the default site (`/apps/aem-poc`), without the default `core` bundle, and without other proofs of concept. Repository nodes and the PCDF bundle remain separately identifiable parts inside that package.
 
 **Why this priority**: Independent install is a stated delivery constraint; without it, the proof of concept cannot be shared as an explicit artifact.
 
@@ -67,7 +68,7 @@ A teammate receives a single named PCDF package (`com.aem.poc.pcdf`) and install
 
 1. **Given** a reviewer who should not install the whole site, **When** they are given the PCDF package, **Then** they can install only that package and reach authoring and delivery for this proof of concept.
 2. **Given** the installed package, **When** a reviewer inspects identity, **Then** application nodes live under `/apps/aem-pocs/pcdf`, promotions under `/content/dam/aem-pocs/pcdf`, models and configuration under `/conf/aem-pocs/pcdf`, and code uses `com.aem.poc.pcdf`.
-3. **Given** the shareable package, **When** a reviewer inspects its parts, **Then** repository nodes and the code bundle are distinct (not a single mixed blob with the default site).
+3. **Given** the shareable package, **When** a reviewer inspects its parts, **Then** repository nodes and the dedicated PCDF code bundle (`core.pcdf` / `com.aem.poc.pcdf`) are distinct, and the default site `core` bundle is not required.
 
 ---
 
@@ -130,6 +131,7 @@ This proof of concept lives under the shared POCs umbrella, not under the defaul
 | Umbrella (apps) | `/apps/aem-pocs` |
 | This POC (apps / nodes) | `/apps/aem-pocs/pcdf` |
 | Shareable package and code identity | `com.aem.poc.pcdf` |
+| PCDF Java / OSGi bundle | Dedicated `core.pcdf` module (not the default `core` module) |
 | Promotions | `/content/dam/aem-pocs/pcdf/{locale}/…` |
 | Models / configuration | `/conf/aem-pocs/pcdf` |
 | Delivery surface | Same POC identity (under the PCDF umbrella, not the default site) |
@@ -164,8 +166,8 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 - **FR-022**: Sample promotions MUST exist under locale folders sufficient to demo match, priority winner, and no-match.
 - **FR-023**: Documentation MUST include hypothesis, non-goals, install and demo steps, paths to look at, how to obtain and install the PCDF-only package, and expected output (visible outcome).
 - **FR-024**: Future targeting dimensions (membership, audience, segment, device, and similar) are out of scope for this proof of concept, but the delivery contract MUST remain usable if those fields are added later via the promotion model and rule configuration without changing the existing request and result fields defined here.
-- **FR-025**: All PCDF application nodes MUST live under `/apps/aem-pocs/pcdf`. Sample promotions MUST live under `/content/dam/aem-pocs/pcdf`. Models and configuration MUST live under `/conf/aem-pocs/pcdf`. Code MUST use `com.aem.poc.pcdf`. PCDF MUST NOT be mixed into `/apps/aem-poc`.
-- **FR-026**: The proof of concept MUST produce one shareable package identified as `com.aem.poc.pcdf` that a teammate can install without the default site package. That package MUST keep repository nodes and the code bundle as separate parts (not fused with other proofs of concept or the default site).
+- **FR-025**: All PCDF application nodes MUST live under `/apps/aem-pocs/pcdf`. Sample promotions MUST live under `/content/dam/aem-pocs/pcdf`. Models and configuration MUST live under `/conf/aem-pocs/pcdf`. PCDF Java MUST live in a dedicated `core.pcdf` module whose bundle identity is `com.aem.poc.pcdf`. PCDF MUST NOT be mixed into `/apps/aem-poc` or into the default `core` module.
+- **FR-026**: The proof of concept MUST produce one shareable package identified as `com.aem.poc.pcdf` that a teammate can install without the default site package and without the default `core` bundle. That package MUST keep repository nodes and the `core.pcdf` bundle as separate parts (not fused with other proofs of concept or the default site).
 - **FR-027**: A delivery request on Publish that includes a preview value MUST be rejected as invalid.
 
 ### Key Entities
@@ -174,7 +176,7 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 - **Locale folder**: A repository location under `/content/dam/aem-pocs/pcdf` that groups promotions for one locale (for example `en_US`). Delivery resolves candidates from the folder that matches the requested locale.
 - **Delivery request**: Locale plus optional country, brand, market, property, page type, promo, and tag. On Author only, an optional preview date (no time) may be supplied by a signed-in user.
 - **Delivery result**: Either one winning promotion’s content fields plus promotion id, or an explicit no-match.
-- **PCDF package**: The explicit, shareable install artifact for this proof of concept only. Contains separately identifiable repository-node content and the PCDF code bundle under identity `com.aem.poc.pcdf`.
+- **PCDF package**: The explicit, shareable install artifact for this proof of concept only. Contains separately identifiable repository-node content and the dedicated `core.pcdf` bundle under identity `com.aem.poc.pcdf`.
 
 ## Success Criteria *(mandatory)*
 
@@ -186,7 +188,7 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 - **SC-004**: Two experiences can reuse the same promotion without any page-level campaign configuration.
 - **SC-005**: For the sample set used in the demo, selecting the winner (eligibility, targeting, and priority) completes in under 100 milliseconds on a local instance used for the demo.
 - **SC-006**: A teammate can reproduce the demo from written steps (prerequisites, deploy of the PCDF package, Author path, Publish request examples, expected outcomes) without tribal knowledge.
-- **SC-007**: A teammate who installs only the PCDF package (not the default site) can complete the documented demo; PCDF nodes, sample promotions, and delivery are present, and nothing from this proof of concept lives under the default site apps tree.
+- **SC-007**: A teammate who installs only the PCDF package (not the default site and not the default `core` bundle) can complete the documented demo; PCDF nodes, sample promotions, and delivery are present, and nothing from this proof of concept lives under the default site apps tree or in the default `core` module.
 - **SC-008**: A reviewer can see `startDate` and `endDate` on Author as dates without a time of day, and a preview date uses that same date-only comparison.
 
 ## Out of Scope
@@ -214,3 +216,4 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 - Targeting dimensions in this proof of concept are country, market, brand, property, page type, URL parameter (promo), and tag.
 - The shareable package is the hand-off unit; teammates are not expected to assemble PCDF from the full multi-module site install unless they choose to.
 - Placement paths and package identity are isolation constraints for independent install, not a mandate for a particular matching implementation inside those locations.
+- PCDF Java is a dedicated `core.pcdf` module/bundle. The existing default `core` module is not used for this POC’s services.
