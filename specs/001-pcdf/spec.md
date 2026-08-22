@@ -19,13 +19,14 @@ This proof of concept proves that hypothesis: Author for authoring, Publish for 
 ### Session 2026-08-22
 
 - Q: Should a Publish caller be allowed to pass a preview date on an unauthenticated delivery request, or is preview limited to signed-in Author users? → A: Preview is limited to a signed-in user on Author only. Publish live delivery always evaluates “now” and must not honor a preview date.
-- Q: Must schedule fields carry timezone (global application)? → A: Yes. On Author, start and end MUST include timezone so eligibility is unambiguous worldwide.
+- Q: Must schedule fields carry timezone (global application)? → A: Desired for a global product, but **out of scope for this POC**.
+- Q: When previewing on Author, is the preview value a date-time with timezone or a calendar date? How are start and end stored? → A: For this POC, `startDate` and `endDate` are **dates only (no time)**. Preview uses a **calendar date** (no time).
 
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Author a promotion without developers (Priority: P1)
 
-A content author creates a promotion as one Content Fragment in a locale folder with headline, body, image, call-to-action text, call-to-action link, start and end date-times with timezone, targeting lists, promotion id, status, priority, and tags. They publish it. No developer is required to launch that campaign.
+A content author creates a promotion as one Content Fragment in a locale folder with headline, body, image, call-to-action text, call-to-action link, `startDate` and `endDate` (dates only, no time), targeting lists, promotion id, status, priority, and tags. They publish it. No developer is required to launch that campaign.
 
 **Why this priority**: This is the core “author once / no development per campaign” value.
 
@@ -34,7 +35,7 @@ A content author creates a promotion as one Content Fragment in a locale folder 
 **Acceptance Scenarios**:
 
 1. **Given** the author is signed in on Author, **When** they create a promotion under a locale folder with required content and metadata, **Then** the promotion is stored as a single item for that locale and can be published.
-2. **Given** a published ACTIVE promotion whose start–end window (with timezone) includes the current instant, **When** a consumer requests that locale with matching context on Publish, **Then** the promotion’s content is returned as the winner if it has the highest priority among matches.
+2. **Given** a published ACTIVE promotion whose `startDate`–`endDate` window includes today’s calendar date, **When** a consumer requests that locale with matching context on Publish, **Then** the promotion’s content is returned as the winner if it has the highest priority among matches.
 
 ---
 
@@ -72,16 +73,16 @@ A teammate receives a single named PCDF package (`com.aem.poc.pcdf`) and install
 
 ### User Story 4 - Preview by date and context (Priority: P2)
 
-A marketing or operations reviewer who is signed in on Author previews which promotion would win for a locale, context, and a chosen evaluation time (including times in the future or past relative to now). Preview uses the same eligibility and targeting rules as live delivery, substituting the preview instant for the current instant. Preview does not change live eligibility on Publish.
+A marketing or operations reviewer who is signed in on Author previews which promotion would win for a locale, context, and a chosen calendar date (including dates in the future or past relative to today). Preview uses the same eligibility and targeting rules as live delivery, substituting the preview date for today’s date. Preview does not change live eligibility on Publish.
 
 **Why this priority**: Campaigns need scheduled activation and expiration confidence before go-live, without exposing future windows on the public Publish surface.
 
-**Independent Test**: Use the same promotion set as live; while signed in on Author, request delivery with a preview instant and confirm match or no-match matches the zoned schedule for that instant. On Publish, the same promotion set is evaluated at now only.
+**Independent Test**: Use the same promotion set as live; while signed in on Author, request delivery with a preview date and confirm match or no-match matches the `startDate`/`endDate` window for that date. On Publish, the same promotion set is evaluated using today’s date only.
 
 **Acceptance Scenarios**:
 
-1. **Given** a promotion that is ACTIVE but whose window starts in the future, **When** live delivery is requested on Publish now, **Then** it is not returned.
-2. **Given** the same promotion, **When** a signed-in Author user requests preview with an evaluation time inside the window and matching context, **Then** it can win according to the same targeting and priority rules.
+1. **Given** a promotion that is ACTIVE but whose `startDate` is in the future, **When** live delivery is requested on Publish today, **Then** it is not returned.
+2. **Given** the same promotion, **When** a signed-in Author user requests preview with a calendar date inside the window and matching context, **Then** it can win according to the same targeting and priority rules.
 3. **Given** preview on Author, **When** targeting or locale would not match, **Then** the result is no content, same as live.
 4. **Given** an unauthenticated Publish request, **When** a preview value is supplied, **Then** the request is rejected as invalid (Publish does not preview).
 
@@ -108,7 +109,7 @@ Promotions live in locale folders and are not attached to individual pages. Many
 - Optional context fields omitted: those dimensions do not constrain matching.
 - Empty targeting list on a promotion for a dimension: that dimension matches all request values.
 - Promotion status not ACTIVE: excluded even if dates and targeting match.
-- Current or preview instant before start or after end (compared as instants using authored timezones): excluded.
+- Current or preview calendar date before `startDate` or after `endDate` (inclusive date comparison, no time of day): excluded.
 - Expired content is never returned on live Publish requests.
 - Preview supplied on Publish (anonymous or otherwise): reject as invalid; do not evaluate as a preview.
 - Preview without a signed-in Author session: reject as invalid.
@@ -140,7 +141,7 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 ### Functional Requirements
 
 - **FR-001**: Authors MUST be able to create and edit a promotion under a locale folder with content fields: headline, body, image, call-to-action text, call-to-action link.
-- **FR-002**: Authors MUST be able to set scheduling fields: start and end as date-times that each include an explicit timezone (required for this global application; server default timezone is not sufficient).
+- **FR-002**: Authors MUST be able to set scheduling fields `startDate` and `endDate` as **calendar dates only** (no time of day) for this POC.
 - **FR-003**: Authors MUST be able to set targeting: countries, markets, brands, properties, page types, URL parameters.
 - **FR-004**: Authors MUST be able to set administration fields: promotion id, status, priority, tags.
 - **FR-005**: The system MUST treat one Content Fragment as one promotion; it MUST NOT require Content Fragment variations (or other variant sets) of the same item for this proof of concept.
@@ -149,9 +150,9 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 - **FR-008**: Creating a new campaign MUST NOT require development support.
 - **FR-009**: The delivery request MUST require locale.
 - **FR-010**: The delivery request MAY include country, brand, market, property, page type, promo, and tag.
-- **FR-011**: A promotion is eligible only when status is ACTIVE AND start instant is on or before the evaluation instant AND end instant is on or after the evaluation instant. Start and end instants are derived from the authored date-times and their timezones.
-- **FR-012**: Live delivery on Publish MUST use the current instant as the evaluation instant and MUST NOT accept a preview value.
-- **FR-013**: Preview MUST be available only to a signed-in user on Author. Preview MUST accept an optional preview value and use it as the evaluation instant; all other rules MUST match live delivery. Preview MUST NOT change which promotions are eligible on Publish.
+- **FR-011**: A promotion is eligible only when status is ACTIVE AND `startDate` is on or before the evaluation date AND `endDate` is on or after the evaluation date (inclusive calendar dates, no time).
+- **FR-012**: Live delivery on Publish MUST use today’s calendar date as the evaluation date and MUST NOT accept a preview value.
+- **FR-013**: Preview MUST be available only to a signed-in user on Author. Preview MUST accept an optional preview **date** (no time) and use it as the evaluation date; all other rules MUST match live delivery. Preview MUST NOT change which promotions are eligible on Publish.
 - **FR-014**: For each targeting dimension that has a non-empty list on the promotion, the request value for that dimension MUST be present in the list for the promotion to match. Empty list means match-all for that dimension. Omitted request parameters MUST NOT constrain that dimension.
 - **FR-015**: Among eligible matching promotions, the system MUST return the one with the highest priority.
 - **FR-016**: If two or more eligible matches share the highest priority, the system MUST return the one with the lexicographically lower promotion id.
@@ -169,9 +170,9 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 
 ### Key Entities
 
-- **Promotion**: A single locale-scoped campaign item authored as one Content Fragment (no variations). Content: headline, body, image, call-to-action text, call-to-action link. Administration: promotion id, status, priority, tags. Schedule: start and end date-times with explicit timezone. Targeting: countries, markets, brands, properties, page types, URL parameters.
+- **Promotion**: A single locale-scoped campaign item authored as one Content Fragment (no variations). Content: headline, body, image, call-to-action text, call-to-action link. Administration: promotion id, status, priority, tags. Schedule: `startDate` and `endDate` as calendar dates (no time). Targeting: countries, markets, brands, properties, page types, URL parameters.
 - **Locale folder**: A repository location under `/content/dam/aem-pocs/pcdf` that groups promotions for one locale (for example `en_US`). Delivery resolves candidates from the folder that matches the requested locale.
-- **Delivery request**: Locale plus optional country, brand, market, property, page type, promo, and tag. On Author only, an optional preview value may be supplied by a signed-in user.
+- **Delivery request**: Locale plus optional country, brand, market, property, page type, promo, and tag. On Author only, an optional preview date (no time) may be supplied by a signed-in user.
 - **Delivery result**: Either one winning promotion’s content fields plus promotion id, or an explicit no-match.
 - **PCDF package**: The explicit, shareable install artifact for this proof of concept only. Contains separately identifiable repository-node content and the PCDF code bundle under identity `com.aem.poc.pcdf`.
 
@@ -181,12 +182,12 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 
 - **SC-001**: A reviewer can create (or use sample) a new campaign on Author with no code change and see it delivered when eligible.
 - **SC-002**: For the sample promotion set, a consumer request with a matching locale and context returns the expected single winner; a non-matching request returns no content—demonstrable in one demo pass.
-- **SC-003**: On Author, preview with an evaluation time inside a future campaign window returns that campaign when targeting matches; the same request on Publish (no preview) does not return it if the window has not started.
+- **SC-003**: On Author, preview with a calendar date inside a future campaign window returns that campaign when targeting matches; the same request on Publish (no preview) does not return it if `startDate` is still in the future.
 - **SC-004**: Two experiences can reuse the same promotion without any page-level campaign configuration.
 - **SC-005**: For the sample set used in the demo, selecting the winner (eligibility, targeting, and priority) completes in under 100 milliseconds on a local instance used for the demo.
 - **SC-006**: A teammate can reproduce the demo from written steps (prerequisites, deploy of the PCDF package, Author path, Publish request examples, expected outcomes) without tribal knowledge.
 - **SC-007**: A teammate who installs only the PCDF package (not the default site) can complete the documented demo; PCDF nodes, sample promotions, and delivery are present, and nothing from this proof of concept lives under the default site apps tree.
-- **SC-008**: A reviewer can see that start and end include timezone on Author, and eligibility for a given instant does not depend on guessing the server’s default timezone.
+- **SC-008**: A reviewer can see `startDate` and `endDate` on Author as dates without a time of day, and a preview date uses that same date-only comparison.
 
 ## Out of Scope
 
@@ -196,6 +197,7 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 - Implementing or configuring a content delivery network or edge cache keys; edge caching is an external recommendation only.
 - Production hardening, observability stacks, and treating a test suite as acceptance.
 - Redesigning the delivery contract for future targeting dimensions.
+- Time-of-day scheduling and timezone-aware instants (a global product may need them later; this POC uses calendar dates only).
 
 ## Assumptions
 
@@ -204,7 +206,7 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 - Priority ties are broken by lexicographically lower promotion id.
 - Tag matching is exact inclusion of the requested tag when tag is provided.
 - Promo on the request maps to the promotion’s URL-parameter targeting list.
-- Eligibility compares instants: authored start/end with timezone versus evaluation instant (Publish “now”, or Author preview value). Calendar-day-only matching and server-default timezone are not used.
+- Eligibility compares calendar dates only: `startDate` ≤ evaluation date ≤ `endDate`. Live evaluation date is today’s date on the instance used for the demo (Author preview uses the supplied date). Time of day and per-field timezone are out of scope for this POC.
 - One promotion equals one Content Fragment; Content Fragment variations are out of scope.
 - Edge caching is out of scope for implementation; cache-key guidance of locale, country, brand, and promo may be documented as an external recommendation only.
 - Default local Author is `localhost:4502` and Publish is `localhost:4503`; credentials follow the project’s local demo convention only.
