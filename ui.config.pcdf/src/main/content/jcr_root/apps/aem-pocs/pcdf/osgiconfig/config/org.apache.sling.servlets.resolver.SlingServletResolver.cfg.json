@@ -1,0 +1,6 @@
+{
+  "servletresolver.paths": [
+    "/bin/",
+    "/services/"
+  ]
+}

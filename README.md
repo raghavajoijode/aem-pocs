@@ -80,6 +80,18 @@ Prefer patterns already in this repo (HTL, Sling Models, OSGi configs,
 clientlibs). Deviate only when the experiment requires it, and say so in the
 POC notes.
 
+## PCDF (Programmatic Content Delivery Framework)
+
+Hypothesis: authors manage locale-scoped promotions as one Content Fragment each; consumer apps get one JSON winner (or explicit no-match) from Publish without wiring campaigns on pages.
+
+- **Modules**: `core.pcdf`, `ui.apps.pcdf`, `ui.content.pcdf`, `ui.config.pcdf`, container `pcdf` (not default `core` / `/apps/aem-poc` / default `ui.config`)
+- **Install**: `mvn clean install -pl pcdf -am` then install `pcdf/target/aem-poc.pcdf-1.0.0-SNAPSHOT.zip` on Author and Publish
+- **Demo**: DAM `/content/dam/aem-pocs/pcdf/en_US`; Publish `GET /services/aem-pocs/pcdf?locale=en_US&country=US` → `pcdf-match-high`
+- **Expected**: `country=CA` → `contentFound: false`; Author `previewDate=2026-10-15` → `pcdf-future`; Publish rejects preview with `preview_not_allowed`
+- **Cleanup**: uninstall the PCDF package (see [`docs/pcdf.md`](docs/pcdf.md))
+
+Full install, curl examples, and CDN cache-key note: [`docs/pcdf.md`](docs/pcdf.md). Spec: [`specs/001-pcdf/`](specs/001-pcdf/).
+
 ## Spec Kit (optional)
 
 This repo is set up with [GitHub Spec Kit](https://github.com/github/spec-kit)

@@ -23,11 +23,16 @@
   <modules>
     <module>all</module>
     <module>core</module>
+    <module>core.pcdf</module>
     <module>ui.frontend</module>
     <module>ui.frontend.react</module>
     <module>ui.apps</module>
     <module>ui.apps.structure</module>
     <module>ui.config</module>
+    <module>ui.config.pcdf</module>
+    <module>ui.apps.pcdf</module>
+    <module>ui.content.pcdf</module>
+    <module>pcdf</module>
     <module>ui.content</module>
     <module>dispatcher.ams</module>
     <module>dispatcher.cloud</module>

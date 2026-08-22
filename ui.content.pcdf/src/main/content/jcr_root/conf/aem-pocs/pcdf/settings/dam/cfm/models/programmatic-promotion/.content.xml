@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Template">
+    <jcr:content
+        cq:template="/libs/settings/dam/cfm/model/template"
+        jcr:description="One locale-scoped promotion. No variations. Dates are calendar days only."
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Programmatic Promotion"
+        sling:resourceSuperType="dam/cfm/models/console/components/data/entity"
+        sling:resourceType="dam/cfm/models/console/components/data/entity"
+        status="enabled"
+        version="2.1">
+        <model
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="wcm/foundation/components/responsivegrid">
+            <cq:dialog
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Programmatic Promotion"
+                sling:resourceType="cq/gui/components/authoring/dialog">
+                <content
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns">
+                    <items jcr:primaryType="nt:unstructured">
+                        <promotionId
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/text"
+                            fieldLabel="Promotion ID"
+                            listOrder="1"
+                            metaType="text-single"
+                            name="promotionId"
+                            renderReadOnly="{Boolean}true"
+                            required="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            valueType="string"/>
+                        <status
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/enumeration"
+                            fieldLabel="Status"
+                            listOrder="2"
+                            metaType="enumeration"
+                            name="status"
+                            optionLabels="[ACTIVE,INACTIVE]"
+                            optionValues="[ACTIVE,INACTIVE]"
+                            renderReadOnly="{Boolean}true"
+                            required="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            valueType="string"/>
+                        <priority
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/number"
+                            fieldLabel="Priority (larger wins)"
+                            listOrder="3"
+                            metaType="number"
+                            name="priority"
+                            renderReadOnly="{Boolean}true"
+                            required="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            valueType="long"/>
+                        <tags
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/text"
+                            fieldLabel="Tags"
+                            listOrder="4"
+                            metaType="text-multi"
+                            name="tags"
+                            renderReadOnly="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            valueType="string/[]"/>
+                        <headline
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/text"
+                            fieldLabel="Headline"
+                            listOrder="5"
+                            metaType="text-single"
+                            name="headline"
+                            renderReadOnly="{Boolean}true"
+                            required="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            valueType="string"/>
+                        <body
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/text"
+                            fieldLabel="Body"
+                            listOrder="6"
+                            metaType="text-multi"
+                            name="body"
+                            renderReadOnly="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            valueType="string"/>
+                        <image
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/contentreference"
+                            fieldLabel="Image"
+                            listOrder="7"
+                            metaType="content-fragment"
+                            name="image"
+                            renderReadOnly="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            valueType="string/content-fragment"/>
+                        <ctaText
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/text"
+                            fieldLabel="CTA text"
+                            listOrder="8"
+                            metaType="text-single"
+                            name="ctaText"
+                            renderReadOnly="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            valueType="string"/>
+                        <ctaLink
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/text"
+                            fieldLabel="CTA link"
+                            listOrder="9"
+                            metaType="text-single"
+                            name="ctaLink"
+                            renderReadOnly="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            valueType="string"/>
+                        <startDate
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/datepicker"
+                            displayedFormat="YYYY-MM-DD"
+                            fieldLabel="Start date (inclusive, date only)"
+                            listOrder="10"
+                            metaType="date"
+                            name="startDate"
+                            renderReadOnly="{Boolean}true"
+                            required="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            typeHint="Date"
+                            valueType="calendar"/>
+                        <endDate
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/datepicker"
+                            displayedFormat="YYYY-MM-DD"
+                            fieldLabel="End date (inclusive, date only)"
+                            listOrder="11"
+                            metaType="date"
+                            name="endDate"
+                            renderReadOnly="{Boolean}true"
+                            required="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            typeHint="Date"
+                            valueType="calendar"/>
+                        <countries
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/text"
+                            fieldDescription="Empty list matches all countries."
+                            fieldLabel="Countries"
+                            listOrder="12"
+                            metaType="text-multi"
+                            name="countries"
+                            renderReadOnly="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            valueType="string/[]"/>
+                        <markets
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/text"
+                            fieldDescription="Empty list matches all markets."
+                            fieldLabel="Markets"
+                            listOrder="13"
+                            metaType="text-multi"
+                            name="markets"
+                            renderReadOnly="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            valueType="string/[]"/>
+                        <brands
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/text"
+                            fieldDescription="Empty list matches all brands."
+                            fieldLabel="Brands"
+                            listOrder="14"
+                            metaType="text-multi"
+                            name="brands"
+                            renderReadOnly="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            valueType="string/[]"/>
+                        <properties
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/text"
+                            fieldDescription="Empty list matches all properties."
+                            fieldLabel="Properties"
+                            listOrder="15"
+                            metaType="text-multi"
+                            name="properties"
+                            renderReadOnly="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            valueType="string/[]"/>
+                        <pageTypes
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/text"
+                            fieldDescription="Empty list matches all page types."
+                            fieldLabel="Page types"
+                            listOrder="16"
+                            metaType="text-multi"
+                            name="pageTypes"
+                            renderReadOnly="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            valueType="string/[]"/>
+                        <urlParameters
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="dam/cfm/admin/components/authoring/contentfragment/datatype/text"
+                            fieldDescription="Matched against request promo. Empty list matches all."
+                            fieldLabel="URL parameters (promo)"
+                            listOrder="17"
+                            metaType="text-multi"
+                            name="urlParameters"
+                            renderReadOnly="{Boolean}true"
+                            showEmptyInReadOnly="{Boolean}true"
+                            valueType="string/[]"/>
+                    </items>
+                </content>
+            </cq:dialog>
+        </model>
+    </jcr:content>
+</jcr:root>

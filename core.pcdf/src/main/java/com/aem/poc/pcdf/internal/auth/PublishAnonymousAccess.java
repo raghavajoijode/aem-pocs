@@ -1,0 +1,17 @@
+package com.aem.poc.pcdf.internal.auth;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+
+/**
+ * Activates only when Publish runmode config is present. Registers an extra
+ * {@code sling.auth.requirements} entry so GET {@code /services/aem-pocs/pcdf}
+ * is anonymous on Publish without replacing the SlingAuthenticator PID.
+ */
+@Component(
+        service = PublishAnonymousAccess.class,
+        configurationPid = "com.aem.poc.pcdf.internal.auth.PublishAnonymousAccess",
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        property = {"sling.auth.requirements=-/services/aem-pocs/pcdf"})
+public class PublishAnonymousAccess {
+}
