@@ -60,7 +60,7 @@ specs/001-pcdf/
 ├── quickstart.md
 ├── contracts/
 │   └── delivery-api.yaml
-└── tasks.md             # /speckit-tasks — not created; implementation not in this workstream
+└── tasks.md             # /speckit-tasks backlog; execute only when implementation is in scope
 ```
 
 ### Source Code (repository root)
