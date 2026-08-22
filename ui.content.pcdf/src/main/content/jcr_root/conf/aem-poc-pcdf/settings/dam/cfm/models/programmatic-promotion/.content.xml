@@ -11,8 +11,7 @@
         sling:resourceSuperType="dam/cfm/models/console/components/data/entity"
         sling:resourceType="dam/cfm/models/console/components/data/entity"
         metadataSchema="/conf/global/settings/dam/adminui-extension/metadataschema/contentfragment"
-        status="enabled"
-        version="2.1">
+        status="enabled">
         <model
             cq:targetPath="/content/entities"
             jcr:primaryType="cq:PageContent"
@@ -35,7 +34,7 @@
                             metaType="text-single"
                             name="promotionId"
                             renderReadOnly="{Boolean}true"
-                            required="{Boolean}true"
+                            required="on"
                             showEmptyInReadOnly="{Boolean}true"
                             valueType="string"/>
                         <status
@@ -48,7 +47,7 @@
                             optionLabels="[ACTIVE,INACTIVE]"
                             optionValues="[ACTIVE,INACTIVE]"
                             renderReadOnly="{Boolean}true"
-                            required="{Boolean}true"
+                            required="on"
                             showEmptyInReadOnly="{Boolean}true"
                             valueType="string"/>
                         <priority
@@ -59,7 +58,7 @@
                             metaType="number"
                             name="priority"
                             renderReadOnly="{Boolean}true"
-                            required="{Boolean}true"
+                            required="on"
                             showEmptyInReadOnly="{Boolean}true"
                             valueType="long"/>
                         <tags
@@ -80,7 +79,7 @@
                             metaType="text-single"
                             name="headline"
                             renderReadOnly="{Boolean}true"
-                            required="{Boolean}true"
+                            required="on"
                             showEmptyInReadOnly="{Boolean}true"
                             valueType="string"/>
                         <body
@@ -132,7 +131,7 @@
                             metaType="date"
                             name="startDate"
                             renderReadOnly="{Boolean}true"
-                            required="{Boolean}true"
+                            required="on"
                             showEmptyInReadOnly="{Boolean}true"
                             typeHint="Date"
                             valueType="calendar"/>
@@ -145,7 +144,7 @@
                             metaType="date"
                             name="endDate"
                             renderReadOnly="{Boolean}true"
-                            required="{Boolean}true"
+                            required="on"
                             showEmptyInReadOnly="{Boolean}true"
                             typeHint="Date"
                             valueType="calendar"/>
