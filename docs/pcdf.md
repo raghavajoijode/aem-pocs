@@ -24,7 +24,7 @@ Stakeholder brief and validation scenarios: [`pcdf-executive.md`](pcdf-executive
 | Sample fragments | `/content/dam/aem-pocs/pcdf/{en-us,en-gb,fr,it,de,hi}/` |
 | Shareable zip | `pcdf/target/aem-poc.pcdf-1.0.0-SNAPSHOT.zip` — FileVault group/name `com.aem.poc.pcdf` |
 
-The zip embeds **only** `aem-poc.core.pcdf`, `aem-poc.ui.apps.pcdf`, `aem-poc.ui.content.pcdf`, and `aem-poc.ui.config.pcdf`. It does **not** embed `aem-poc.core`, `aem-poc.ui.apps`, or `aem-poc.ui.config`. Site `all` is optional convenience and is **not** required for isolation.
+The zip embeds **only** `aem-poc.core.pcdf`, `aem-poc.ui.apps.pcdf`, `aem-poc.ui.content.pcdf`, and `aem-poc.ui.config.pcdf`. It does **not** embed `aem-poc.core`, `aem-poc.ui.apps`, or `aem-poc.ui.config`. The site `all` package embeds this same PCDF zip as a subpackage, so `mvn clean install -PautoInstallSinglePackage` deploys the default site **and** PCDF. Use `-pl pcdf` when you need PCDF without the rest of the site.
 
 ## Authoring experience
 
@@ -54,7 +54,7 @@ mvn clean install -pl pcdf -am -PautoInstallPcdfPublish
 
 Manual alternative: upload `pcdf/target/aem-poc.pcdf-1.0.0-SNAPSHOT.zip` in Package Manager on Author and again on Publish.
 
-Full-repo `mvn clean install -PautoInstallSinglePackage` still deploys the default site `all` package. Use the `-pl pcdf` commands above to prove isolation.
+Full-repo `mvn clean install -PautoInstallSinglePackage` installs site `all`, which now embeds the PCDF container zip. Isolation reviews should still use the `-pl pcdf` commands above.
 
 ## Demo / expected JSON (Publish, anonymous)
 

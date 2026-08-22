@@ -30,7 +30,7 @@ FileVault group/name: `com.aem.poc.pcdf`.
 
 The zip embeds `core.pcdf`, `ui.apps.pcdf`, `ui.config.pcdf`, and `ui.content.pcdf` only — not `aem-poc.core` or `/apps/aem-poc`.
 
-Confirm `/apps/aem-pocs/pcdf`, `/conf/aem-pocs/pcdf`, `/content/dam/aem-pocs/pcdf` exist. Optional whole-repo install (`-PautoInstallSinglePackage`) still deploys site `all`; isolation reviews should use `-pl pcdf` only.
+Confirm `/apps/aem-pocs/pcdf`, `/conf/aem-pocs/pcdf`, `/content/dam/aem-pocs/pcdf` exist. Whole-repo `mvn clean install -PautoInstallSinglePackage` installs site `all` **including** the PCDF container zip. Isolation reviews should still use `-pl pcdf` only.
 
 ## Demo path
 
