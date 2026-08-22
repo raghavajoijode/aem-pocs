@@ -176,6 +176,8 @@ Bundle-Category: ${componentGroupName}
 # reproducible builds (https://github.com/bndtools/bnd/issues/3521)
 -noextraheaders: true
 -snapshot: SNAPSHOT
+# Bnd 5.1.2 does not know Java 21 and would emit osgi.ee=UNKNOWN (bundle stays Installed)
+-noee: true
 
 Bundle-DocURL:
 -plugin org.apache.sling.caconfig.bndplugin.ConfigurationClassScannerPlugin

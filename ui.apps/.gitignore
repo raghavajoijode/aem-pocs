@@ -1,2 +1,4 @@
+# Webpack / aem-clientlib-generator output (rebuilt from ui.frontend and ui.frontend.react)
 src/main/content/jcr_root/apps/aem-poc/clientlibs/clientlib-site
 src/main/content/jcr_root/apps/aem-poc/clientlibs/clientlib-dependencies
+src/main/content/jcr_root/apps/aem-poc/clientlibs/clientlib-react
