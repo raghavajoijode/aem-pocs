@@ -1,16 +1,19 @@
 # PCDF quickstart
 
-Visible proof: author a Content Fragment (or use samples), then see one JSON winner on Publish — or explicit `contentFound: false`. Preview only on signed-in Author.
+This file is the **validation guide for a future implementation**. This workstream does **not** implement PCDF (no `core.pcdf` module yet).
+
+Visible proof **when built**: author a Content Fragment (or use samples), then see one JSON winner on **Publish** — or explicit `contentFound: false`. Preview only on signed-in Author.
+
+**Where delivery lives** (from `docs/programmatic-content-delivery-requirements.md`): Publish delivery API under the PCDF identity, **`GET /services/aem-pocs/pcdf`**. Not a public Author campaign engine.
 
 Contract: [contracts/delivery-api.yaml](./contracts/delivery-api.yaml). Sample IDs: [data-model.md](./data-model.md).
 
 ## Prerequisites
 
-- JDK 8+ and Maven 3.3.9+
-- Local **Author** `http://localhost:4502` and **Publish** `http://localhost:4503`
+- **JDK 21** and Maven 3.3.9+
+- Local **AEM LTS** **Author** `http://localhost:4502` and **Publish** `http://localhost:4503`
 - Adobe Maven repo in `~/.m2/settings.xml`
 - Local credentials: POM default `admin` / `admin` (do not commit real secrets)
-- This POC is **not** Cloud-only; it targets the repo’s AEM 6.6 uber-jar / 6.5-style local SDK
 
 ## Build the PCDF-only package
 

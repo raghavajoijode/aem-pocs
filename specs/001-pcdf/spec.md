@@ -22,6 +22,7 @@ This proof of concept proves that hypothesis: Author for authoring, Publish for 
 - Q: Must schedule fields carry timezone (global application)? → A: Desired for a global product, but **out of scope for this POC**.
 - Q: When previewing on Author, is the preview value a date-time with timezone or a calendar date? How are start and end stored? → A: For this POC, `startDate` and `endDate` are **dates only (no time)**. Preview uses a **calendar date** (no time).
 - Q: Should this POC’s Java live in a separate Maven module and bundle (`core.pcdf`) or inside the existing `core` module? → A: Separate `core.pcdf` module and bundle (`com.aem.poc.pcdf`); default `core` stays free of PCDF.
+- Q: Runtime and workstream scope? → A: **Java 21**. Local **AEM LTS** (Author `localhost:4502`, Publish `localhost:4503`). **This workstream does not implement the feature** (specify / plan / checklist only). Delivery location is defined in `docs/programmatic-content-delivery-requirements.md` (feature description): Publish delivery API under the PCDF identity, example path `/services/aem-pocs/pcdf`.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -134,7 +135,7 @@ This proof of concept lives under the shared POCs umbrella, not under the defaul
 | PCDF Java / OSGi bundle | Dedicated `core.pcdf` module (not the default `core` module) |
 | Promotions | `/content/dam/aem-pocs/pcdf/{locale}/…` |
 | Models / configuration | `/conf/aem-pocs/pcdf` |
-| Delivery surface | Same POC identity (under the PCDF umbrella, not the default site) |
+| Delivery surface | Same POC identity on **Publish** (example: `/services/aem-pocs/pcdf`). Source: `docs/programmatic-content-delivery-requirements.md` feature description. Not a public Author campaign engine. |
 
 Inside the shareable package, **repository nodes and the code bundle MUST remain separate parts** so the package can be handed off as a whole without folding PCDF into the rest of the shared site.
 
@@ -200,6 +201,7 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 - Production hardening, observability stacks, and treating a test suite as acceptance.
 - Redesigning the delivery contract for future targeting dimensions.
 - Time-of-day scheduling and timezone-aware instants (a global product may need them later; this POC uses calendar dates only).
+- **Implementing this feature in the repository** (modules, servlet, sample content, package) is **not in this workstream**. Spec, plan, and checklists describe what a later implementation would build.
 
 ## Assumptions
 
@@ -211,7 +213,8 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 - Eligibility compares calendar dates only: `startDate` ≤ evaluation date ≤ `endDate`. Live evaluation date is today’s date on the instance used for the demo (Author preview uses the supplied date). Time of day and per-field timezone are out of scope for this POC.
 - One promotion equals one Content Fragment; Content Fragment variations are out of scope.
 - Edge caching is out of scope for implementation; cache-key guidance of locale, country, brand, and promo may be documented as an external recommendation only.
-- Default local Author is `localhost:4502` and Publish is `localhost:4503`; credentials follow the project’s local demo convention only.
+- Default local Author is `localhost:4502` and Publish is `localhost:4503` on an **AEM LTS** instance. Credentials follow the project’s local demo convention only.
+- Target language is **Java 21**. (The archetype parent POM may still declare an older compiler until an implementation change is explicitly in scope.)
 - Automated tests are optional; the proof of concept is accepted via visible demo and documentation, not coverage gates.
 - Targeting dimensions in this proof of concept are country, market, brand, property, page type, URL parameter (promo), and tag.
 - The shareable package is the hand-off unit; teammates are not expected to assemble PCDF from the full multi-module site install unless they choose to.

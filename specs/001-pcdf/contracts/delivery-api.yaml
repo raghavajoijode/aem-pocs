@@ -3,13 +3,14 @@ info:
   title: PCDF delivery
   version: 0.1.0
   description: >
-    Single-winner promotion delivery. Public anonymous GET on Publish.
-    Authenticated GET on Author; previewDate allowed on Author only.
+    Single-winner promotion delivery. Public anonymous GET on Publish
+    (AEM LTS local). Authenticated GET on Author; previewDate allowed on Author only.
+    Path from docs/programmatic-content-delivery-requirements.md (PCDF identity).
 servers:
   - url: http://localhost:4503
-    description: Local Publish (live)
+    description: Local AEM LTS Publish (live)
   - url: http://localhost:4502
-    description: Local Author (authenticated; optional preview)
+    description: Local AEM LTS Author (authenticated; optional preview)
 paths:
   /services/aem-pocs/pcdf:
     get:

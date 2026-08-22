@@ -58,14 +58,16 @@
 
 ## Documentation and tests
 
-**Decision**: Primary evidence is [quickstart.md](./quickstart.md) plus a short PCDF section in the root README. Automated tests optional (constitution III). No `it.tests` / UI-test suite.
+**Decision**: Primary evidence **when implemented** is [quickstart.md](./quickstart.md) plus a short PCDF section in the root README. This workstream stops at spec/plan/checklist; it does not add modules or a servlet.
 
-**Rationale**: Visible Author CF + Publish JSON is the POC outcome.
+**Rationale**: Visible Author CF + Publish JSON is the eventual POC outcome. Constitution III still applies if/when the feature is built.
 
 **Alternatives considered**: Contract-test suite as acceptance — constitution forbids test-suite-as-gate.
 
 ## AEM stack
 
-**Decision**: Stay on this repo’s stack: Java 8, Maven multi-module, AEM uber-jar `6.6.2`, OSGi DS, Sling servlets, Content Fragments, FileVault packages. No new frameworks, no dispatcher work for this POC.
+**Decision**: **Java 21** and a local **AEM LTS** Author/Publish pair (`localhost:4502` / `localhost:4503`). Delivery is **Publish** `GET /services/aem-pocs/pcdf` as in `docs/programmatic-content-delivery-requirements.md` (identity: same POC, not `/apps/aem-poc`). OSGi DS, Sling servlets, Content Fragments, FileVault when built. No dispatcher/CDN implementation.
 
-**Rationale**: Constitution V and existing parent POM. Dispatcher/CDN is an external note only.
+**Rationale**: Runtime stated by the project (Java 21, AEM LTS), not the archetype parent POM’s current Java 8 / uber-jar `6.6.2` pins. Those pins are repo lag and are not the target for a future PCDF implementation.
+
+**Alternatives considered**: Follow parent POM Java 8 / uber-jar 6.6.2 as the product target — rejected. Cloud-only AEMaaCS as the only runtime — rejected (local LTS).
