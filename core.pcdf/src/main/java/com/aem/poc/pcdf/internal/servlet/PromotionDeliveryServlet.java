@@ -22,7 +22,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(
         service = Servlet.class,
         property = {
-            "sling.servlet.paths=/services/aem-pocs/pcdf",
+            "sling.servlet.paths=/services/aem-poc/pcdf",
             "sling.servlet.methods=GET"
         })
 public class PromotionDeliveryServlet extends SlingSafeMethodsServlet {

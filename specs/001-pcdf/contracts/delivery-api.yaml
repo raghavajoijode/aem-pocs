@@ -12,7 +12,7 @@ servers:
   - url: http://localhost:4502
     description: Local AEM 6.5 LTS SP2 Author (authenticated; optional preview)
 paths:
-  /services/aem-pocs/pcdf:
+  /services/aem-poc/pcdf:
     get:
       operationId: getWinningPromotion
       summary: Return the winning promotion or an explicit no-match
@@ -23,7 +23,7 @@ paths:
           schema:
             type: string
             example: en-us
-          description: DAM folder name under /content/dam/aem-pocs/pcdf (lowercase hyphenated, e.g. en-us, fr, hi)
+          description: DAM folder name under /content/dam/aem-poc/pcdf (lowercase hyphenated, e.g. en-us, fr, hi)
         - in: query
           name: country
           required: false
@@ -75,9 +75,9 @@ paths:
                     promotionId: pcdf-match-high
                     headline: Fall welcome
                     body: Sample body
-                    image: /content/dam/aem-pocs/pcdf/en-us/welcome.png
+                    image: /content/dam/aem-poc/pcdf/en-us/welcome.png
                     ctaText: Learn more
-                    ctaLink: /content/aem-pocs/pcdf
+                    ctaLink: /content/aem-poc/pcdf
                 noMatch:
                   value:
                     contentFound: false

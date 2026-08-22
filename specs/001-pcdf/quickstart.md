@@ -2,7 +2,7 @@
 
 Visible proof: author a Content Fragment (or use samples), then see one JSON winner on **Publish** — or explicit `contentFound: false`. Preview only on signed-in Author.
 
-**Where delivery lives**: Publish `GET /services/aem-pocs/pcdf`. Authenticated on Author.
+**Where delivery lives**: Publish `GET /services/aem-poc/pcdf`. Authenticated on Author.
 
 Locale folders: `en-us`, `en-gb`, `fr`, `it`, `de`, `hi` (lowercase, hyphenated).
 
@@ -28,16 +28,16 @@ mvn clean install -pl pcdf -am -PautoInstallPcdfPublish
 Shareable zip: `pcdf/target/aem-poc.pcdf-1.0.0-SNAPSHOT.zip`  
 FileVault group/name: `com.aem.poc.pcdf`.
 
-The zip embeds `core.pcdf`, `ui.apps.pcdf`, `ui.config.pcdf`, and `ui.content.pcdf` only — not `aem-poc.core` or `/apps/aem-poc`.
+The zip embeds `core.pcdf`, `ui.apps.pcdf`, `ui.config.pcdf`, and `ui.content.pcdf` only — not `aem-poc.core` or site components.
 
-Confirm `/apps/aem-pocs/pcdf`, `/conf/aem-pocs/pcdf`, `/content/dam/aem-pocs/pcdf` exist. Whole-repo `mvn clean install -PautoInstallSinglePackage` installs site `all` **including** the PCDF container zip. Isolation reviews should still use `-pl pcdf` only.
+Confirm `/apps/aem-poc/pcdf`, `/conf/aem-poc/pcdf`, `/content/dam/aem-poc/pcdf` exist. Whole-repo `mvn clean install -PautoInstallSinglePackage` installs site `all` with the same PCDF artifacts under `/apps/aem-poc-packages/pcdf`. Isolation reviews should still use `-pl pcdf` only.
 
 ## Demo path
 
 ### Authoring
 
 1. Sign in on Author.
-2. Open DAM: `/content/dam/aem-pocs/pcdf/en-us` (also `en-gb`, `fr`, `it`, `de`, `hi`).
+2. Open DAM: `/content/dam/aem-poc/pcdf/en-us` (also `en-gb`, `fr`, `it`, `de`, `hi`).
 3. Open sample fragment `pcdf-match-high` (or create a new `ProgrammaticPromotion` CF). Confirm `startDate` / `endDate` are dates without time.
 4. Publish the fragment if you changed it.
 5. Authors do not configure campaigns on individual pages.
@@ -46,23 +46,23 @@ Confirm `/apps/aem-pocs/pcdf`, `/conf/aem-pocs/pcdf`, `/content/dam/aem-pocs/pcd
 
 ```bash
 # Winner (priority 20 beats 10)
-curl -s "http://localhost:4503/services/aem-pocs/pcdf?locale=en-us&country=US"
+curl -s "http://localhost:4503/services/aem-poc/pcdf?locale=en-us&country=US"
 
 # Same winner from a second experience
-curl -s "http://localhost:4503/services/aem-pocs/pcdf?locale=en-us&country=US&pageType=home"
+curl -s "http://localhost:4503/services/aem-poc/pcdf?locale=en-us&country=US&pageType=home"
 
 # No-match
-curl -s "http://localhost:4503/services/aem-pocs/pcdf?locale=en-us&country=CA"
+curl -s "http://localhost:4503/services/aem-poc/pcdf?locale=en-us&country=CA"
 
-curl -s "http://localhost:4503/services/aem-pocs/pcdf?locale=en-gb&brand=TH"
-curl -s "http://localhost:4503/services/aem-pocs/pcdf?locale=fr"
-curl -s "http://localhost:4503/services/aem-pocs/pcdf?locale=it&tag=estate"
-curl -s "http://localhost:4503/services/aem-pocs/pcdf?locale=de&promo=SUMMER"
-curl -s "http://localhost:4503/services/aem-pocs/pcdf?locale=hi"
+curl -s "http://localhost:4503/services/aem-poc/pcdf?locale=en-gb&brand=TH"
+curl -s "http://localhost:4503/services/aem-poc/pcdf?locale=fr"
+curl -s "http://localhost:4503/services/aem-poc/pcdf?locale=it&tag=estate"
+curl -s "http://localhost:4503/services/aem-poc/pcdf?locale=de&promo=SUMMER"
+curl -s "http://localhost:4503/services/aem-poc/pcdf?locale=hi"
 
 # Preview must fail on Publish
 curl -s -o /dev/stderr -w "%{http_code}" \
-  "http://localhost:4503/services/aem-pocs/pcdf?locale=en-us&previewDate=2026-10-15"
+  "http://localhost:4503/services/aem-poc/pcdf?locale=en-us&previewDate=2026-10-15"
 ```
 
 **Expected**: `en-us&country=US` → `pcdf-match-high`; `country=CA` → `contentFound: false`; `en-gb&brand=TH` → `pcdf-gb-high`; `fr` → `pcdf-fr-welcome`; `it&tag=estate` → `pcdf-it-sale`; `de&promo=SUMMER` → `pcdf-de-summer`; `hi` → `pcdf-match-high` (Hindi). Preview on Publish → HTTP 400 `preview_not_allowed`. Full table: [`docs/pcdf-executive.md`](../../docs/pcdf-executive.md).
@@ -71,11 +71,11 @@ curl -s -o /dev/stderr -w "%{http_code}" \
 
 ```bash
 curl -s -u admin:admin \
-  "http://localhost:4502/services/aem-pocs/pcdf?locale=en-us&previewDate=2026-10-15"
+  "http://localhost:4502/services/aem-poc/pcdf?locale=en-us&previewDate=2026-10-15"
 ```
 
 **Expected**: `pcdf-future`. Publish without preview does not return that fragment before 2026-10-01.
 
 ## Cleanup
 
-Uninstall the PCDF package from Package Manager on Author and Publish, or delete `/apps/aem-pocs/pcdf`, `/apps/aem-pocs-pcdf-packages`, `/conf/aem-pocs/pcdf`, `/content/dam/aem-pocs/pcdf`.
+Uninstall the PCDF package from Package Manager on Author and Publish, or delete `/apps/aem-poc/pcdf`, `/apps/aem-poc-packages/pcdf`, `/conf/aem-poc/pcdf`, `/content/dam/aem-poc/pcdf`.

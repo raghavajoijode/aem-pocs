@@ -1,6 +1,0 @@
-{
-  "servletresolver.paths": [
-    "/bin/",
-    "/services/"
-  ]
-}

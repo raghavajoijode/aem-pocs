@@ -11,7 +11,7 @@
     <artifactId>aem-poc.ui.config.pcdf</artifactId>
     <packaging>content-package</packaging>
     <name>AEM POCs - PCDF UI config</name>
-    <description>PCDF runmode OSGi under /apps/aem-pocs/pcdf/osgiconfig</description>
+    <description>PCDF Publish OSGi under /apps/aem-poc/pcdf/config.publish</description>
     <build>
         <sourceDirectory>src/main/content/jcr_root</sourceDirectory>
         <plugins>

@@ -24,16 +24,17 @@ dump of project governance; follow Spec Kit skills when present.
 | Combined deploy package | `all` |
 | Dispatcher | `dispatcher.ams` or `dispatcher.cloud` |
 
-Named POCs live under the **aem-pocs** umbrella, not under the archetype site
-`/apps/aem-poc`:
+Named POCs live under the single `/apps/aem-poc` parent (not a second
+`/apps` tree). Keep each POC in its own child folder and Maven modules:
 
-| POC | Apps | Java / Maven package |
-| --- | --- | --- |
-| PCDF | `/apps/aem-pocs/pcdf` | `com.aem.poc.pcdf` |
+| POC | Apps | Java / Maven package | Package embed |
+| --- | --- | --- | --- |
+| PCDF | `/apps/aem-poc/pcdf` | `com.aem.poc.pcdf` | `/apps/aem-poc-packages/pcdf` |
 
-Same pattern for DAM and conf (`/content/dam/aem-pocs/{id}`, `/conf/aem-pocs/{id}`).
+Same pattern for DAM and conf (`/content/dam/aem-poc/{id}`, `/conf/aem-poc/{id}`).
 A POC that must be shared as its own installable unit keeps nodes and bundle
-separate and ships them in that POC’s package only.
+separate. `all` embeds those same artifacts at the same package path (do not
+also embed the POC container zip, or the bundle installs twice).
 
 Do not invent parallel module trees. Prefer HTL, Sling Models, OSGi configs, and
 clientlibs already used here unless the POC hypothesis requires something else

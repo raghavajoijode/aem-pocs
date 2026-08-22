@@ -10,7 +10,7 @@ description: "Task list for PCDF implementation"
 
 **Tests**: Not requested. Constitution and spec treat tests as optional; this list has **no** automated-test tasks.
 
-**Runtime**: Java 21 (parent POM), local **AEM 6.5 LTS SP2** (Author `4502`, Publish `4503`). Delivery: Publish `GET /services/aem-pocs/pcdf`.
+**Runtime**: Java 21 (parent POM), local **AEM 6.5 LTS SP2** (Author `4502`, Publish `4503`). Delivery: Publish `GET /services/aem-poc/pcdf`.
 
 **Workstream note**: Implemented in `core.pcdf`, `ui.apps.pcdf`, `ui.content.pcdf`, `ui.config.pcdf`, and `pcdf`.
 
@@ -32,9 +32,9 @@ PCDF modules from plan.md: `core.pcdf/`, `ui.apps.pcdf/`, `ui.content.pcdf/`, `u
 
 - [X] T001 Register modules `core.pcdf`, `ui.apps.pcdf`, `ui.content.pcdf`, `ui.config.pcdf`, and `pcdf` in `/workspace/pom.xml`
 - [X] T002 Create OSGi bundle module `/workspace/core.pcdf/pom.xml` (inherits parent Java 21, Bundle-SymbolicName `com.aem.poc.pcdf`, artifact `aem-poc.core.pcdf`) modeled on `/workspace/core/pom.xml` with no PCDF classes under `/workspace/core/`
-- [X] T003 [P] Create apps package `/workspace/ui.apps.pcdf/pom.xml` and `/workspace/ui.apps.pcdf/src/main/content/META-INF/vault/filter.xml` rooted at `/apps/aem-pocs/pcdf`
-- [X] T004 [P] Create content package `/workspace/ui.content.pcdf/pom.xml` and `/workspace/ui.content.pcdf/src/main/content/META-INF/vault/filter.xml` for `/conf/aem-pocs/pcdf` and `/content/dam/aem-pocs/pcdf`
-- [X] T039 [P] Create config package `/workspace/ui.config.pcdf/pom.xml` and `/workspace/ui.config.pcdf/src/main/content/META-INF/vault/filter.xml` rooted at `/apps/aem-pocs/pcdf/osgiconfig` (not `/apps/aem-poc/osgiconfig`)
+- [X] T003 [P] Create apps package `/workspace/ui.apps.pcdf/pom.xml` and `/workspace/ui.apps.pcdf/src/main/content/META-INF/vault/filter.xml` rooted at `/apps/aem-poc/pcdf`
+- [X] T004 [P] Create content package `/workspace/ui.content.pcdf/pom.xml` and `/workspace/ui.content.pcdf/src/main/content/META-INF/vault/filter.xml` for `/conf/aem-poc/pcdf` and `/content/dam/aem-poc/pcdf`
+- [X] T039 [P] Create config package `/workspace/ui.config.pcdf/pom.xml` and `/workspace/ui.config.pcdf/src/main/content/META-INF/vault/filter.xml` rooted at `/apps/aem-poc/pcdf/config` and `config.publish` (JCR installer max depth 4; not `/apps/aem-poc/pcdf/osgiconfig`)
 - [X] T005 Create container package `/workspace/pcdf/pom.xml` (FileVault group/name `com.aem.poc.pcdf`) embedding `aem-poc.core.pcdf`, `aem-poc.ui.apps.pcdf`, `aem-poc.ui.content.pcdf`, and `aem-poc.ui.config.pcdf` only (not `aem-poc.core`, `aem-poc.ui.apps`, or `aem-poc.ui.config`)
 
 ---
@@ -45,9 +45,9 @@ PCDF modules from plan.md: `core.pcdf/`, `ui.apps.pcdf/`, `ui.content.pcdf/`, `u
 
 **⚠️ CRITICAL**: No user story work until this phase is complete
 
-- [X] T006 Add Content Fragment model skeleton `ProgrammaticPromotion` at `/workspace/ui.content.pcdf/src/main/content/jcr_root/conf/aem-pocs/pcdf/settings/dam/cfm/models/programmatic-promotion/.content.xml`
-- [X] T007 [P] Add Publish runmode anonymous access for `/services/aem-pocs/pcdf` in `/workspace/ui.config.pcdf/src/main/content/jcr_root/apps/aem-pocs/pcdf/osgiconfig/config.publish/` (sling.auth.requirements or equivalent; do not add PCDF PIDs under `/workspace/ui.config/`)
-- [X] T008 [P] Add path servlet `GET /services/aem-pocs/pcdf` in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java`
+- [X] T006 Add Content Fragment model skeleton `ProgrammaticPromotion` at `/workspace/ui.content.pcdf/src/main/content/jcr_root/conf/aem-poc/pcdf/settings/dam/cfm/models/programmatic-promotion/.content.xml`
+- [X] T007 [P] Add Publish runmode anonymous access for `/services/aem-poc/pcdf` in `/workspace/ui.config.pcdf/src/main/content/jcr_root/apps/aem-poc/pcdf/config.publish/` (sling.auth.requirements or equivalent; do not add PCDF PIDs under `/workspace/ui.config/`)
+- [X] T008 [P] Add path servlet `GET /services/aem-poc/pcdf` in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java`
 - [X] T009 Return JSON errors (`locale_required`) from `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java` per `/workspace/specs/001-pcdf/contracts/delivery-api.yaml`
 - [X] T010 Add calendar-date evaluation helper (no time) in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/eligibility/DateWindow.java`
 - [X] T011 Add CF-to-promotion mapping in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/model/Promotion.java`
@@ -60,13 +60,13 @@ PCDF modules from plan.md: `core.pcdf/`, `ui.apps.pcdf/`, `ui.content.pcdf/`, `u
 
 **Goal**: Authors create one `ProgrammaticPromotion` CF under a locale folder (date-only `startDate`/`endDate`, no variations) and an eligible published fragment can be delivered
 
-**Independent Test**: On Author, create or open a CF under `/content/dam/aem-pocs/pcdf/en-us`, publish it, then request Publish `GET /services/aem-pocs/pcdf?locale=en-us` and see that fragment when ACTIVE and in date window
+**Independent Test**: On Author, create or open a CF under `/content/dam/aem-poc/pcdf/en-us`, publish it, then request Publish `GET /services/aem-poc/pcdf?locale=en-us` and see that fragment when ACTIVE and in date window
 
 ### Implementation for User Story 1
 
-- [X] T012 [US1] Complete CFM fields (`promotionId`, `status`, `priority`, `tags`, `headline`, `body`, `image`, `ctaText`, `ctaLink`, `startDate`, `endDate`, targeting lists) in `/workspace/ui.content.pcdf/src/main/content/jcr_root/conf/aem-pocs/pcdf/settings/dam/cfm/models/programmatic-promotion/.content.xml`
-- [X] T013 [P] [US1] Add locale folder `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-pocs/pcdf/en-us/.content.xml`
-- [X] T014 [US1] Add sample fragment `pcdf-match-high` under `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-pocs/pcdf/en-us/` per `/workspace/specs/001-pcdf/data-model.md`
+- [X] T012 [US1] Complete CFM fields (`promotionId`, `status`, `priority`, `tags`, `headline`, `body`, `image`, `ctaText`, `ctaLink`, `startDate`, `endDate`, targeting lists) in `/workspace/ui.content.pcdf/src/main/content/jcr_root/conf/aem-poc/pcdf/settings/dam/cfm/models/programmatic-promotion/.content.xml`
+- [X] T013 [P] [US1] Add locale folder `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-poc/pcdf/en-us/.content.xml`
+- [X] T014 [US1] Add sample fragment `pcdf-match-high` under `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-poc/pcdf/en-us/` per `/workspace/specs/001-pcdf/data-model.md`
 - [X] T015 [US1] Query **published** fragments in the locale folder in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/service/PromotionQueryService.java` (missing folder → empty list / no-match)
 - [X] T016 [US1] Apply ACTIVE + inclusive `startDate`/`endDate` in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/eligibility/EligibilityService.java`
 - [X] T017 [US1] Emit match JSON (`contentFound`, `promotionId`, `headline`, `body`, `image`, `ctaText`, `ctaLink`) from `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java`
@@ -87,7 +87,7 @@ PCDF modules from plan.md: `core.pcdf/`, `ui.apps.pcdf/`, `ui.content.pcdf/`, `u
 - [X] T019 [US2] Implement targeting (empty list = match-all; omitted request param unconstrained; `promo` → `urlParameters`; `tag` exact inclusion) in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/eligibility/TargetingRules.java` without adding new request/response fields (FR-024: later dimensions via model/rules only)
 - [X] T020 [US2] Rank by highest integer `priority` then lexicographically lower `promotionId` (per locale) in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/eligibility/Ranking.java`
 - [X] T021 [US2] Return no-match body with `contentFound: false` and no substitute fields in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java` (including unknown locale folder)
-- [X] T022 [P] [US2] Add samples `pcdf-match-low` and `pcdf-inactive` under `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-pocs/pcdf/en-us/` per `/workspace/specs/001-pcdf/data-model.md`
+- [X] T022 [P] [US2] Add samples `pcdf-match-low` and `pcdf-inactive` under `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-poc/pcdf/en-us/` per `/workspace/specs/001-pcdf/data-model.md`
 - [X] T023 [US2] Reject missing `locale` with HTTP 400 `locale_required` in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java`
 
 **Checkpoint**: US1 and US2 independently demoable (winner vs no-match)
@@ -98,7 +98,7 @@ PCDF modules from plan.md: `core.pcdf/`, `ui.apps.pcdf/`, `ui.content.pcdf/`, `u
 
 **Goal**: One zip `com.aem.poc.pcdf` installs apps, conf, DAM samples, and `core.pcdf` without default site or default `core`
 
-**Independent Test**: Install only `pcdf/target/aem-poc.pcdf-1.0.0-SNAPSHOT.zip` on a clean AEM LTS Author (and Publish); `/apps/aem-pocs/pcdf` present; `/apps/aem-poc` and `aem-poc.core` not required
+**Independent Test**: Install only `pcdf/target/aem-poc.pcdf-1.0.0-SNAPSHOT.zip` on a clean AEM LTS Author (and Publish); `/apps/aem-poc/pcdf` present; default site components and `aem-poc.core` not required
 
 ### Implementation for User Story 3
 
@@ -121,7 +121,7 @@ PCDF modules from plan.md: `core.pcdf/`, `ui.apps.pcdf/`, `ui.content.pcdf/`, `u
 
 - [X] T028 [US4] Use `previewDate` as evaluation date only for authenticated Author, considering **published** fragments only, in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java`
 - [X] T029 [US4] Reject `previewDate` on Publish with HTTP 400 `preview_not_allowed` in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java`
-- [X] T030 [P] [US4] Add sample `pcdf-future` under `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-pocs/pcdf/en-us/` per `/workspace/specs/001-pcdf/data-model.md`
+- [X] T030 [P] [US4] Add sample `pcdf-future` under `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-poc/pcdf/en-us/` per `/workspace/specs/001-pcdf/data-model.md`
 - [X] T031 [US4] Keep Author delivery authenticated (401 without session). Do not add a Publish-style anonymous `sling.auth` exemption under `/workspace/ui.config.pcdf/.../config.author/` (absence of `PublishAnonymousAccess` config is the control).
 
 **Checkpoint**: Preview Author-only; Publish live unchanged
@@ -195,7 +195,7 @@ PCDF modules from plan.md: `core.pcdf/`, `ui.apps.pcdf/`, `ui.content.pcdf/`, `u
 
 ```bash
 # After T012 (model fields), content folder and mapping can proceed:
-Task: "Add locale folder ui.content.pcdf/.../content/dam/aem-pocs/pcdf/en-us/.content.xml"
+Task: "Add locale folder ui.content.pcdf/.../content/dam/aem-poc/pcdf/en-us/.content.xml"
 Task: "Add CF-to-promotion mapping already in Phase 2 Promotion.java — extend fields if needed"
 ```
 
@@ -230,7 +230,7 @@ Task: "Add CF-to-promotion mapping already in Phase 2 Promotion.java — extend 
 ## Notes
 
 - [P] = different files, no incomplete-task dependency
-- Do not add PCDF to `/workspace/core/` or `/apps/aem-poc`
+- Do not add PCDF to `/workspace/core/` or `/apps/aem-poc/components`
 - Do not add unit/integration test suites as acceptance
 - Do not implement Akamai/CDN
 - Commit after each task or logical group when implementing

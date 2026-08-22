@@ -6,7 +6,7 @@
 
 ## Summary
 
-Authors would manage locale-scoped promotions as **one Content Fragment each** (no variations). Consumer apps call **Publish** `GET /services/aem-pocs/pcdf`. Response is **one winner** or `{ "contentFound": false }`. Preview with `previewDate` is **signed-in Author only** and considers **published** fragments only. Java is **21** at the parent POM; runtime is local **AEM 6.5 LTS SP2**. Code in **`core.pcdf`**; OSGi runmode config in **`ui.config.pcdf`**; teammates install **`com.aem.poc.pcdf`** without default `core` or `/apps/aem-poc`.
+Authors would manage locale-scoped promotions as **one Content Fragment each** (no variations). Consumer apps call **Publish** `GET /services/aem-poc/pcdf`. Response is **one winner** or `{ "contentFound": false }`. Preview with `previewDate` is **signed-in Author only** and considers **published** fragments only. Java is **21** at the parent POM; runtime is local **AEM 6.5 LTS SP2**. Code in **`core.pcdf`**; OSGi runmode config in **`ui.config.pcdf`**; teammates install **`com.aem.poc.pcdf`** without default `core`.
 
 **Backlog:** [tasks.md](./tasks.md) is the implementation list. `/speckit-implement` stays opt-in (does not start until requested).
 
@@ -16,7 +16,7 @@ Authors would manage locale-scoped promotions as **one Content Fragment each** (
 
 **Primary Dependencies**: Local **AEM 6.5 LTS SP2**; OSGi DS, Sling servlets, Content Fragments, FileVault
 
-**Storage**: JCR — CF model under `/conf/aem-pocs/pcdf`; fragments under `/content/dam/aem-pocs/pcdf/{locale}/`
+**Storage**: JCR — CF model under `/conf/aem-poc/pcdf`; fragments under `/content/dam/aem-poc/pcdf/{locale}/`
 
 **Testing**: Optional; not an acceptance gate. Demo via [quickstart.md](./quickstart.md) when implemented
 
@@ -42,7 +42,7 @@ Authors would manage locale-scoped promotions as **one Content Fragment each** (
 | IV. Install / demo / expected output | Pass | [quickstart.md](./quickstart.md) |
 | V. Simplicity and AEM fit | Pass with justified extra modules | See Complexity Tracking — isolation **is** the POC |
 | Content/code split | Pass | Java in `core.pcdf`; apps in `ui.apps.pcdf`; sample/conf in `ui.content.pcdf`; runmode OSGi in `ui.config.pcdf` |
-| Prefer HTL / Sling Models / OSGi / clientlibs | Pass | Authoring uses stock CF editor; delivery is a Sling servlet. No new SPA. Deviation: extra modules + `/apps/aem-pocs` umbrella, documented |
+| Prefer HTL / Sling Models / OSGi / clientlibs | Pass | Authoring uses stock CF editor; delivery is a Sling servlet. No new SPA. Deviation: extra modules under `/apps/aem-poc/pcdf`, documented |
 | AEMaaCS analyser not a release gate | Pass | Unused as gate |
 | No committed secrets | Pass | `admin`/`admin` as local convention in docs only |
 
@@ -71,14 +71,13 @@ core/                            # UNCHANGED — no PCDF classes
 core.pcdf/
   src/main/java/com/aem/poc/pcdf/
 ui.apps.pcdf/
-  src/main/content/jcr_root/apps/aem-pocs/pcdf/
+  src/main/content/jcr_root/apps/aem-poc/pcdf/
 ui.config.pcdf/
-  src/main/content/jcr_root/apps/aem-pocs/pcdf/osgiconfig/
-    config.publish/              # anonymous GET for /services/aem-pocs/pcdf
-    config.author/               # no anonymous exemption
+  src/main/content/jcr_root/apps/aem-poc/pcdf/config/
+  src/main/content/jcr_root/apps/aem-poc/pcdf/config.publish/  # anonymous GET for /services/aem-poc/pcdf
 ui.content.pcdf/
-  src/main/content/jcr_root/conf/aem-pocs/pcdf/
-  src/main/content/jcr_root/content/dam/aem-pocs/pcdf/{locale}/
+  src/main/content/jcr_root/conf/aem-poc/pcdf/
+  src/main/content/jcr_root/content/dam/aem-poc/pcdf/{locale}/
 pcdf/                            # container package com.aem.poc.pcdf
   embed: core.pcdf + ui.apps.pcdf + ui.content.pcdf + ui.config.pcdf
 all/                             # optional embed of pcdf; not the isolation proof
@@ -87,11 +86,11 @@ ui.frontend/                     # not used for this POC
 ui.frontend.react/               # not used for this POC
 ```
 
-**Structure Decision**: Keep the archetype tree. Add PCDF-specific modules so the shareable container does not contain `aem-poc.core` or `/apps/aem-poc`. Runmode config uses **`ui.config.pcdf`** (constitution `ui.config` split, PCDF-only zip). Logical processing: validate request → locale DAM path (missing folder = no-match) → load **published** `ProgrammaticPromotion` fragments → ACTIVE + date → targeting → highest integer priority / lowest `promotionId` → JSON.
+**Structure Decision**: Keep the archetype tree. Add PCDF-specific modules so the shareable container does not contain `aem-poc.core` or `/apps/aem-poc/components`. Runmode config uses **`ui.config.pcdf`** (constitution `ui.config` split, PCDF-only zip). Logical processing: validate request → locale DAM path (missing folder = no-match) → load **published** `ProgrammaticPromotion` fragments → ACTIVE + date → targeting → highest integer priority / lowest `promotionId` → JSON.
 
 ## Complexity Tracking
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
 | Extra Maven modules (`core.pcdf`, `ui.apps.pcdf`, `ui.content.pcdf`, `ui.config.pcdf`, `pcdf`) | PCDF-only zip + constitution config split | Putting PCDF in default `core` / `ui.apps` / `ui.config` prevents independent install |
-| `/apps/aem-pocs` umbrella instead of `/apps/aem-poc` | Isolation identity for this and future POCs | Mixing into `/apps/aem-poc` is an explicit spec failure |
+| Extra package embed under `/apps/aem-poc-packages/pcdf` | Same install path for `all` and the PCDF zip | A second package root (`aem-pocs-pcdf-packages`) installed the bundle twice |

@@ -10,7 +10,7 @@ Slide deck: [pcdf-brief.html](pcdf-brief.html). Operator install and curl table:
 
 Authors work only in **Assets / Content Fragments**, not in page properties.
 
-- Locale is a **folder** (`/content/dam/aem-pocs/pcdf/en-us`, `en-gb`, `fr`, `it`, `de`, `hi`, …). The name is the `locale` query value (lowercase, hyphenated).
+- Locale is a **folder** (`/content/dam/aem-poc/pcdf/en-us`, `en-gb`, `fr`, `it`, `de`, `hi`, …). The name is the `locale` query value (lowercase, hyphenated).
 - One fragment = one promotion. They do **not** create CF variations for language; they put the fragment in the right folder.
 - They set copy (headline, body, image, CTA), a calendar **start and end date** (no time of day), targeting lists (empty means “any” for that dimension), status (`ACTIVE` / `INACTIVE`), and an integer **priority** (higher number wins).
 - They **publish**. Unpublished work is invisible to Publish and to Author preview.
@@ -28,7 +28,7 @@ Authors work only in **Assets / Content Fragments**, not in page properties.
 
 ## Demo / validation scenarios
 
-Run after [PCDF-only install](pcdf.md#build-and-deploy-pcdf-alone). Publish base: `http://localhost:4503/services/aem-pocs/pcdf`.
+Run after [PCDF-only install](pcdf.md#build-and-deploy-pcdf-alone). Publish base: `http://localhost:4503/services/aem-poc/pcdf`.
 
 | # | Story | Call | Pass if |
 | --- | --- | --- | --- |
@@ -48,7 +48,7 @@ Run after [PCDF-only install](pcdf.md#build-and-deploy-pcdf-alone). Publish base
 | 14 | Preview blocked on live | Publish + `previewDate=2026-10-15` | HTTP 400 `preview_not_allowed` |
 | 15 | Author preview | Author + auth + `locale=en-us&previewDate=2026-10-15` | `pcdf-future` |
 | 16 | Author locked down | Author **without** credentials | HTTP 401 |
-| 17 | Isolation | Install **only** the PCDF zip | `/apps/aem-pocs/pcdf` present; default site not required |
+| 17 | Isolation | Install **only** the PCDF zip | `/apps/aem-poc/pcdf` present; default site not required |
 
 ## Out of scope (say this up front)
 

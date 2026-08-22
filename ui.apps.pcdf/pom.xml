@@ -11,7 +11,7 @@
     <artifactId>aem-poc.ui.apps.pcdf</artifactId>
     <packaging>content-package</packaging>
     <name>AEM POCs - PCDF UI apps</name>
-    <description>PCDF apps under /apps/aem-pocs/pcdf (not /apps/aem-poc)</description>
+    <description>PCDF apps under /apps/aem-poc/pcdf</description>
     <build>
         <sourceDirectory>src/main/content/jcr_root</sourceDirectory>
         <plugins>

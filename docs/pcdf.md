@@ -10,7 +10,7 @@ Stakeholder brief and validation scenarios: [`pcdf-executive.md`](pcdf-executive
 
 - CDN / Akamai implementation (cache-key recommendation only: `locale|country|brand|promo`)
 - Time-of-day or timezone-aware instants (`startDate` / `endDate` are **calendar dates**)
-- PCDF code in default `core` or nodes under `/apps/aem-poc`
+- PCDF code in default `core` or site nodes under `/apps/aem-poc/components` (PCDF stays in `/apps/aem-poc/pcdf`)
 - Test-suite coverage as an acceptance gate
 
 ## Where it lives
@@ -18,20 +18,20 @@ Stakeholder brief and validation scenarios: [`pcdf-executive.md`](pcdf-executive
 | Piece | Location |
 | --- | --- |
 | Java (servlet, eligibility, query) | `core.pcdf` — Bundle-SymbolicName `com.aem.poc.pcdf` |
-| Apps root | `/apps/aem-pocs/pcdf` (`ui.apps.pcdf`) |
-| OSGi runmode config | `/apps/aem-pocs/pcdf/osgiconfig` (`ui.config.pcdf`) |
-| CF model | `/conf/aem-pocs/pcdf/settings/dam/cfm/models/programmatic-promotion` |
-| Sample fragments | `/content/dam/aem-pocs/pcdf/{en-us,en-gb,fr,it,de,hi}/` |
+| Apps root | `/apps/aem-poc/pcdf` (`ui.apps.pcdf`) |
+| OSGi runmode config | `/apps/aem-poc/pcdf/config.publish` (`ui.config.pcdf`) |
+| CF model | `/conf/aem-poc/pcdf/settings/dam/cfm/models/programmatic-promotion` |
+| Sample fragments | `/content/dam/aem-poc/pcdf/{en-us,en-gb,fr,it,de,hi}/` |
 | Shareable zip | `pcdf/target/aem-poc.pcdf-1.0.0-SNAPSHOT.zip` — FileVault group/name `com.aem.poc.pcdf` |
 
-The zip embeds **only** `aem-poc.core.pcdf`, `aem-poc.ui.apps.pcdf`, `aem-poc.ui.content.pcdf`, and `aem-poc.ui.config.pcdf`. It does **not** embed `aem-poc.core`, `aem-poc.ui.apps`, or `aem-poc.ui.config`. The site `all` package embeds this same PCDF zip as a subpackage, so `mvn clean install -PautoInstallSinglePackage` deploys the default site **and** PCDF. Use `-pl pcdf` when you need PCDF without the rest of the site.
+The zip embeds **only** `aem-poc.core.pcdf`, `aem-poc.ui.apps.pcdf`, `aem-poc.ui.content.pcdf`, and `aem-poc.ui.config.pcdf` under `/apps/aem-poc-packages/pcdf`. It does **not** embed `aem-poc.core`, `aem-poc.ui.apps`, or `aem-poc.ui.config`. The site `all` package embeds those **same four artifacts** at the same path (not the PCDF container zip), so `mvn clean install -PautoInstallSinglePackage` deploys the default site **and** PCDF once. Use `-pl pcdf` when you need PCDF without the rest of the site.
 
 ## Authoring experience
 
 Authors stay in the stock AEM Content Fragment editor. They do not open pages, campaigns, or code.
 
 1. Sign in on Author (`http://localhost:4502`).
-2. Open DAM: `/content/dam/aem-pocs/pcdf/` and pick a locale folder (`en-us`, `en-gb`, `fr`, `it`, `de`, `hi`, or a new folder with the same lowercase hyphenated name you will send as `locale`).
+2. Open DAM: `/content/dam/aem-poc/pcdf/` and pick a locale folder (`en-us`, `en-gb`, `fr`, `it`, `de`, `hi`, or a new folder with the same lowercase hyphenated name you will send as `locale`).
 3. Create a **Programmatic Promotion** fragment (model `ProgrammaticPromotion`). One fragment = one promotion; **do not** use CF variations for locale.
 4. Fill administration (`promotionId` unique **in this folder**, `status` `ACTIVE` / `INACTIVE`, integer `priority` — larger wins), date-only `startDate` / `endDate` (inclusive), content (headline, body, image, CTA), and optional targeting lists (empty = match-all for that dimension except `tag`, which must include the request value when `tag` is sent).
 5. Publish the fragment. Live Publish and Author preview both consider **published** fragments only. Unpublished drafts never win.
@@ -54,11 +54,11 @@ mvn clean install -pl pcdf -am -PautoInstallPcdfPublish
 
 Manual alternative: upload `pcdf/target/aem-poc.pcdf-1.0.0-SNAPSHOT.zip` in Package Manager on Author and again on Publish.
 
-Full-repo `mvn clean install -PautoInstallSinglePackage` installs site `all`, which now embeds the PCDF container zip. Isolation reviews should still use the `-pl pcdf` commands above.
+Full-repo `mvn clean install -PautoInstallSinglePackage` installs site `all`, which embeds the PCDF artifacts under `/apps/aem-poc-packages/pcdf`. Isolation reviews should still use the `-pl pcdf` commands above.
 
 ## Demo / expected JSON (Publish, anonymous)
 
-Base: `http://localhost:4503/services/aem-pocs/pcdf`
+Base: `http://localhost:4503/services/aem-poc/pcdf`
 
 | Flow | Request | Expected |
 | --- | --- | --- |
@@ -82,7 +82,7 @@ Author preview (authenticated; published fragments only):
 
 ```bash
 curl -s -u admin:admin \
-  "http://localhost:4502/services/aem-pocs/pcdf?locale=en-us&previewDate=2026-10-15"
+  "http://localhost:4502/services/aem-poc/pcdf?locale=en-us&previewDate=2026-10-15"
 # promotionId pcdf-future (window 2026-10-01..2026-10-31)
 ```
 
@@ -96,10 +96,10 @@ Winner selection is an in-memory filter/rank after listing the locale folder. On
 
 Sling decides authentication **before** the servlet runs. Anonymous Publish callers never reach `doGet` if the path is protected.
 
-`PublishAnonymousAccess` is an OSGi component that registers `sling.auth.requirements=-/services/aem-pocs/pcdf`. It uses `configurationPolicy = REQUIRE` and is **only** given config under `config.publish`. Author has no such config, so Author stays signed-in.
+`PublishAnonymousAccess` is an OSGi component that registers `sling.auth.requirements=-/services/aem-poc/pcdf`. It uses `configurationPolicy = REQUIRE` and is **only** given config under `config.publish`. Author has no such config, so Author stays signed-in.
 
 Putting the same `sling.auth.requirements` property on `PromotionDeliveryServlet` would apply wherever the bundle starts (Author and Publish). The servlet cannot “skip auth” itself: a 401 happens upstream. Keep the exemption as this Publish-only component (or equivalent Publish runmode config). The servlet still rejects `previewDate` on Publish as defense in depth.
 
 ## Cleanup
 
-Uninstall `com.aem.poc.pcdf` from Package Manager on Author and Publish, or delete `/apps/aem-pocs/pcdf`, `/apps/aem-pocs-pcdf-packages`, `/conf/aem-pocs/pcdf`, and `/content/dam/aem-pocs/pcdf`.
+Uninstall `com.aem.poc.pcdf` from Package Manager on Author and Publish, or delete `/apps/aem-poc/pcdf`, `/apps/aem-poc-packages/pcdf`, `/conf/aem-poc/pcdf`, and `/content/dam/aem-poc/pcdf`.

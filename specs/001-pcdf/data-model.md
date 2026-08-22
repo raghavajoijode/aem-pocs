@@ -3,8 +3,8 @@
 ## Promotion (Content Fragment)
 
 **Model name**: `ProgrammaticPromotion`  
-**Model path**: `/conf/aem-pocs/pcdf/settings/dam/cfm/models/programmatic-promotion` (implementation may use an equivalent CFM path under `/conf/aem-pocs/pcdf`).  
-**Instance path**: `/content/dam/aem-pocs/pcdf/{locale}/{promotionName}`  
+**Model path**: `/conf/aem-poc/pcdf/settings/dam/cfm/models/programmatic-promotion` (implementation may use an equivalent CFM path under `/conf/aem-poc/pcdf`).  
+**Instance path**: `/content/dam/aem-poc/pcdf/{locale}/{promotionName}`  
 **Cardinality**: one fragment = one promotion; no variations.
 
 ### Fields
@@ -41,7 +41,7 @@ Unpublished fragments are not visible on Publish. Author preview uses the same r
 
 ## Locale folder
 
-**Path**: `/content/dam/aem-pocs/pcdf/{locale}`  
+**Path**: `/content/dam/aem-poc/pcdf/{locale}`  
 **Example**: `en-us`, `en-gb`, `fr`, `it`, `de`, `hi`  
 **Rule**: Delivery loads candidates only from the folder whose name equals request `locale` (exact, case-sensitive). Unknown locale → no candidates → `{ "contentFound": false }` (not a substitute locale). Missing `locale` parameter → 400. Underscore forms such as `en_US` are not the same as `en-us`.
 
@@ -59,7 +59,7 @@ No-match: `contentFound=false` and no substitute promotion fields.
 
 ## Sample set (required for demo)
 
-Place under `/content/dam/aem-pocs/pcdf/` (folder name = request `locale`):
+Place under `/content/dam/aem-poc/pcdf/` (folder name = request `locale`):
 
 ### `en-us` — priority, country, inactive, preview
 

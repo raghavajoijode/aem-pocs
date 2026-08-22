@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = PromotionQueryService.class)
 public class PromotionQueryService {
 
-    public static final String DAM_ROOT = "/content/dam/aem-pocs/pcdf";
+    public static final String DAM_ROOT = "/content/dam/aem-poc/pcdf";
 
     private static final Logger LOG = LoggerFactory.getLogger(PromotionQueryService.class);
 

@@ -79,9 +79,26 @@
                         </embedded>
                         <embedded>
                             <groupId>com.aem.poc</groupId>
-                            <artifactId>aem-poc.pcdf</artifactId>
+                            <artifactId>aem-poc.ui.apps.pcdf</artifactId>
                             <type>zip</type>
                             <target>/apps/aem-poc-packages/application/install</target>
+                        </embedded>
+                        <embedded>
+                            <groupId>com.aem.poc</groupId>
+                            <artifactId>aem-poc.core.pcdf</artifactId>
+                            <target>/apps/aem-poc-packages/application/install</target>
+                        </embedded>
+                        <embedded>
+                            <groupId>com.aem.poc</groupId>
+                            <artifactId>aem-poc.ui.config.pcdf</artifactId>
+                            <type>zip</type>
+                            <target>/apps/aem-poc-packages/application/install</target>
+                        </embedded>
+                        <embedded>
+                            <groupId>com.aem.poc</groupId>
+                            <artifactId>aem-poc.ui.content.pcdf</artifactId>
+                            <type>zip</type>
+                            <target>/apps/aem-poc-packages/content/install</target>
                         </embedded>
                         <embedded>
                             <groupId>com.adobe.cq</groupId>
@@ -110,24 +127,6 @@
                             <groupId>com.adobe.cq</groupId>
                             <artifactId>core.wcm.components.extensions.amp</artifactId>
                             <target>/apps/aem-poc-vendor-packages/application/install</target>
-                        </embedded>
-                        <embedded>
-                            <groupId>com.adobe.cq</groupId>
-                            <artifactId>core.wcm.components.examples.ui.config</artifactId>
-                            <type>zip</type>
-                            <target>/apps/aem-poc-vendor-packages/application/install</target>
-                        </embedded>
-                        <embedded>
-                            <groupId>com.adobe.cq</groupId>
-                            <artifactId>core.wcm.components.examples.ui.apps</artifactId>
-                            <type>zip</type>
-                            <target>/apps/aem-poc-vendor-packages/application/install</target>
-                        </embedded>
-                        <embedded>
-                            <groupId>com.adobe.cq</groupId>
-                            <artifactId>core.wcm.components.examples.ui.content</artifactId>
-                            <type>zip</type>
-                            <target>/apps/aem-poc-vendor-packages/content/install</target>
                         </embedded>
                     </embeddeds>
                 </configuration>
@@ -243,7 +242,24 @@
         </dependency>
         <dependency>
             <groupId>com.aem.poc</groupId>
-            <artifactId>aem-poc.pcdf</artifactId>
+            <artifactId>aem-poc.ui.apps.pcdf</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>com.aem.poc</groupId>
+            <artifactId>aem-poc.core.pcdf</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aem.poc</groupId>
+            <artifactId>aem-poc.ui.config.pcdf</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>com.aem.poc</groupId>
+            <artifactId>aem-poc.ui.content.pcdf</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
@@ -266,21 +282,6 @@
         <dependency>
             <groupId>com.adobe.cq</groupId>
             <artifactId>core.wcm.components.extensions.amp</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.adobe.cq</groupId>
-            <artifactId>core.wcm.components.examples.ui.config</artifactId>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>com.adobe.cq</groupId>
-            <artifactId>core.wcm.components.examples.ui.apps</artifactId>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>com.adobe.cq</groupId>
-            <artifactId>core.wcm.components.examples.ui.content</artifactId>
-            <type>zip</type>
         </dependency>
     </dependencies>
 </project>

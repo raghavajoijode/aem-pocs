@@ -14,9 +14,9 @@
 
 ## Delivery surface
 
-**Decision**: `GET /services/aem-pocs/pcdf` (Sling path servlet on the `core.pcdf` bundle). Query parameters as in [contracts/delivery-api.yaml](./contracts/delivery-api.yaml). JSON body; HTTP 200 for match and no-match; HTTP 400 for invalid requests (missing locale, preview on Publish, bad date).
+**Decision**: `GET /services/aem-poc/pcdf` (Sling path servlet on the `core.pcdf` bundle). Query parameters as in [contracts/delivery-api.yaml](./contracts/delivery-api.yaml). JSON body; HTTP 200 for match and no-match; HTTP 400 for invalid requests (missing locale, preview on Publish, bad date).
 
-**Rationale**: Path sits under the PCDF identity, not `/apps/aem-poc`. GET avoids CSRF complexity for the demo. Distinguishing 400 vs `{ "contentFound": false }` keeps “bad request” separate from “nothing eligible.”
+**Rationale**: Path sits under the PCDF identity (`/services/aem-poc/pcdf`). GET avoids CSRF complexity for the demo. Distinguishing 400 vs `{ "contentFound": false }` keeps “bad request” separate from “nothing eligible.”
 
 **Alternatives considered**:
 
@@ -25,7 +25,7 @@
 
 ## Author vs Publish access
 
-**Decision**: Publish runmode OSGi config removes authentication requirement for `/services/aem-pocs/pcdf` (anonymous GET). Author keeps default authentication. Servlet rejects `previewDate` on Publish (400) even if someone later misconfigures auth.
+**Decision**: Publish runmode OSGi config removes authentication requirement for `/services/aem-poc/pcdf` (anonymous GET). Author keeps default authentication. Servlet rejects `previewDate` on Publish (400) even if someone later misconfigures auth.
 
 **Rationale**: FR-019, FR-020, FR-021, FR-027. Defense in depth: runmode config for anonymous Publish plus servlet rule for preview.
 
@@ -36,7 +36,7 @@
 
 ## Content model
 
-**Decision**: One Content Fragment model `ProgrammaticPromotion` under `/conf/aem-pocs/pcdf`. One fragment per promotion; **no variations**. Locale is the DAM folder `/content/dam/aem-pocs/pcdf/{locale}/`. Date fields are Date (date-only in the authoring UI). Targeting fields are multi-value strings.
+**Decision**: One Content Fragment model `ProgrammaticPromotion` under `/conf/aem-poc/pcdf`. One fragment per promotion; **no variations**. Locale is the DAM folder `/content/dam/aem-poc/pcdf/{locale}/`. Date fields are Date (date-only in the authoring UI). Targeting fields are multi-value strings.
 
 **Rationale**: Spec FR-005/006 and authoring without developers (standard CF editor). Empty multi-value = match-all.
 
@@ -66,7 +66,7 @@
 
 ## AEM stack
 
-**Decision**: **Java 21** at the parent POM (`release` 21). Local **AEM 6.5 LTS SP2** Author/Publish (`localhost:4502` / `localhost:4503`). Delivery is **Publish** `GET /services/aem-pocs/pcdf`. OSGi runmode config in **`ui.config.pcdf`**. Unknown locale folder → no-match. Author preview → published fragments only. `promotionId` unique per locale; reusable across locales.
+**Decision**: **Java 21** at the parent POM (`release` 21). Local **AEM 6.5 LTS SP2** Author/Publish (`localhost:4502` / `localhost:4503`). Delivery is **Publish** `GET /services/aem-poc/pcdf`. OSGi runmode config in **`ui.config.pcdf`**. Unknown locale folder → no-match. Author preview → published fragments only. `promotionId` unique per locale; reusable across locales.
 
 **Rationale**: Project-stated runtime. Constitution config split preserved without putting PCDF PIDs in default `ui.config`.
 

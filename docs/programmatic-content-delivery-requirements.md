@@ -14,17 +14,17 @@ PCDF (Programmatic Content Delivery Framework)
 
 ### Identity and placement
 
-Everything for this POC lives under the shared POCs umbrella, not under the archetype site (`/apps/aem-poc`). Nodes, code, and the shareable package are isolated so a teammate can install **only** PCDF.
+Everything for this POC lives under the single `/apps/aem-poc` parent, in a PCDF child folder and dedicated modules, so a teammate can still install **only** PCDF.
 
-- **Umbrella (repository)**: `/apps/aem-pocs`
-- **This POC (apps)**: `/apps/aem-pocs/pcdf`
+- **Parent (repository)**: `/apps/aem-poc`
+- **This POC (apps)**: `/apps/aem-poc/pcdf`
 - **Java / OSGi / Maven package**: `com.aem.poc.pcdf`
 - **Shareable package artifact**: `com.aem.poc.pcdf` (content nodes and bundle kept as separate parts inside that package)
-- **DAM / promotions**: `/content/dam/aem-pocs/pcdf/{locale}/…`
-- **Conf / models**: `/conf/aem-pocs/pcdf`
-- **Delivery API**: under the same POC identity (for example `/services/aem-pocs/pcdf`)
+- **DAM / promotions**: `/content/dam/aem-poc/pcdf/{locale}/…`
+- **Conf / models**: `/conf/aem-poc/pcdf`
+- **Delivery API**: under the same POC identity (for example `/services/aem-poc/pcdf`)
 
-Future POCs follow the same pattern: `/apps/aem-pocs/{poc-id}` and `com.aem.poc.{poc-id}`.
+Future POCs follow the same pattern: `/apps/aem-poc/{poc-id}` and `com.aem.poc.{poc-id}`.
 
 ### One-liner
 
@@ -47,7 +47,7 @@ This POC proves that hypothesis on AEM: Author for authoring, Publish for a deli
 ### In scope
 
 - One promotion = one content item (no content-fragment variations).
-- Locale is represented by repository folders (for example `en-us`, `fr`, `en-gb` under `/content/dam/aem-pocs/pcdf`).
+- Locale is represented by repository folders (for example `en-us`, `fr`, `en-gb` under `/content/dam/aem-poc/pcdf`).
 - Authoring of content fields, scheduling, targeting, and administration fields without development support per campaign.
 - Eligibility: only ACTIVE promotions whose start/end window includes “now” (or preview date).
 - Targeting dimensions for this POC: country, market, brand, property, page type, URL parameter (`promo`), and tag.
@@ -163,12 +163,12 @@ Promotions live in locale folders and are not attached to individual pages. Many
 - **FR-022**: Sample promotions MUST exist under locale folders sufficient to demo match, priority winner, and no-match.
 - **FR-023**: Documentation MUST include hypothesis, non-goals, install/demo steps, paths to look at, and expected output (visible outcome).
 - **FR-024**: Future targeting dimensions (membership, audience, segment, device, and similar) are out of scope for this POC, but the delivery contract MUST remain usable if those fields are added later via the promotion model and rule configuration without changing the existing request/response fields defined here.
-- **FR-025**: All PCDF application nodes MUST live under `/apps/aem-pocs/pcdf`. Sample promotions MUST live under `/content/dam/aem-pocs/pcdf`. Models/config MUST live under `/conf/aem-pocs/pcdf`. Code and the shareable package MUST use `com.aem.poc.pcdf`. PCDF MUST NOT be mixed into `/apps/aem-poc`.
+- **FR-025**: All PCDF application nodes MUST live under `/apps/aem-poc/pcdf`. Sample promotions MUST live under `/content/dam/aem-poc/pcdf`. Models/config MUST live under `/conf/aem-poc/pcdf`. Code and the shareable package MUST use `com.aem.poc.pcdf`. PCDF MUST NOT be mixed into default `core`, default `ui.config`, or `/apps/aem-poc/components`.
 
 ### Key entities
 
 - **Promotion**: A single locale-scoped campaign item. Content: headline, body, image, CTA text, CTA link. Administration: promotion id, status, priority, tags. Schedule: start date, end date. Targeting: countries, markets, brands, properties, page types, URL parameters.
-- **Locale folder**: A repository location under `/content/dam/aem-pocs/pcdf` that groups promotions for one locale (for example `en-us`). Delivery resolves candidates from the folder that matches the requested locale.
+- **Locale folder**: A repository location under `/content/dam/aem-poc/pcdf` that groups promotions for one locale (for example `en-us`). Delivery resolves candidates from the folder that matches the requested locale.
 - **Delivery request**: Locale plus optional country, brand, market, property, page type, promo, tag, and optional preview date.
 - **Delivery result**: Either one winning promotion’s content fields plus promotion id, or an explicit no-match.
 
@@ -209,11 +209,11 @@ Suggested short name if asked: `pcdf`.
 
 These notes come from the original architecture brief. They are HOW, not acceptance criteria for specify.
 
-- Apps / clientlibs / components: `/apps/aem-pocs/pcdf` (do not use `/apps/aem-poc` for this POC).
+- Apps / clientlibs / components: `/apps/aem-poc/pcdf` (do not mix into `/apps/aem-poc/components`).
 - Java and Maven package: `com.aem.poc.pcdf`. Shareable FileVault package group/artifact: `com.aem.poc.pcdf`. Keep nodes and the OSGi bundle as separate embeddeds inside that package.
-- DAM root: `/content/dam/aem-pocs/pcdf/{locale}/{promotionName}`.
-- Conf / Content Fragment model: `/conf/aem-pocs/pcdf`. Suggested model name: `ProgrammaticPromotion`.
-- Suggested delivery path: `GET /services/aem-pocs/pcdf`.
+- DAM root: `/content/dam/aem-poc/pcdf/{locale}/{promotionName}`.
+- Conf / Content Fragment model: `/conf/aem-poc/pcdf`. Suggested model name: `ProgrammaticPromotion`.
+- Suggested delivery path: `GET /services/aem-poc/pcdf`.
 - Preview query example: `locale`, `country`, `promo`, `previewDate=2026-10-15`.
 - Logical layers: request validation → locale path → query fragments → ACTIVE + date filter → targeting rules → highest priority → JSON.
 - Named services in the brief (servlet, content service, query service, rule evaluation) are a planning sketch, not a mandate to copy class names.

@@ -30,7 +30,7 @@
 - [x] CHK012 Did the later date-only clarification fully replace zoned date-time wording so no leftover “instant/timezone” acceptance remains? [Consistency, Spec §Clarifications, Spec §FR-002, Spec §Out of Scope]
 - [x] CHK013 Is empty targeting list (match-all) consistent with omitted request parameters (unconstrained) without contradicting “must be present in the list”? [Consistency, Spec §FR-014, Spec §Assumptions]
 - [x] CHK014 Is “one Content Fragment = one promotion, no variations” consistent with locale-by-folder (not variant sets)? [Consistency, Spec §FR-005, Spec §FR-006]
-- [x] CHK015 Is PCDF isolation (`core.pcdf`, not default `core`, not `/apps/aem-poc`) consistent across identity, FR-025/026, and User Story 3? [Consistency, Spec §Identity and placement, Spec §FR-025, Spec §FR-026]
+- [x] CHK015 Is PCDF isolation (`core.pcdf`, not default `core`, `/apps/aem-poc/pcdf` not `/apps/aem-poc/components`) consistent across identity, FR-025/026, and User Story 3? [Consistency, Spec §Identity and placement, Spec §FR-025, Spec §FR-026]
 
 ## Acceptance Criteria Quality
 

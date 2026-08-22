@@ -36,8 +36,7 @@
                         <!-- /apps root -->
                         <filter><root>/apps</root></filter>
                         <filter><root>/apps/aem-poc</root></filter>
-                        <filter><root>/apps/aem-pocs</root></filter>
-                        <filter><root>/apps/aem-pocs/pcdf</root></filter>
+                        <filter><root>/apps/aem-poc/pcdf</root></filter>
                         <!-- Common overlay roots -->
                         <filter><root>/apps/sling</root></filter>
                         <filter><root>/apps/sling/servlet</root></filter>
