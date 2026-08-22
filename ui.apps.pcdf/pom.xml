@@ -24,14 +24,13 @@
                     </properties>
                     <group>com.aem.poc</group>
                     <name>aem-poc.ui.apps.pcdf</name>
-                    <packageType>mixed</packageType>
-                    <validatorsSettings>
-                        <jackrabbit-filter>
-                            <options>
-                                <validRoots>/apps</validRoots>
-                            </options>
-                        </jackrabbit-filter>
-                    </validatorsSettings>
+                    <packageType>application</packageType>
+                    <repositoryStructurePackages>
+                        <repositoryStructurePackage>
+                            <groupId>com.aem.poc</groupId>
+                            <artifactId>aem-poc.ui.apps.structure</artifactId>
+                        </repositoryStructurePackage>
+                    </repositoryStructurePackages>
                 </configuration>
             </plugin>
             <plugin>
@@ -40,4 +39,12 @@
             </plugin>
         </plugins>
     </build>
+    <dependencies>
+        <dependency>
+            <groupId>com.aem.poc</groupId>
+            <artifactId>aem-poc.ui.apps.structure</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+    </dependencies>
 </project>

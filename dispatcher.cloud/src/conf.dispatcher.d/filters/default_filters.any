@@ -50,28 +50,6 @@
 # Allow IMS Authentication
 /0031 { /type "allow" /method "GET" /url "/callback/j_security_check" }
 
-# AEM Forms specific filters
-# to allow AF specific endpoints for prefill, submit and sign
-/0032 { /type "allow" /path "/content/forms/af/*" /method "POST" /selectors '(submit|internalsubmit|agreement|signSubmit|prefilldata|save|analyticsconfigparser)' /extension '(jsp|json)' }
-
-# to allow AF specific endpoints for thank you page
-/0033 { /type "allow" /path "/content/forms/af/*"  /method "GET" /selectors '(guideThankYouPage|guideAsyncThankYouPage)'  /extension '(html)'}
-
-# to allow AF specific endpoints for lazy loading
-/0034 { /type "allow" /path "/content/forms/af/*"  /method "GET" /extension '(jsonhtmlemitter)'}
-
-# to allow fp related functionalities
-/0035 { /type "allow" /path "/content/forms/*" /selectors '(fp|attach|draft|dor|api)'  /extension '(html|jsp|json|pdf)' }
-
-# to allow forms access via dam path
-/0036 { /type "allow" /path "/content/dam/formsanddocuments/**/jcr:content" /method "GET"}
-
-# to allow invoke service functionality (FDM)
-/0037 { /type "allow" /path "/content/forms/*" /selectors '(af)'  /extension '(dermis)' }
-
-# to allow forms portal draft and submissions component operation servlet
-/0038 { /type "allow" /path "/content/*" /method "GET" /selectors '(fp)' /extension '(operation)' }
-
 # AEM Screens Filters
 # to allow AEM Screens channels selectors
 /0050 { /type "allow" /method "GET" /url "/screens/channels.json" }

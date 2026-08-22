@@ -21,7 +21,7 @@
                 <configuration>
                     <group>com.aem.poc.pcdf</group>
                     <name>com.aem.poc.pcdf</name>
-                    <packageType>mixed</packageType>
+                    <packageType>container</packageType>
                     <skipSubPackageValidation>true</skipSubPackageValidation>
                     <embeddeds>
                         <embedded>

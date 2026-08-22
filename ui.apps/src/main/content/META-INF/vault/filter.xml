@@ -3,4 +3,6 @@
     <filter root="/apps/aem-poc/clientlibs"/>
     <filter root="/apps/aem-poc/components"/>
     <filter root="/apps/aem-poc/i18n"/>
+    <filter root="/apps/msm/aem-poc_blueprint"/>
+    <filter root="/apps/sling/servlet/errorhandler"/>
 </workspaceFilter>

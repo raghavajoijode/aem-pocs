@@ -122,7 +122,7 @@ PCDF modules from plan.md: `core.pcdf/`, `ui.apps.pcdf/`, `ui.content.pcdf/`, `u
 - [X] T028 [US4] Use `previewDate` as evaluation date only for authenticated Author, considering **published** fragments only, in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java`
 - [X] T029 [US4] Reject `previewDate` on Publish with HTTP 400 `preview_not_allowed` in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java`
 - [X] T030 [P] [US4] Add sample `pcdf-future` under `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-pocs/pcdf/en-us/` per `/workspace/specs/001-pcdf/data-model.md`
-- [X] T031 [US4] Keep Author delivery authenticated (401 without session) via `/workspace/ui.config.pcdf/src/main/content/jcr_root/apps/aem-pocs/pcdf/osgiconfig/config.author/` (no anonymous sling.auth exemption)
+- [X] T031 [US4] Keep Author delivery authenticated (401 without session). Do not add a Publish-style anonymous `sling.auth` exemption under `/workspace/ui.config.pcdf/.../config.author/` (absence of `PublishAnonymousAccess` config is the control).
 
 **Checkpoint**: Preview Author-only; Publish live unchanged
 
