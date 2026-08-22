@@ -69,7 +69,7 @@ A teammate receives a single named PCDF package (`com.aem.poc.pcdf`) and install
 **Acceptance Scenarios**:
 
 1. **Given** a reviewer who should not install the whole site, **When** they are given the PCDF package, **Then** they can install only that package and reach authoring and delivery for this proof of concept.
-2. **Given** the installed package, **When** a reviewer inspects identity, **Then** application nodes live under `/apps/aem-poc/pcdf`, promotions under `/content/dam/aem-poc/pcdf`, models and configuration under `/conf/aem-poc/pcdf`, and code uses `com.aem.poc.pcdf`.
+2. **Given** the installed package, **When** a reviewer inspects identity, **Then** application nodes live under `/apps/aem-poc/pcdf`, promotions under `/content/dam/aem-poc/pcdf`, models and configuration under `/conf/aem-poc-pcdf`, and code uses `com.aem.poc.pcdf`.
 3. **Given** the shareable package, **When** a reviewer inspects its parts, **Then** repository nodes and the dedicated PCDF code bundle (`core.pcdf` / `com.aem.poc.pcdf`) are distinct, and the default site `core` bundle is not required.
 
 ---
@@ -138,7 +138,7 @@ This proof of concept lives under `/apps/aem-poc/pcdf` (same parent as the site,
 | PCDF Java / OSGi bundle | Dedicated `core.pcdf` module (not the default `core` module) |
 | PCDF OSGi runmode config | Dedicated `ui.config.pcdf` module (not default `ui.config`) |
 | Promotions | `/content/dam/aem-poc/pcdf/{locale}/…` |
-| Models / configuration | `/conf/aem-poc/pcdf` |
+| Models / configuration | `/conf/aem-poc-pcdf` |
 | Delivery surface | Same POC identity on **Publish** (example: `/services/aem-poc/pcdf`). Source: `docs/programmatic-content-delivery-requirements.md` feature description. Not a public Author campaign engine. |
 
 Inside the shareable package, **repository nodes and the code bundle MUST remain separate parts** so the package can be handed off as a whole without folding PCDF into the rest of the shared site.
@@ -171,7 +171,7 @@ Future proofs of concept follow the same pattern: `/apps/aem-poc/{poc-id}` and `
 - **FR-022**: Sample promotions MUST exist under locale folders sufficient to demo match, priority winner, and no-match.
 - **FR-023**: Documentation MUST include hypothesis, non-goals, install and demo steps, paths to look at, how to obtain and install the PCDF-only package, and expected output (visible outcome).
 - **FR-024**: Future targeting dimensions (membership, audience, segment, device, and similar) are out of scope for this proof of concept, but the delivery contract MUST remain usable if those fields are added later via the promotion model and rule configuration without changing the existing request and result fields defined here.
-- **FR-025**: All PCDF application nodes MUST live under `/apps/aem-poc/pcdf`. Sample promotions MUST live under `/content/dam/aem-poc/pcdf`. Models MUST live under `/conf/aem-poc/pcdf`. OSGi runmode config MUST live in a dedicated **`ui.config.pcdf`** module (PCDF-only; not default `ui.config`). PCDF Java MUST live in a dedicated `core.pcdf` module whose bundle identity is `com.aem.poc.pcdf`. PCDF MUST NOT be mixed into `/apps/aem-poc/components` or into the default `core` module.
+- **FR-025**: All PCDF application nodes MUST live under `/apps/aem-poc/pcdf`. Sample promotions MUST live under `/content/dam/aem-poc/pcdf`. Models MUST live under `/conf/aem-poc-pcdf`. OSGi runmode config MUST live in a dedicated **`ui.config.pcdf`** module (PCDF-only; not default `ui.config`). PCDF Java MUST live in a dedicated `core.pcdf` module whose bundle identity is `com.aem.poc.pcdf`. PCDF MUST NOT be mixed into `/apps/aem-poc/components` or into the default `core` module.
 - **FR-026**: The proof of concept MUST produce one shareable package identified as `com.aem.poc.pcdf` that a teammate can install without the default site package and without the default `core` bundle. That package MUST keep repository nodes and the `core.pcdf` bundle as separate parts (not fused with other proofs of concept or the default site).
 - **FR-027**: A delivery request on Publish that includes a preview value MUST be rejected as invalid.
 

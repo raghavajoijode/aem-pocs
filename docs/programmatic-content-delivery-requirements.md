@@ -21,7 +21,7 @@ Everything for this POC lives under the single `/apps/aem-poc` parent, in a PCDF
 - **Java / OSGi / Maven package**: `com.aem.poc.pcdf`
 - **Shareable package artifact**: `com.aem.poc.pcdf` (content nodes and bundle kept as separate parts inside that package)
 - **DAM / promotions**: `/content/dam/aem-poc/pcdf/{locale}/…`
-- **Conf / models**: `/conf/aem-poc/pcdf`
+- **Conf / models**: `/conf/aem-poc-pcdf`
 - **Delivery API**: under the same POC identity (for example `/services/aem-poc/pcdf`)
 
 Future POCs follow the same pattern: `/apps/aem-poc/{poc-id}` and `com.aem.poc.{poc-id}`.
@@ -163,7 +163,7 @@ Promotions live in locale folders and are not attached to individual pages. Many
 - **FR-022**: Sample promotions MUST exist under locale folders sufficient to demo match, priority winner, and no-match.
 - **FR-023**: Documentation MUST include hypothesis, non-goals, install/demo steps, paths to look at, and expected output (visible outcome).
 - **FR-024**: Future targeting dimensions (membership, audience, segment, device, and similar) are out of scope for this POC, but the delivery contract MUST remain usable if those fields are added later via the promotion model and rule configuration without changing the existing request/response fields defined here.
-- **FR-025**: All PCDF application nodes MUST live under `/apps/aem-poc/pcdf`. Sample promotions MUST live under `/content/dam/aem-poc/pcdf`. Models/config MUST live under `/conf/aem-poc/pcdf`. Code and the shareable package MUST use `com.aem.poc.pcdf`. PCDF MUST NOT be mixed into default `core`, default `ui.config`, or `/apps/aem-poc/components`.
+- **FR-025**: All PCDF application nodes MUST live under `/apps/aem-poc/pcdf`. Sample promotions MUST live under `/content/dam/aem-poc/pcdf`. Models/config MUST live under `/conf/aem-poc-pcdf`. Code and the shareable package MUST use `com.aem.poc.pcdf`. PCDF MUST NOT be mixed into default `core`, default `ui.config`, or `/apps/aem-poc/components`.
 
 ### Key entities
 
@@ -212,7 +212,7 @@ These notes come from the original architecture brief. They are HOW, not accepta
 - Apps / clientlibs / components: `/apps/aem-poc/pcdf` (do not mix into `/apps/aem-poc/components`).
 - Java and Maven package: `com.aem.poc.pcdf`. Shareable FileVault package group/artifact: `com.aem.poc.pcdf`. Keep nodes and the OSGi bundle as separate embeddeds inside that package.
 - DAM root: `/content/dam/aem-poc/pcdf/{locale}/{promotionName}`.
-- Conf / Content Fragment model: `/conf/aem-poc/pcdf`. Suggested model name: `ProgrammaticPromotion`.
+- Conf / Content Fragment model: `/conf/aem-poc-pcdf`. Suggested model name: `ProgrammaticPromotion`.
 - Suggested delivery path: `GET /services/aem-poc/pcdf`.
 - Preview query example: `locale`, `country`, `promo`, `previewDate=2026-10-15`.
 - Logical layers: request validation → locale path → query fragments → ACTIVE + date filter → targeting rules → highest priority → JSON.

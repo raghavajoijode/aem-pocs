@@ -5,9 +5,15 @@
     jcr:mixinTypes="[rep:AccessControllable]"
     jcr:primaryType="sling:OrderedFolder">
     <jcr:content
-        cq:conf="/conf/aem-poc/pcdf"
+        cq:conf="/conf/aem-poc-pcdf"
         jcr:primaryType="nt:unstructured"
-        jcr:title="PCDF"/>
+        jcr:title="PCDF">
+        <policies jcr:primaryType="nt:unstructured">
+            <cfm
+                jcr:primaryType="nt:unstructured"
+                policy-cfm-allowedModelsByPaths="[/conf/aem-poc-pcdf/settings/dam/cfm/models/programmatic-promotion]"/>
+        </policies>
+    </jcr:content>
     <rep:policy jcr:primaryType="rep:ACL">
         <allow
             jcr:primaryType="rep:GrantACE"

@@ -3,7 +3,7 @@
     xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
     jcr:primaryType="sling:OrderedFolder">
     <jcr:content
-        cq:conf="/conf/aem-poc/pcdf"
+        cq:conf="/conf/aem-poc-pcdf"
         jcr:primaryType="nt:unstructured"
         jcr:title="it"/>
 </jcr:root>

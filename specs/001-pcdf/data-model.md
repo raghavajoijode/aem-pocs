@@ -3,7 +3,7 @@
 ## Promotion (Content Fragment)
 
 **Model name**: `ProgrammaticPromotion`  
-**Model path**: `/conf/aem-poc/pcdf/settings/dam/cfm/models/programmatic-promotion` (implementation may use an equivalent CFM path under `/conf/aem-poc/pcdf`).  
+**Model path**: `/conf/aem-poc-pcdf/settings/dam/cfm/models/programmatic-promotion` (implementation may use an equivalent CFM path under `/conf/aem-poc-pcdf`).  
 **Instance path**: `/content/dam/aem-poc/pcdf/{locale}/{promotionName}`  
 **Cardinality**: one fragment = one promotion; no variations.
 

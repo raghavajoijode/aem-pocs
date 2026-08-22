@@ -20,7 +20,7 @@ Stakeholder brief and validation scenarios: [`pcdf-executive.md`](pcdf-executive
 | Java (servlet, eligibility, query) | `core.pcdf` — Bundle-SymbolicName `com.aem.poc.pcdf` |
 | Apps root | `/apps/aem-poc/pcdf` (`ui.apps.pcdf`) |
 | OSGi runmode config | `/apps/aem-poc/pcdf/config.publish` (`ui.config.pcdf`) |
-| CF model | `/conf/aem-poc/pcdf/settings/dam/cfm/models/programmatic-promotion` |
+| CF model | `/conf/aem-poc-pcdf/settings/dam/cfm/models/programmatic-promotion` |
 | Sample fragments | `/content/dam/aem-poc/pcdf/{en-us,en-gb,fr,it,de,hi}/` |
 | Shareable zip | `pcdf/target/aem-poc.pcdf-1.0.0-SNAPSHOT.zip` — FileVault group/name `com.aem.poc.pcdf` |
 
@@ -102,4 +102,4 @@ Putting the same `sling.auth.requirements` property on `PromotionDeliveryServlet
 
 ## Cleanup
 
-Uninstall `com.aem.poc.pcdf` from Package Manager on Author and Publish, or delete `/apps/aem-poc/pcdf`, `/apps/aem-poc-packages/pcdf`, `/conf/aem-poc/pcdf`, and `/content/dam/aem-poc/pcdf`.
+Uninstall `com.aem.poc.pcdf` from Package Manager on Author and Publish, or delete `/apps/aem-poc/pcdf`, `/apps/aem-poc-packages/pcdf`, `/conf/aem-poc-pcdf`, and `/content/dam/aem-poc/pcdf`.

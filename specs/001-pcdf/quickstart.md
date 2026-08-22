@@ -30,7 +30,7 @@ FileVault group/name: `com.aem.poc.pcdf`.
 
 The zip embeds `core.pcdf`, `ui.apps.pcdf`, `ui.config.pcdf`, and `ui.content.pcdf` only — not `aem-poc.core` or site components.
 
-Confirm `/apps/aem-poc/pcdf`, `/conf/aem-poc/pcdf`, `/content/dam/aem-poc/pcdf` exist. Whole-repo `mvn clean install -PautoInstallSinglePackage` installs site `all` with the same PCDF artifacts under `/apps/aem-poc-packages/pcdf`. Isolation reviews should still use `-pl pcdf` only.
+Confirm `/apps/aem-poc/pcdf`, `/conf/aem-poc-pcdf`, `/content/dam/aem-poc/pcdf` exist. Whole-repo `mvn clean install -PautoInstallSinglePackage` installs site `all` with the same PCDF artifacts under `/apps/aem-poc-packages/pcdf`. Isolation reviews should still use `-pl pcdf` only.
 
 ## Demo path
 
@@ -78,4 +78,4 @@ curl -s -u admin:admin \
 
 ## Cleanup
 
-Uninstall the PCDF package from Package Manager on Author and Publish, or delete `/apps/aem-poc/pcdf`, `/apps/aem-poc-packages/pcdf`, `/conf/aem-poc/pcdf`, `/content/dam/aem-poc/pcdf`.
+Uninstall the PCDF package from Package Manager on Author and Publish, or delete `/apps/aem-poc/pcdf`, `/apps/aem-poc-packages/pcdf`, `/conf/aem-poc-pcdf`, `/content/dam/aem-poc/pcdf`.
