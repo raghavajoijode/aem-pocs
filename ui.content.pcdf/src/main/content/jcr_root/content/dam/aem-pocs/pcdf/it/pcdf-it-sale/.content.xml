@@ -7,31 +7,31 @@
         cq:lastReplicationAction="Activate"
         cq:lastReplicated="{Date}2020-01-01T00:00:00.000Z"
         cq:lastReplicatedBy="admin"
-        cq:name="pcdf-match-high"
-        cq:parentPath="/content/dam/aem-pocs/pcdf/en_US"
+        cq:name="pcdf-it-sale"
+        cq:parentPath="/content/dam/aem-pocs/pcdf/it"
         contentFragment="{Boolean}true"
         jcr:mixinTypes="[cq:ReplicationStatus]"
         jcr:primaryType="dam:AssetContent"
-        jcr:title="pcdf-match-high">
+        jcr:title="pcdf-it-sale">
         <data
             cq:model="/conf/aem-pocs/pcdf/settings/dam/cfm/models/programmatic-promotion"
             jcr:primaryType="nt:unstructured">
             <master
                 jcr:primaryType="nt:unstructured"
-                body="Sample body"
-                countries="[US]"
-                ctaLink="/content/aem-pocs/pcdf"
-                ctaText="Learn more"
+                body="Tagged estate sale"
+                ctaLink=""
+                ctaText=""
                 endDate="{Date}2030-12-31T00:00:00.000Z"
-                headline="Fall welcome"
+                headline="Saldi estate"
                 image=""
                 priority="{Long}20"
-                promotionId="pcdf-match-high"
+                promotionId="pcdf-it-sale"
                 startDate="{Date}2020-01-01T00:00:00.000Z"
-                status="ACTIVE"/>
+                status="ACTIVE"
+                tags="[estate]"/>
         </data>
         <metadata
             jcr:primaryType="nt:unstructured"
-            dc:title="pcdf-match-high"/>
+            dc:title="pcdf-it-sale"/>
     </jcr:content>
 </jcr:root>

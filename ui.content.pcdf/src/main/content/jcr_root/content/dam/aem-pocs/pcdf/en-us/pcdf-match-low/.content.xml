@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    xmlns:dam="http://www.day.com/dam/1.0" xmlns:dc="http://purl.org/dc/elements/1.1/"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        cq:lastReplicationAction="Activate"
+        cq:lastReplicated="{Date}2020-01-01T00:00:00.000Z"
+        cq:lastReplicatedBy="admin"
+        cq:name="pcdf-match-low"
+        cq:parentPath="/content/dam/aem-pocs/pcdf/en-us"
+        contentFragment="{Boolean}true"
+        jcr:mixinTypes="[cq:ReplicationStatus]"
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="pcdf-match-low">
+        <data
+            cq:model="/conf/aem-pocs/pcdf/settings/dam/cfm/models/programmatic-promotion"
+            jcr:primaryType="nt:unstructured">
+            <master
+                jcr:primaryType="nt:unstructured"
+                body="Lower priority US promo"
+                ctaLink=""
+                ctaText=""
+                endDate="{Date}2030-12-31T00:00:00.000Z"
+                headline="Lower priority welcome"
+                image=""
+                priority="{Long}10"
+                promotionId="pcdf-match-low"
+                startDate="{Date}2020-01-01T00:00:00.000Z"
+                status="ACTIVE"
+                countries="[US]"/>
+        </data>
+        <metadata
+            jcr:primaryType="nt:unstructured"
+            dc:title="pcdf-match-low"/>
+    </jcr:content>
+</jcr:root>

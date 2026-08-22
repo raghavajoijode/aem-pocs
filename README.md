@@ -57,6 +57,10 @@ mvn clean install -PautoInstallSinglePackage -Daem.port=4503
 # Deploy only the `core` bundle to Author
 mvn clean install -PautoInstallBundle
 
+# Build and deploy **PCDF alone** (not the site `all` package) to Author, then Publish
+mvn clean install -pl pcdf -am -PautoInstallPcdf
+mvn clean install -pl pcdf -am -PautoInstallPcdfPublish
+
 # Deploy a single content package from its module (e.g. ui.apps)
 cd ui.apps && mvn clean install -PautoInstallPackage
 ```
@@ -85,12 +89,12 @@ POC notes.
 Hypothesis: authors manage locale-scoped promotions as one Content Fragment each; consumer apps get one JSON winner (or explicit no-match) from Publish without wiring campaigns on pages.
 
 - **Modules**: `core.pcdf`, `ui.apps.pcdf`, `ui.content.pcdf`, `ui.config.pcdf`, container `pcdf` (not default `core` / `/apps/aem-poc` / default `ui.config`)
-- **Install**: `mvn clean install -pl pcdf -am` then install `pcdf/target/aem-poc.pcdf-1.0.0-SNAPSHOT.zip` on Author and Publish
-- **Demo**: DAM `/content/dam/aem-pocs/pcdf/en_US`; Publish `GET /services/aem-pocs/pcdf?locale=en_US&country=US` → `pcdf-match-high`
+- **Install (PCDF only)**: `mvn clean install -pl pcdf -am -PautoInstallPcdf` then `-PautoInstallPcdfPublish`
+- **Demo**: DAM `/content/dam/aem-pocs/pcdf/en-us` (also `en-gb`, `fr`, `it`, `de`, `hi`); Publish `GET /services/aem-pocs/pcdf?locale=en-us&country=US` → `pcdf-match-high`
 - **Expected**: `country=CA` → `contentFound: false`; Author `previewDate=2026-10-15` → `pcdf-future`; Publish rejects preview with `preview_not_allowed`
 - **Cleanup**: uninstall the PCDF package (see [`docs/pcdf.md`](docs/pcdf.md))
 
-Full install, curl examples, and CDN cache-key note: [`docs/pcdf.md`](docs/pcdf.md). Spec: [`specs/001-pcdf/`](specs/001-pcdf/).
+Operator guide: [`docs/pcdf.md`](docs/pcdf.md). Executive brief and validation table: [`docs/pcdf-executive.md`](docs/pcdf-executive.md). Slides: [`docs/pcdf-brief.html`](docs/pcdf-brief.html). Spec: [`specs/001-pcdf/`](specs/001-pcdf/).
 
 ## Spec Kit (optional)
 
@@ -103,6 +107,8 @@ Agent orientation for any IDE: see [`AGENTS.md`](AGENTS.md).
 
 ## Related docs
 
+- [`docs/pcdf-executive.md`](docs/pcdf-executive.md) — PCDF executive brief and validation scenarios
+- [`docs/pcdf-brief.html`](docs/pcdf-brief.html) — PCDF slide deck
 - [`README-CIF.md`](README-CIF.md) — Commerce Integration Framework notes (CIF
   not enabled in `archetype.properties`)
 - [`README-precompiled-scripts.md`](README-precompiled-scripts.md) — precompiled

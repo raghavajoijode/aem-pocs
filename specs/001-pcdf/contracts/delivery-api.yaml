@@ -22,8 +22,8 @@ paths:
           required: true
           schema:
             type: string
-            example: en_US
-          description: DAM folder name under /content/dam/aem-pocs/pcdf
+            example: en-us
+          description: DAM folder name under /content/dam/aem-pocs/pcdf (lowercase hyphenated, e.g. en-us, fr, hi)
         - in: query
           name: country
           required: false
@@ -75,7 +75,7 @@ paths:
                     promotionId: pcdf-match-high
                     headline: Fall welcome
                     body: Sample body
-                    image: /content/dam/aem-pocs/pcdf/en_US/welcome.png
+                    image: /content/dam/aem-pocs/pcdf/en-us/welcome.png
                     ctaText: Learn more
                     ctaLink: /content/aem-pocs/pcdf
                 noMatch:

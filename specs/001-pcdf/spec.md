@@ -178,7 +178,7 @@ Future proofs of concept follow the same pattern: `/apps/aem-pocs/{poc-id}` and 
 ### Key Entities
 
 - **Promotion**: A single locale-scoped campaign item authored as one Content Fragment (no variations). Content: headline, body, image, call-to-action text, call-to-action link. Administration: promotion id, status, priority, tags. Schedule: `startDate` and `endDate` as calendar dates (no time). Targeting: countries, markets, brands, properties, page types, URL parameters.
-- **Locale folder**: A repository location under `/content/dam/aem-pocs/pcdf` that groups promotions for one locale (for example `en_US`). Delivery resolves candidates from the folder that matches the requested locale.
+- **Locale folder**: A repository location under `/content/dam/aem-pocs/pcdf` that groups promotions for one locale (lowercase hyphenated codes such as `en-us`, `en-gb`, `fr`, `it`, `de`, `hi`). Delivery resolves candidates from the folder that matches the requested locale.
 - **Delivery request**: Locale plus optional country, brand, market, property, page type, promo, and tag. On Author only, an optional preview date (no time) may be supplied by a signed-in user.
 - **Delivery result**: Either one winning promotion’s content fields plus promotion id, or an explicit no-match.
 - **PCDF package**: The explicit, shareable install artifact for this proof of concept only. Contains separately identifiable repository-node content and the dedicated `core.pcdf` bundle under identity `com.aem.poc.pcdf`.

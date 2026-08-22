@@ -5,5 +5,5 @@
     <jcr:content
         cq:conf="/conf/aem-pocs/pcdf"
         jcr:primaryType="nt:unstructured"
-        jcr:title="en_US"/>
+        jcr:title="hi"/>
 </jcr:root>

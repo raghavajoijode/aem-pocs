@@ -7,31 +7,31 @@
         cq:lastReplicationAction="Activate"
         cq:lastReplicated="{Date}2020-01-01T00:00:00.000Z"
         cq:lastReplicatedBy="admin"
-        cq:name="pcdf-match-low"
-        cq:parentPath="/content/dam/aem-pocs/pcdf/en_US"
+        cq:name="pcdf-gb-high"
+        cq:parentPath="/content/dam/aem-pocs/pcdf/en-gb"
         contentFragment="{Boolean}true"
         jcr:mixinTypes="[cq:ReplicationStatus]"
         jcr:primaryType="dam:AssetContent"
-        jcr:title="pcdf-match-low">
+        jcr:title="pcdf-gb-high">
         <data
             cq:model="/conf/aem-pocs/pcdf/settings/dam/cfm/models/programmatic-promotion"
             jcr:primaryType="nt:unstructured">
             <master
                 jcr:primaryType="nt:unstructured"
-                body="Lower priority US promo"
-                countries="[US]"
-                ctaLink=""
-                ctaText=""
+                body="Higher-priority TH brand on en-gb"
+                ctaLink="/content/aem-pocs/pcdf"
+                ctaText="Shop"
                 endDate="{Date}2030-12-31T00:00:00.000Z"
-                headline="Lower priority welcome"
+                headline="UK brand offer"
                 image=""
-                priority="{Long}10"
-                promotionId="pcdf-match-low"
+                priority="{Long}20"
+                promotionId="pcdf-gb-high"
                 startDate="{Date}2020-01-01T00:00:00.000Z"
-                status="ACTIVE"/>
+                status="ACTIVE"
+                brands="[TH]"/>
         </data>
         <metadata
             jcr:primaryType="nt:unstructured"
-            dc:title="pcdf-match-low"/>
+            dc:title="pcdf-gb-high"/>
     </jcr:content>
 </jcr:root>

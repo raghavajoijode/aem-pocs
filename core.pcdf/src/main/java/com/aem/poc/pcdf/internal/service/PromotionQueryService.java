@@ -1,6 +1,7 @@
 package com.aem.poc.pcdf.internal.service;
 
 import com.aem.poc.pcdf.internal.eligibility.DateWindow;
+import com.aem.poc.pcdf.internal.locale.LocaleFolder;
 import com.aem.poc.pcdf.internal.model.Promotion;
 import com.day.cq.replication.ReplicationStatus;
 import java.util.ArrayList;
@@ -27,6 +28,9 @@ public class PromotionQueryService {
     private SlingSettingsService slingSettings;
 
     public boolean localeFolderExists(ResourceResolver resolver, String locale) {
+        if (!LocaleFolder.isSafe(locale)) {
+            return false;
+        }
         return resolver.getResource(DAM_ROOT + "/" + locale) != null;
     }
 
@@ -34,6 +38,9 @@ public class PromotionQueryService {
      * Published fragments only (Author: replication activated; Publish: repository content).
      */
     public List<Promotion> listPublished(ResourceResolver resolver, String locale) {
+        if (!LocaleFolder.isSafe(locale)) {
+            return Collections.emptyList();
+        }
         Resource folder = resolver.getResource(DAM_ROOT + "/" + locale);
         if (folder == null) {
             return Collections.emptyList();

@@ -7,6 +7,8 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  * Activates only when Publish runmode config is present. Registers an extra
  * {@code sling.auth.requirements} entry so GET {@code /services/aem-pocs/pcdf}
  * is anonymous on Publish without replacing the SlingAuthenticator PID.
+ * Do not put this property on {@code PromotionDeliveryServlet}: Sling authenticates
+ * before the servlet runs, and a servlet-level exemption would also open Author.
  */
 @Component(
         service = PublishAnonymousAccess.class,

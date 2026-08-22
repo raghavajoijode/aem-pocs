@@ -42,8 +42,8 @@ Unpublished fragments are not visible on Publish. Author preview uses the same r
 ## Locale folder
 
 **Path**: `/content/dam/aem-pocs/pcdf/{locale}`  
-**Example**: `en_US`, `fr_CA`  
-**Rule**: Delivery loads candidates only from the folder whose name equals request `locale`. Unknown locale → no candidates → `{ "contentFound": false }` (not a substitute locale). Missing `locale` parameter → 400.
+**Example**: `en-us`, `en-gb`, `fr`, `it`, `de`, `hi`  
+**Rule**: Delivery loads candidates only from the folder whose name equals request `locale` (exact, case-sensitive). Unknown locale → no candidates → `{ "contentFound": false }` (not a substitute locale). Missing `locale` parameter → 400. Underscore forms such as `en_US` are not the same as `en-us`.
 
 ## Delivery request (not stored)
 
@@ -59,16 +59,30 @@ No-match: `contentFound=false` and no substitute promotion fields.
 
 ## Sample set (required for demo)
 
-Place under `/content/dam/aem-pocs/pcdf/en_US/` (names may vary; IDs must match the quickstart):
+Place under `/content/dam/aem-pocs/pcdf/` (folder name = request `locale`):
+
+### `en-us` — priority, country, inactive, preview
 
 | promotionId | status | priority | startDate | endDate | Targeting (non-empty) | Purpose |
 | --- | --- | --- | --- | --- | --- | --- |
 | `pcdf-match-low` | ACTIVE | 10 | 2020-01-01 | 2030-12-31 | `countries=US` | Loses priority contest |
-| `pcdf-match-high` | ACTIVE | 20 | 2020-01-01 | 2030-12-31 | `countries=US` | Winner when `locale=en_US&country=US` |
+| `pcdf-match-high` | ACTIVE | 20 | 2020-01-01 | 2030-12-31 | `countries=US` | Winner when `locale=en-us&country=US` |
 | `pcdf-future` | ACTIVE | 50 | 2026-10-01 | 2026-10-31 | (empty) | Preview-only until October 2026 |
 | `pcdf-inactive` | INACTIVE | 99 | 2020-01-01 | 2030-12-31 | (empty) | Never returned |
 
-No-match demo: `locale=en_US&country=CA` (US-targeted fragments do not match; future/inactive excluded).
+No-match: `locale=en-us&country=CA`.
+
+### Other locales
+
+| Folder | promotionId | Targeting / notes | Demo |
+| --- | --- | --- | --- |
+| `en-gb` | `pcdf-gb-high` (20), `pcdf-gb-low` (10) | `brands=TH` | `brand=TH` → high; `brand=XX` → no-match |
+| `fr` | `pcdf-fr-welcome` | empty (match-all) | `locale=fr` and `locale=fr&pageType=home` same winner |
+| `it` | `pcdf-it-sale` (20, `tags=estate`), `pcdf-it-evergreen` (5) | tag inclusion | `tag=estate` → sale; `tag=inverno` → no-match |
+| `de` | `pcdf-de-summer` (20, `urlParameters=SUMMER`), `pcdf-de-always` (5) | promo | `promo=SUMMER` → summer; `promo=WINTER` → always |
+| `hi` | `pcdf-match-high` | empty; **same id as en-us** | per-locale uniqueness |
+
+Unknown folder (for example `ja`) → no-match.
 
 ## Validation summary
 

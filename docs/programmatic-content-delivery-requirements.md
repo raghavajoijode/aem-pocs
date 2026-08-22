@@ -47,7 +47,7 @@ This POC proves that hypothesis on AEM: Author for authoring, Publish for a deli
 ### In scope
 
 - One promotion = one content item (no content-fragment variations).
-- Locale is represented by repository folders (for example `en_US`, `fr_CA`, `en_GB` under `/content/dam/aem-pocs/pcdf`).
+- Locale is represented by repository folders (for example `en-us`, `fr`, `en-gb` under `/content/dam/aem-pocs/pcdf`).
 - Authoring of content fields, scheduling, targeting, and administration fields without development support per campaign.
 - Eligibility: only ACTIVE promotions whose start/end window includes “now” (or preview date).
 - Targeting dimensions for this POC: country, market, brand, property, page type, URL parameter (`promo`), and tag.
@@ -168,7 +168,7 @@ Promotions live in locale folders and are not attached to individual pages. Many
 ### Key entities
 
 - **Promotion**: A single locale-scoped campaign item. Content: headline, body, image, CTA text, CTA link. Administration: promotion id, status, priority, tags. Schedule: start date, end date. Targeting: countries, markets, brands, properties, page types, URL parameters.
-- **Locale folder**: A repository location under `/content/dam/aem-pocs/pcdf` that groups promotions for one locale (for example `en_US`). Delivery resolves candidates from the folder that matches the requested locale.
+- **Locale folder**: A repository location under `/content/dam/aem-pocs/pcdf` that groups promotions for one locale (for example `en-us`). Delivery resolves candidates from the folder that matches the requested locale.
 - **Delivery request**: Locale plus optional country, brand, market, property, page type, promo, tag, and optional preview date.
 - **Delivery result**: Either one winning promotion’s content fields plus promotion id, or an explicit no-match.
 

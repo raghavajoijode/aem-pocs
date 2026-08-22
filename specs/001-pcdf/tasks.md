@@ -60,13 +60,13 @@ PCDF modules from plan.md: `core.pcdf/`, `ui.apps.pcdf/`, `ui.content.pcdf/`, `u
 
 **Goal**: Authors create one `ProgrammaticPromotion` CF under a locale folder (date-only `startDate`/`endDate`, no variations) and an eligible published fragment can be delivered
 
-**Independent Test**: On Author, create or open a CF under `/content/dam/aem-pocs/pcdf/en_US`, publish it, then request Publish `GET /services/aem-pocs/pcdf?locale=en_US` and see that fragment when ACTIVE and in date window
+**Independent Test**: On Author, create or open a CF under `/content/dam/aem-pocs/pcdf/en-us`, publish it, then request Publish `GET /services/aem-pocs/pcdf?locale=en-us` and see that fragment when ACTIVE and in date window
 
 ### Implementation for User Story 1
 
 - [X] T012 [US1] Complete CFM fields (`promotionId`, `status`, `priority`, `tags`, `headline`, `body`, `image`, `ctaText`, `ctaLink`, `startDate`, `endDate`, targeting lists) in `/workspace/ui.content.pcdf/src/main/content/jcr_root/conf/aem-pocs/pcdf/settings/dam/cfm/models/programmatic-promotion/.content.xml`
-- [X] T013 [P] [US1] Add locale folder `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-pocs/pcdf/en_US/.content.xml`
-- [X] T014 [US1] Add sample fragment `pcdf-match-high` under `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-pocs/pcdf/en_US/` per `/workspace/specs/001-pcdf/data-model.md`
+- [X] T013 [P] [US1] Add locale folder `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-pocs/pcdf/en-us/.content.xml`
+- [X] T014 [US1] Add sample fragment `pcdf-match-high` under `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-pocs/pcdf/en-us/` per `/workspace/specs/001-pcdf/data-model.md`
 - [X] T015 [US1] Query **published** fragments in the locale folder in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/service/PromotionQueryService.java` (missing folder → empty list / no-match)
 - [X] T016 [US1] Apply ACTIVE + inclusive `startDate`/`endDate` in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/eligibility/EligibilityService.java`
 - [X] T017 [US1] Emit match JSON (`contentFound`, `promotionId`, `headline`, `body`, `image`, `ctaText`, `ctaLink`) from `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java`
@@ -80,14 +80,14 @@ PCDF modules from plan.md: `core.pcdf/`, `ui.apps.pcdf/`, `ui.content.pcdf/`, `u
 
 **Goal**: Request locale + optional context; return exactly one winner or `{ "contentFound": false }` with no fallback
 
-**Independent Test**: Sample set — `locale=en_US&country=US` → `pcdf-match-high`; `country=CA` → `contentFound: false`; two ACTIVE US-targeted fragments differ only by priority
+**Independent Test**: Sample set — `locale=en-us&country=US` → `pcdf-match-high`; `country=CA` → `contentFound: false`; two ACTIVE US-targeted fragments differ only by priority
 
 ### Implementation for User Story 2
 
 - [X] T019 [US2] Implement targeting (empty list = match-all; omitted request param unconstrained; `promo` → `urlParameters`; `tag` exact inclusion) in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/eligibility/TargetingRules.java` without adding new request/response fields (FR-024: later dimensions via model/rules only)
 - [X] T020 [US2] Rank by highest integer `priority` then lexicographically lower `promotionId` (per locale) in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/eligibility/Ranking.java`
 - [X] T021 [US2] Return no-match body with `contentFound: false` and no substitute fields in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java` (including unknown locale folder)
-- [X] T022 [P] [US2] Add samples `pcdf-match-low` and `pcdf-inactive` under `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-pocs/pcdf/en_US/` per `/workspace/specs/001-pcdf/data-model.md`
+- [X] T022 [P] [US2] Add samples `pcdf-match-low` and `pcdf-inactive` under `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-pocs/pcdf/en-us/` per `/workspace/specs/001-pcdf/data-model.md`
 - [X] T023 [US2] Reject missing `locale` with HTTP 400 `locale_required` in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java`
 
 **Checkpoint**: US1 and US2 independently demoable (winner vs no-match)
@@ -121,7 +121,7 @@ PCDF modules from plan.md: `core.pcdf/`, `ui.apps.pcdf/`, `ui.content.pcdf/`, `u
 
 - [X] T028 [US4] Use `previewDate` as evaluation date only for authenticated Author, considering **published** fragments only, in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java`
 - [X] T029 [US4] Reject `previewDate` on Publish with HTTP 400 `preview_not_allowed` in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java`
-- [X] T030 [P] [US4] Add sample `pcdf-future` under `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-pocs/pcdf/en_US/` per `/workspace/specs/001-pcdf/data-model.md`
+- [X] T030 [P] [US4] Add sample `pcdf-future` under `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-pocs/pcdf/en-us/` per `/workspace/specs/001-pcdf/data-model.md`
 - [X] T031 [US4] Keep Author delivery authenticated (401 without session) via `/workspace/ui.config.pcdf/src/main/content/jcr_root/apps/aem-pocs/pcdf/osgiconfig/config.author/` (no anonymous sling.auth exemption)
 
 **Checkpoint**: Preview Author-only; Publish live unchanged
@@ -195,7 +195,7 @@ PCDF modules from plan.md: `core.pcdf/`, `ui.apps.pcdf/`, `ui.content.pcdf/`, `u
 
 ```bash
 # After T012 (model fields), content folder and mapping can proceed:
-Task: "Add locale folder ui.content.pcdf/.../content/dam/aem-pocs/pcdf/en_US/.content.xml"
+Task: "Add locale folder ui.content.pcdf/.../content/dam/aem-pocs/pcdf/en-us/.content.xml"
 Task: "Add CF-to-promotion mapping already in Phase 2 Promotion.java — extend fields if needed"
 ```
 
@@ -208,7 +208,7 @@ Task: "Add CF-to-promotion mapping already in Phase 2 Promotion.java — extend 
 1. Phase 1 Setup  
 2. Phase 2 Foundational  
 3. Phase 3 US1  
-4. **STOP**: Author one CF, publish, hit Publish GET with `locale=en_US`  
+4. **STOP**: Author one CF, publish, hit Publish GET with `locale=en-us`  
 5. Then US2 (winner vs no-match) before calling the POC “delivery complete”
 
 ### Incremental Delivery

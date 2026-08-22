@@ -8,7 +8,7 @@
         cq:lastReplicated="{Date}2020-01-01T00:00:00.000Z"
         cq:lastReplicatedBy="admin"
         cq:name="pcdf-inactive"
-        cq:parentPath="/content/dam/aem-pocs/pcdf/en_US"
+        cq:parentPath="/content/dam/aem-pocs/pcdf/en-us"
         contentFragment="{Boolean}true"
         jcr:mixinTypes="[cq:ReplicationStatus]"
         jcr:primaryType="dam:AssetContent"
