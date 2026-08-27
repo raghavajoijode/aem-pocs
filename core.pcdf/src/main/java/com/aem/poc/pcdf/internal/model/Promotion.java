@@ -8,7 +8,6 @@ public class Promotion {
 
     private String promotionId = "";
     private String status = "";
-    private int priority;
     private List<String> tags = Collections.emptyList();
     private String headline = "";
     private String body = "";
@@ -17,7 +16,6 @@ public class Promotion {
     private String ctaLink = "";
     private LocalDate startDate;
     private LocalDate endDate;
-    private List<String> countries = Collections.emptyList();
     private List<String> markets = Collections.emptyList();
     private List<String> brands = Collections.emptyList();
     private List<String> properties = Collections.emptyList();
@@ -38,14 +36,6 @@ public class Promotion {
 
     public void setStatus(String status) {
         this.status = status == null ? "" : status;
-    }
-
-    public int getPriority() {
-        return priority;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
     }
 
     public List<String> getTags() {
@@ -110,14 +100,6 @@ public class Promotion {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
-    }
-
-    public List<String> getCountries() {
-        return countries;
-    }
-
-    public void setCountries(List<String> countries) {
-        this.countries = countries == null ? Collections.emptyList() : countries;
     }
 
     public List<String> getMarkets() {

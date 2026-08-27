@@ -14,7 +14,7 @@
 
 ## Delivery surface
 
-**Decision**: `GET /services/aem-poc/pcdf` (Sling path servlet on the `core.pcdf` bundle). Query parameters as in [contracts/delivery-api.yaml](./contracts/delivery-api.yaml). JSON body; HTTP 200 for match and no-match; HTTP 400 for invalid requests (missing locale, preview on Publish, bad date).
+**Decision**: `GET /services/aem-poc/pcdf` (Sling path servlet on the `core.pcdf` bundle). Query parameters as in [contracts/delivery-api.yaml](./contracts/delivery-api.yaml). JSON body; HTTP 200 for match and no-match; HTTP 400 for invalid requests (missing region/country/locale, preview on Publish, bad date).
 
 **Rationale**: Path sits under the PCDF identity (`/services/aem-poc/pcdf`). GET avoids CSRF complexity for the demo. Distinguishing 400 vs `{ "contentFound": false }` keeps “bad request” separate from “nothing eligible.”
 
@@ -36,24 +36,24 @@
 
 ## Content model
 
-**Decision**: One Content Fragment model `ProgrammaticPromotion` under `/conf/aem-poc/pcdf`. One fragment per promotion; **no variations**. Locale is the DAM folder `/content/dam/aem-poc/pcdf/{locale}/`. Date fields are Date (date-only in the authoring UI). Targeting fields are multi-value strings.
+**Decision**: One Content Fragment model `ProgrammaticPromotion` under `/conf/aem-poc-pcdf`. One fragment per promotion; **no variations**. Topology is `/content/dam/aem-poc/pcdf/{region}/{country}/{locale}/`. Status and brand are `cq:tags` (`pcdf:status/*`, `pcdf:brand/*`). Date fields are targeting (date-only in the authoring UI). Remaining targeting fields are multi-value strings.
 
 **Rationale**: Spec FR-005/006 and authoring without developers (standard CF editor). Empty multi-value = match-all.
 
 **Alternatives considered**:
 
 - Experience Fragments or page components — implies per-page wiring (out of scope).
-- CF variations for locale — spec forbids variant sets; locale is folder topology.
+- CF variations for locale — spec forbids variant sets; region, country, and locale are folder topology.
 
 ## Query and ranking
 
-**Decision**: Resolve candidates with a query limited to the locale folder and the `ProgrammaticPromotion` model, then apply ACTIVE + date + targeting in Java, then pick max priority and lexicographically lowest `promotionId` on ties. Target “rule evaluation under 100ms” for the **sample set**, not a production query SLA.
+**Decision**: QueryBuilder limited to the region/country/locale folder (`path` + `type=dam:Asset` + CF model), optional CF `nodename`, and tagid predicates for `pcdf:status/ACTIVE` plus optional brand/topic tags. Then apply targeting dates (`startDate`/`endDate`) and remaining list targeting in Java, then return the **first** remaining hit. Priority ranking is out of scope for this MVP.
 
 **Rationale**: Sample set is small; in-memory filter keeps matching rules obvious and testable in a demo. Query-only targeting in JCR is brittle for empty-list match-all.
 
 **Alternatives considered**:
 
-- Pure QueryBuilder predicates for every dimension — empty-list match-all is awkward in JCR.
+- Pure QueryBuilder predicates for every dimension including dates — empty-list match-all is awkward in JCR; dates are calendar fields checked in Java after the query.
 - Caching / CDN keys in product — out of scope; document `locale|country|brand|promo` as an external recommendation only.
 
 ## Documentation and tests

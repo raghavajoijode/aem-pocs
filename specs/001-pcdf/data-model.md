@@ -4,46 +4,51 @@
 
 **Model name**: `ProgrammaticPromotion`  
 **Model path**: `/conf/aem-poc-pcdf/settings/dam/cfm/models/programmatic-promotion` (implementation may use an equivalent CFM path under `/conf/aem-poc-pcdf`).  
-**Instance path**: `/content/dam/aem-poc/pcdf/{locale}/{promotionName}`  
+**Instance path**: `/content/dam/aem-poc/pcdf/{region}/{country}/{locale}/{promotionName}`  
 **Cardinality**: one fragment = one promotion; no variations.
 
 ### Fields
 
 | Field | Role | Type | Rules |
 | --- | --- | --- | --- |
-| `promotionId` | Administration | String | Required. Tie-break key (lexicographically lower wins). Unique **within a locale folder**; the same id MAY be used in other locales. |
-| `status` | Administration | Enumeration | Required. At least `ACTIVE` and `INACTIVE`. Only `ACTIVE` is eligible. |
-| `priority` | Administration | Integer | Required. Higher number wins. |
-| `tags` | Administration | String[] | Optional. If the request includes `tag`, the fragment must contain that exact value. |
+| `promotionId` | Administration | String | Required. Unique **within a region/country/locale folder**; the same id MAY be used in other folders. |
 | `headline` | Content | String | Required for a useful demo response. |
 | `body` | Content | Text / String | Optional in storage; included in the match response when present (empty string if blank). |
 | `image` | Content | Content reference (DAM image) | Optional; match response uses the asset path (or empty). |
 | `ctaText` | Content | String | Optional. |
 | `ctaLink` | Content | String (URL or path) | Optional. |
-| `startDate` | Schedule | Date (date only) | Required. Inclusive. No time of day. |
-| `endDate` | Schedule | Date (date only) | Required. Inclusive. Must be on or after `startDate` for sample content. |
-| `countries` | Targeting | String[] | Empty = match-all for `country`. |
+| `startDate` | Targeting | Date (date only) | Required. Inclusive. No time of day. |
+| `endDate` | Targeting | Date (date only) | Required. Inclusive. Must be on or after `startDate` for sample content. |
 | `markets` | Targeting | String[] | Empty = match-all for `market`. |
-| `brands` | Targeting | String[] | Empty = match-all for `brand`. |
 | `properties` | Targeting | String[] | Empty = match-all for `property`. |
 | `pageTypes` | Targeting | String[] | Empty = match-all for `pageType`. |
 | `urlParameters` | Targeting | String[] | Empty = match-all for request `promo`. |
 
+### Tags (on the Content Fragment, not model fields)
+
+Namespace: `/content/cq:tags/pcdf`. Stored as `cq:tags`.
+
+| Tag | Role | Rules |
+| --- | --- | --- |
+| `pcdf:status/ACTIVE` or `pcdf:status/INACTIVE` | Status | Required for eligibility. Only ACTIVE is eligible. |
+| `pcdf:brand/{code}` | Brand | Optional. Empty brand tags = match-all for request `brand`. |
+| `pcdf:topic/{name}` | Topic | Optional. If the request includes `tag`, the fragment must contain that topic (or the same leaf name). |
+
 ### Lifecycle
 
 ```text
-created (status typically INACTIVE or ACTIVE)
+created (status tag typically INACTIVE or ACTIVE)
   → ACTIVE  : eligible if evaluation date is in [startDate, endDate]
   → INACTIVE: never eligible, even if dates and targeting match
 ```
 
 Unpublished fragments are not visible on Publish. Author preview uses the same rule: **only published** fragments may win (plus `previewDate` for the calendar window).
 
-## Locale folder
+## Topology folder
 
-**Path**: `/content/dam/aem-poc/pcdf/{locale}`  
-**Example**: `en-us`, `en-gb`, `fr`, `it`, `de`, `hi`  
-**Rule**: Delivery loads candidates only from the folder whose name equals request `locale` (exact, case-sensitive). Unknown locale → no candidates → `{ "contentFound": false }` (not a substitute locale). Missing `locale` parameter → 400. Underscore forms such as `en_US` are not the same as `en-us`.
+**Path**: `/content/dam/aem-poc/pcdf/{region}/{country}/{locale}`  
+**Examples**: `americas/us/en-us`, `emea/gb/en-gb`, `emea/fr/fr`, `emea/it/it`, `emea/de/de`, `apac/in/hi`  
+**Rule**: Delivery loads candidates only from the folder whose three segments equal request `region`, `country`, and `locale` (exact, lowercase). Unknown folder → no candidates → `{ "contentFound": false }` (not a substitute). Missing `region`, `country`, or `locale` parameter → 400. Underscore locale forms such as `en_US` are not the same as `en-us`. Country codes are lowercase folder names (`us`, not `US`).
 
 ## Delivery request (not stored)
 
@@ -59,35 +64,37 @@ No-match: `contentFound=false` and no substitute promotion fields.
 
 ## Sample set (required for demo)
 
-Place under `/content/dam/aem-poc/pcdf/` (folder name = request `locale`):
+Place under `/content/dam/aem-poc/pcdf/{region}/{country}/{locale}/`.
 
-### `en-us` — priority, country, inactive, preview
+### `americas/us/en-us` — match, inactive, preview
 
-| promotionId | status | priority | startDate | endDate | Targeting (non-empty) | Purpose |
-| --- | --- | --- | --- | --- | --- | --- |
-| `pcdf-match-low` | ACTIVE | 10 | 2020-01-01 | 2030-12-31 | `countries=US` | Loses priority contest |
-| `pcdf-match-high` | ACTIVE | 20 | 2020-01-01 | 2030-12-31 | `countries=US` | Winner when `locale=en-us&country=US` |
-| `pcdf-future` | ACTIVE | 50 | 2026-10-01 | 2026-10-31 | (empty) | Preview-only until October 2026 |
-| `pcdf-inactive` | INACTIVE | 99 | 2020-01-01 | 2030-12-31 | (empty) | Never returned |
+| promotionId | status tag | startDate | endDate | Other | Purpose |
+| --- | --- | --- | --- | --- | --- |
+| `pcdf-match-low` | ACTIVE | 2020-01-01 | 2030-12-31 | | Extra eligible sample; request by `name` |
+| `pcdf-match-high` | ACTIVE | 2020-01-01 | 2030-12-31 | | Demo match (`name=pcdf-match-high`) |
+| `pcdf-future` | ACTIVE | 2026-10-01 | 2026-10-31 | | Preview-only until October 2026 |
+| `pcdf-inactive` | INACTIVE | 2020-01-01 | 2030-12-31 | | Never returned |
 
-No-match: `locale=en-us&country=CA`.
+No-match: `region=americas&country=ca&locale=en-us` (folder does not exist).
 
-### Other locales
+### Other folders
 
 | Folder | promotionId | Targeting / notes | Demo |
 | --- | --- | --- | --- |
-| `en-gb` | `pcdf-gb-high` (20), `pcdf-gb-low` (10) | `brands=TH` | `brand=TH` → high; `brand=XX` → no-match |
-| `fr` | `pcdf-fr-welcome` | empty (match-all) | `locale=fr` and `locale=fr&pageType=home` same winner |
-| `it` | `pcdf-it-sale` (20, `tags=estate`), `pcdf-it-evergreen` (5) | tag inclusion | `tag=estate` → sale; `tag=inverno` → no-match |
-| `de` | `pcdf-de-summer` (20, `urlParameters=SUMMER`), `pcdf-de-always` (5) | promo | `promo=SUMMER` → summer; `promo=WINTER` → always |
-| `hi` | `pcdf-match-high` | empty; **same id as en-us** | per-locale uniqueness |
+| `emea/gb/en-gb` | `pcdf-gb-high`, `pcdf-gb-low` | `pcdf:brand/TH` | `brand=TH&name=pcdf-gb-high` → high; `brand=XX` → no-match |
+| `emea/fr/fr` | `pcdf-fr-welcome` | empty lists (match-all) | `locale=fr` and `&pageType=home` same winner |
+| `emea/it/it` | `pcdf-it-sale` (`pcdf:topic/estate`), `pcdf-it-evergreen` | topic inclusion | `tag=estate` → sale; `tag=inverno` → no-match |
+| `emea/de/de` | `pcdf-de-summer` (`urlParameters=SUMMER`), `pcdf-de-always` | CF name | `promo=pcdf-de-summer` or `name=pcdf-de-always` |
+| `apac/in/hi` | `pcdf-match-high` | empty; **same id as en-us** | per-folder uniqueness |
 
-Unknown folder (for example `ja`) → no-match.
+Unknown folder (for example `apac/jp/ja`) → no-match.
 
 ## Validation summary
 
 - Empty targeting list → dimension does not constrain.
+- Empty brand tags → brand does not constrain.
 - Omitted request parameter → dimension does not constrain.
 - Request `promo` matches `urlParameters`.
-- Request `tag` requires exact inclusion in `tags`.
-- Ranking: highest integer `priority` (larger wins), then lowest `promotionId` within that locale.
+- Request `tag` requires exact inclusion of a topic tag leaf.
+- Request `brand` requires inclusion of a brand tag leaf when brand tags are present.
+- Ranking: not in MVP. After exact path/tag/date/list filtering, return the first remaining result.

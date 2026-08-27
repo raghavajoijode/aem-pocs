@@ -3,8 +3,8 @@ package com.aem.poc.pcdf.internal.locale;
 import java.util.regex.Pattern;
 
 /**
- * Locale query values are DAM folder names: lowercase BCP-47-style tokens
- * such as {@code en-us}, {@code en-gb}, {@code fr}, {@code it}, {@code de}, {@code hi}.
+ * Locale query values are the third DAM folder segment under region/country:
+ * lowercase BCP-47-style tokens such as {@code en-us}, {@code fr}, {@code hi}.
  * Underscore forms ({@code en_US}) are not folders and yield no-match.
  */
 public final class LocaleFolder {

@@ -20,7 +20,7 @@ Everything for this POC lives under the single `/apps/aem-poc` parent, in a PCDF
 - **This POC (apps)**: `/apps/aem-poc/pcdf`
 - **Java / OSGi / Maven package**: `com.aem.poc.pcdf`
 - **Shareable package artifact**: `com.aem.poc.pcdf` (content nodes and bundle kept as separate parts inside that package)
-- **DAM / promotions**: `/content/dam/aem-poc/pcdf/{locale}/…`
+- **DAM / promotions**: `/content/dam/aem-poc/pcdf/{region}/{country}/{locale}/…`
 - **Conf / models**: `/conf/aem-poc-pcdf`
 - **Delivery API**: under the same POC identity (for example `/services/aem-poc/pcdf`)
 
@@ -47,11 +47,11 @@ This POC proves that hypothesis on AEM: Author for authoring, Publish for a deli
 ### In scope
 
 - One promotion = one content item (no content-fragment variations).
-- Locale is represented by repository folders (for example `en-us`, `fr`, `en-gb` under `/content/dam/aem-poc/pcdf`).
+- Locale is represented by repository folders (for example `americas/us/en-us` under `/content/dam/aem-poc/pcdf/{region}/{country}/{locale}`).
 - Authoring of content fields, scheduling, targeting, and administration fields without development support per campaign.
 - Eligibility: only ACTIVE promotions whose start/end window includes “now” (or preview date).
-- Targeting dimensions for this POC: country, market, brand, property, page type, URL parameter (`promo`), and tag.
-- Request: locale is mandatory; country, brand, market, property, page type, promo, and tag are optional.
+- Targeting dimensions for this POC: start/end dates, market, property, page type, URL parameter (`promo`), brand tag, and topic tag. Country is topology (with region and locale), not a targeting list.
+- Request: region, country, and locale are mandatory; brand, market, property, page type, promo, and tag are optional.
 - Resolution: all eligible, matching promotions → highest priority wins; no match → no content (no silent fallback).
 - Preview using the same rules as live, with an optional preview date.
 - Publish: anonymous read of the delivery API. Author: authenticated access only. Delivery API is for Publish (not as a public Author campaign engine).
@@ -141,7 +141,7 @@ Promotions live in locale folders and are not attached to individual pages. Many
 
 - **FR-001**: Authors MUST be able to create and edit a promotion under a locale folder with content fields: headline, body, image, CTA text, CTA link.
 - **FR-002**: Authors MUST be able to set scheduling fields: start date and end date.
-- **FR-003**: Authors MUST be able to set targeting: countries, markets, brands, properties, page types, URL parameters.
+- **FR-003**: Authors MUST be able to set targeting: start/end dates, markets, properties, page types, URL parameters. Brand and status are tags. Country is a folder.
 - **FR-004**: Authors MUST be able to set administration fields: promotion id, status, priority, tags.
 - **FR-005**: The system MUST treat one content item as one promotion; it MUST NOT require content-fragment variations for this POC.
 - **FR-006**: Locale MUST be expressed by folder topology, not by variation sets.
@@ -153,7 +153,7 @@ Promotions live in locale folders and are not attached to individual pages. Many
 - **FR-012**: Live delivery MUST use the current date as the evaluation date.
 - **FR-013**: Preview MUST accept an optional preview date and use it as the evaluation date; all other rules MUST match live delivery.
 - **FR-014**: For each targeting dimension that has a non-empty list on the promotion, the request value for that dimension MUST be present in the list for the promotion to match. Empty list means match-all for that dimension. Omitted request parameters MUST NOT constrain that dimension.
-- **FR-015**: Among eligible matching promotions, the system MUST return the one with the highest priority.
+- **FR-015**: Among eligible matching promotions, the system MUST return the first remaining result after exact filtering (no priority ranking).
 - **FR-016**: If two or more eligible matches share the highest priority, the system MUST return the one with the lexicographically lower promotion id.
 - **FR-017**: If no promotion is eligible and matching, the system MUST return an explicit no-match result (`contentFound` false) and MUST NOT return a substitute promotion.
 - **FR-018**: A successful match response MUST include: content found flag, promotion id, headline, body, image, CTA text, CTA link.
@@ -211,7 +211,7 @@ These notes come from the original architecture brief. They are HOW, not accepta
 
 - Apps / clientlibs / components: `/apps/aem-poc/pcdf` (do not mix into `/apps/aem-poc/components`).
 - Java and Maven package: `com.aem.poc.pcdf`. Shareable FileVault package group/artifact: `com.aem.poc.pcdf`. Keep nodes and the OSGi bundle as separate embeddeds inside that package.
-- DAM root: `/content/dam/aem-poc/pcdf/{locale}/{promotionName}`.
+- DAM root: `/content/dam/aem-poc/pcdf/{region}/{country}/{locale}/{promotionName}`.
 - Conf / Content Fragment model: `/conf/aem-poc-pcdf`. Suggested model name: `ProgrammaticPromotion`.
 - Suggested delivery path: `GET /services/aem-poc/pcdf`.
 - Preview query example: `locale`, `country`, `promo`, `previewDate=2026-10-15`.

@@ -18,20 +18,31 @@ paths:
       summary: Return the winning promotion or an explicit no-match
       parameters:
         - in: query
+          name: region
+          required: true
+          schema:
+            type: string
+            example: americas
+          description: DAM folder under /content/dam/aem-poc/pcdf (lowercase, e.g. americas, emea, apac)
+        - in: query
+          name: country
+          required: true
+          schema:
+            type: string
+            example: us
+          description: DAM folder under region (lowercase ISO-like code, e.g. us, gb, fr)
+        - in: query
           name: locale
           required: true
           schema:
             type: string
             example: en-us
-          description: DAM folder name under /content/dam/aem-poc/pcdf (lowercase hyphenated, e.g. en-us, fr, hi)
-        - in: query
-          name: country
-          required: false
-          schema: { type: string, example: US }
+          description: DAM folder under region/country (lowercase hyphenated, e.g. en-us, fr, hi)
         - in: query
           name: brand
           required: false
           schema: { type: string }
+          description: Matched against pcdf:brand/* tags (empty brand tags = match-all)
         - in: query
           name: market
           required: false
@@ -45,10 +56,19 @@ paths:
           required: false
           schema: { type: string }
         - in: query
+          name: name
+          required: false
+          schema: { type: string, example: test-promo }
+          description: >
+            Content Fragment node name under the region/country/locale folder.
+            QueryBuilder nodename. If omitted, `promo` is treated as the fragment name.
+        - in: query
           name: promo
           required: false
           schema: { type: string }
-          description: Matched against the promotion urlParameters list
+          description: >
+            When `name` is omitted, this is the CF node name (e.g. test-promo).
+            When `name` is present, matched against the promotion urlParameters list.
         - in: query
           name: tag
           required: false
@@ -75,14 +95,14 @@ paths:
                     promotionId: pcdf-match-high
                     headline: Fall welcome
                     body: Sample body
-                    image: /content/dam/aem-poc/pcdf/en-us/welcome.png
+                    image: /content/dam/aem-poc/pcdf/americas/us/en-us/welcome.png
                     ctaText: Learn more
                     ctaLink: /content/aem-poc/pcdf
                 noMatch:
                   value:
                     contentFound: false
         "400":
-          description: Invalid request (missing locale, previewDate on Publish, unparseable date)
+          description: Invalid request (missing region/country/locale, previewDate on Publish, unparseable date)
           content:
             application/json:
               schema:
@@ -90,6 +110,10 @@ paths:
               examples:
                 missingLocale:
                   value: { error: "locale_required" }
+                missingRegion:
+                  value: { error: "region_required" }
+                missingCountry:
+                  value: { error: "country_required" }
                 previewOnPublish:
                   value: { error: "preview_not_allowed" }
         "401":

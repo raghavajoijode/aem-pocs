@@ -2,7 +2,6 @@ package com.aem.poc.pcdf.internal.servlet;
 
 import com.aem.poc.pcdf.internal.eligibility.DateWindow;
 import com.aem.poc.pcdf.internal.eligibility.EligibilityService;
-import com.aem.poc.pcdf.internal.eligibility.Ranking;
 import com.aem.poc.pcdf.internal.eligibility.TargetingRules;
 import com.aem.poc.pcdf.internal.model.Promotion;
 import com.aem.poc.pcdf.internal.service.PromotionQueryService;
@@ -42,6 +41,18 @@ public class PromotionDeliveryServlet extends SlingSafeMethodsServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
+        String region = request.getParameter("region");
+        if (region == null || region.isBlank()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"error\":\"region_required\"}");
+            return;
+        }
+        String country = request.getParameter("country");
+        if (country == null || country.isBlank()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"error\":\"country_required\"}");
+            return;
+        }
         String locale = request.getParameter("locale");
         if (locale == null || locale.isBlank()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -68,28 +79,42 @@ public class PromotionDeliveryServlet extends SlingSafeMethodsServlet {
             }
         }
 
-        if (!queryService.localeFolderExists(request.getResourceResolver(), locale)) {
+        String fragmentName = request.getParameter("name");
+        String promo = request.getParameter("promo");
+        String urlPromo = promo;
+        if ((fragmentName == null || fragmentName.isBlank()) && promo != null && !promo.isBlank()) {
+            fragmentName = promo;
+            urlPromo = null;
+        }
+
+        if (!queryService.localeFolderExists(request.getResourceResolver(), region, country, locale)) {
             writeNoMatch(response);
             return;
         }
 
-        List<Promotion> published = queryService.listPublished(request.getResourceResolver(), locale);
+        List<Promotion> published =
+                queryService.listPublished(
+                        request.getResourceResolver(),
+                        region,
+                        country,
+                        locale,
+                        fragmentName,
+                        request.getParameter("brand"),
+                        request.getParameter("tag"));
         List<Promotion> eligible = eligibilityService.filterEligible(published, evaluationDate);
         List<Promotion> targeted = TargetingRules.filter(
                 eligible,
-                request.getParameter("country"),
                 request.getParameter("brand"),
                 request.getParameter("market"),
                 request.getParameter("property"),
                 request.getParameter("pageType"),
-                request.getParameter("promo"),
+                urlPromo,
                 request.getParameter("tag"));
-        Promotion winner = Ranking.pickWinner(targeted);
-        if (winner == null) {
+        if (targeted.isEmpty()) {
             writeNoMatch(response);
             return;
         }
-        writeMatch(response, winner);
+        writeMatch(response, targeted.get(0));
     }
 
     private static void writeNoMatch(SlingHttpServletResponse response) throws IOException {

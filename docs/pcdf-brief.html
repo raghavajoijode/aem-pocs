@@ -70,9 +70,9 @@
       <h2>Marketers stay in the fragment editor.</h2>
       <div class="two">
         <ul>
-          <li>Open a locale folder under DAM: <code>en-us</code>, <code>en-gb</code>, <code>fr</code>, <code>it</code>, <code>de</code>, <code>hi</code>.</li>
+          <li>Open a region/country/locale folder under DAM: <code>americas/us/en-us</code>, <code>emea/gb/en-gb</code>, <code>emea/fr/fr</code>, …</li>
           <li>Create one Programmatic Promotion fragment — not a variation set, not a page.</li>
-          <li>Set copy, calendar dates (no time), targeting lists, status, and priority.</li>
+          <li>Set copy, targeting calendar dates (no time), targeting lists, and tags for status and brand.</li>
         </ul>
         <ul>
           <li>Publish. Drafts never win, including on Author preview.</li>
@@ -82,15 +82,15 @@
       </div>
     </section>
     <section>
-      <kicker>Locales</kicker>
-      <h2>Folder name is the locale code.</h2>
-      <p>Lowercase, hyphenated. <code>locale=en-us</code> reads <code>/content/dam/aem-poc/pcdf/en-us</code>. <code>en_US</code> does not match. Unknown <code>ja</code> is no-match, not French.</p>
-      <p>The same <code>promotionId</code> may exist in Hindi and US English; uniqueness is per folder.</p>
+      <kicker>Topology</kicker>
+      <h2>Folder path is region, country, then locale.</h2>
+      <p>Lowercase. <code>region=americas&amp;country=us&amp;locale=en-us</code> reads <code>/content/dam/aem-poc/pcdf/americas/us/en-us</code>. Unknown <code>country=ca</code> is no-match, not another language.</p>
+      <p>The same <code>promotionId</code> may exist in Hindi and US English; uniqueness is per folder. Status and brand are tags on the fragment.</p>
     </section>
     <section>
       <kicker>Decision</kicker>
-      <h2>Published → active → in date → targeting → highest priority.</h2>
-      <p>Ties go to the lexicographically lower id. Publish always uses today. Preview date is Author-only and is rejected on live.</p>
+      <h2>Published → active tag → dates → first exact match.</h2>
+      <p>Ties go to the lexicographically lower id. Publish always uses today. Preview date is Author-only and is rejected on live. Dates are targeting fields; status is a tag.</p>
     </section>
     <section>
       <kicker>Hand-off</kicker>
@@ -104,13 +104,13 @@
       <table>
         <thead><tr><th>Intent</th><th>Query</th><th>Winner</th></tr></thead>
         <tbody>
-          <tr><td>US priority</td><td><code>locale=en-us&amp;country=US</code></td><td><code>pcdf-match-high</code></td></tr>
-          <tr><td>No-match</td><td><code>locale=en-us&amp;country=CA</code></td><td>empty</td></tr>
-          <tr><td>UK brand</td><td><code>locale=en-gb&amp;brand=TH</code></td><td><code>pcdf-gb-high</code></td></tr>
-          <tr><td>France reuse</td><td><code>locale=fr</code> twice, different pageType</td><td><code>pcdf-fr-welcome</code></td></tr>
-          <tr><td>Italy tag</td><td><code>locale=it&amp;tag=estate</code></td><td><code>pcdf-it-sale</code></td></tr>
-          <tr><td>Germany promo</td><td><code>locale=de&amp;promo=SUMMER</code></td><td><code>pcdf-de-summer</code></td></tr>
-          <tr><td>Hindi, same id</td><td><code>locale=hi</code></td><td><code>pcdf-match-high</code></td></tr>
+          <tr><td>US by name</td><td><code>region=americas&amp;country=us&amp;locale=en-us&amp;name=pcdf-match-high</code></td><td><code>pcdf-match-high</code></td></tr>
+          <tr><td>No-match</td><td><code>region=americas&amp;country=ca&amp;locale=en-us</code></td><td>empty</td></tr>
+          <tr><td>UK brand</td><td><code>region=emea&amp;country=gb&amp;locale=en-gb&amp;brand=TH</code></td><td><code>pcdf-gb-high</code></td></tr>
+          <tr><td>France reuse</td><td><code>region=emea&amp;country=fr&amp;locale=fr</code> twice, different pageType</td><td><code>pcdf-fr-welcome</code></td></tr>
+          <tr><td>Italy tag</td><td><code>region=emea&amp;country=it&amp;locale=it&amp;tag=estate</code></td><td><code>pcdf-it-sale</code></td></tr>
+          <tr><td>Germany by name</td><td><code>region=emea&amp;country=de&amp;locale=de&amp;promo=pcdf-de-summer</code></td><td><code>pcdf-de-summer</code></td></tr>
+          <tr><td>Hindi, same id</td><td><code>region=apac&amp;country=in&amp;locale=hi</code></td><td><code>pcdf-match-high</code></td></tr>
         </tbody>
       </table>
     </section>
@@ -119,7 +119,7 @@
       <h2>Preview is a signed-in Author tool.</h2>
       <ul>
         <li>Author without a session: 401. Publish: anonymous GET.</li>
-        <li>Author <code>previewDate=2026-10-15</code> on <code>en-us</code>: <code>pcdf-future</code>.</li>
+        <li>Author <code>previewDate=2026-10-15</code> on <code>americas/us/en-us</code>: <code>pcdf-future</code>.</li>
         <li>Same preview query on Publish: 400 <code>preview_not_allowed</code>.</li>
       </ul>
     </section>

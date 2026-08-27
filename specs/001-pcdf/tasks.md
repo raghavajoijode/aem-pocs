@@ -235,3 +235,17 @@ Task: "Add CF-to-promotion mapping already in Phase 2 Promotion.java — extend 
 - Do not implement Akamai/CDN
 - Commit after each task or logical group when implementing
 - `/speckit-implement` will treat unchecked `checklists/*.md` as a gate unless you proceed anyway
+
+---
+
+## Phase 8: Region/country topology, tags, targeting dates
+
+**Purpose**: Country sits in DAM topology with region; brand and status are CF tags; start/end dates are targeting fields.
+
+- [X] T041 Require `region`, `country`, and `locale` and resolve `/content/dam/aem-poc/pcdf/{region}/{country}/{locale}` in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java` and `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/topology/TopologyPath.java`
+- [X] T042 Read status and brand from `cq:tags` in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/tags/PromotionTags.java` and `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/service/PromotionQueryService.java`
+- [X] T043 Drop `status`, `brands`, `countries`, and model `tags` from `/workspace/ui.content.pcdf/src/main/content/jcr_root/conf/aem-poc-pcdf/settings/dam/cfm/models/programmatic-promotion/.content.xml`; keep `startDate`/`endDate` as targeting
+- [X] T044 Add tag namespace `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/cq:tags/pcdf/` and filter root in `/workspace/ui.content.pcdf/src/main/content/META-INF/vault/filter.xml`
+- [X] T045 Relocate sample fragments under `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-poc/pcdf/{region}/{country}/{locale}/` per `/workspace/specs/001-pcdf/data-model.md`
+- [X] T046 Update `/workspace/docs/pcdf.md`, `/workspace/docs/pcdf-executive.md`, `/workspace/docs/pcdf-brief.html`, `/workspace/README.md`, and `/workspace/specs/001-pcdf/` contract/quickstart for the new request shape
+- [X] T047 Drop priority ranking: first exact match in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java`; remove `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/eligibility/Ranking.java` and the `priority` CF field

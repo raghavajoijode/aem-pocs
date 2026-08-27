@@ -10,19 +10,19 @@ Slide deck: [pcdf-brief.html](pcdf-brief.html). Operator install and curl table:
 
 Authors work only in **Assets / Content Fragments**, not in page properties.
 
-- Locale is a **folder** (`/content/dam/aem-poc/pcdf/en-us`, `en-gb`, `fr`, `it`, `de`, `hi`, …). The name is the `locale` query value (lowercase, hyphenated).
+- Locale is the **third DAM folder** (`/content/dam/aem-poc/pcdf/{region}/{country}/{locale}`, for example `americas/us/en-us`). Region, country, and locale query values are those folder names (lowercase).
 - One fragment = one promotion. They do **not** create CF variations for language; they put the fragment in the right folder.
-- They set copy (headline, body, image, CTA), a calendar **start and end date** (no time of day), targeting lists (empty means “any” for that dimension), status (`ACTIVE` / `INACTIVE`), and an integer **priority** (higher number wins).
+- They set copy (headline, body, image, CTA), targeting **start and end dates** (no time of day), targeting lists (empty means “any” for that dimension), and **tags** for status (`pcdf:status/ACTIVE` or `INACTIVE`) and optional brand (`pcdf:brand/TH`).
 - They **publish**. Unpublished work is invisible to Publish and to Author preview.
 - They do **not** attach the promotion to a page. Home, PDP, and a mobile app can all request the same locale and targeting and receive the same winner.
 
 ## How delivery decides
 
-1. Require `locale`. Missing → invalid request (HTTP 400).
-2. Load **published** fragments in that folder only. Unknown folder (for example `ja`) → no-match, **no** fallback language.
-3. Keep `ACTIVE` rows whose date window includes today (Author may pass `previewDate` instead; Publish rejects preview).
-4. Apply targeting (country, brand, market, property, page type, promo, tag).
-5. Pick the highest priority; if tied, the lexicographically lower `promotionId`.
+1. Require `region`, `country`, and `locale`. Missing any → invalid request (HTTP 400).
+2. **QueryBuilder** in that folder (optional CF `name` / `promo` as node name; tags `ACTIVE` and optional brand/topic). Unknown folder → no-match, **no** fallback.
+3. Keep hits whose targeting date window includes today (Author may pass `previewDate` instead; Publish rejects preview).
+4. Apply remaining targeting lists (market, property, page type, urlParameters when `name` is also sent).
+5. Return the **first** remaining result. Priority ranking is not in this MVP.
 
 `promotionId` is unique **per folder**. Hindi and US English may both use `pcdf-match-high`.
 
@@ -32,24 +32,24 @@ Run after [PCDF-only install](pcdf.md#build-and-deploy-pcdf-alone). Publish base
 
 | # | Story | Call | Pass if |
 | --- | --- | --- | --- |
-| 1 | US priority | `locale=en-us&country=US` | `pcdf-match-high` (not the priority-10 sibling) |
-| 2 | Explicit no-match | `locale=en-us&country=CA` | `contentFound: false` |
-| 3 | Reuse, no page campaign | `locale=en-us&country=US` and again with `&pageType=home` | Same `promotionId` both times |
-| 4 | UK brand | `locale=en-gb&brand=TH` | `pcdf-gb-high` |
-| 5 | Brand miss | `locale=en-gb&brand=XX` | `contentFound: false` |
-| 6 | France match-all | `locale=fr` and `locale=fr&pageType=home` | `pcdf-fr-welcome` both |
-| 7 | Italy tag | `locale=it&tag=estate` | `pcdf-it-sale` |
-| 8 | Italy tag miss | `locale=it&tag=inverno` | `contentFound: false` |
-| 9 | Germany promo | `locale=de&promo=SUMMER` | `pcdf-de-summer` |
-| 10 | Germany promo fallback list | `locale=de&promo=WINTER` | `pcdf-de-always` |
-| 11 | Hindi, reused id | `locale=hi` | `pcdf-match-high`, Hindi headline |
-| 12 | Unknown locale | `locale=ja` | `contentFound: false` |
+| 1 | US match by name | `region=americas&country=us&locale=en-us&name=pcdf-match-high` | `pcdf-match-high` |
+| 2 | Explicit no-match | `region=americas&country=ca&locale=en-us` | `contentFound: false` |
+| 3 | Reuse, no page campaign | same as #1 and again with `&pageType=home` | Same `promotionId` both times |
+| 4 | UK brand | `region=emea&country=gb&locale=en-gb&brand=TH&name=pcdf-gb-high` | `pcdf-gb-high` |
+| 5 | Brand miss | `region=emea&country=gb&locale=en-gb&brand=XX` | `contentFound: false` |
+| 6 | France match-all | `region=emea&country=fr&locale=fr` and with `&pageType=home` | `pcdf-fr-welcome` both |
+| 7 | Italy tag | `region=emea&country=it&locale=it&tag=estate` | `pcdf-it-sale` |
+| 8 | Italy tag miss | `region=emea&country=it&locale=it&tag=inverno` | `contentFound: false` |
+| 9 | Germany by CF name | `region=emea&country=de&locale=de&promo=pcdf-de-summer` | `pcdf-de-summer` |
+| 10 | Germany other CF | `region=emea&country=de&locale=de&name=pcdf-de-always` | `pcdf-de-always` |
+| 11 | Hindi, reused id | `region=apac&country=in&locale=hi` | `pcdf-match-high`, Hindi headline |
+| 12 | Unknown locale | `region=apac&country=jp&locale=ja` | `contentFound: false` |
 | 13 | Bad request | no `locale` | HTTP 400 `locale_required` |
-| 14 | Preview blocked on live | Publish + `previewDate=2026-10-15` | HTTP 400 `preview_not_allowed` |
-| 15 | Author preview | Author + auth + `locale=en-us&previewDate=2026-10-15` | `pcdf-future` |
+| 14 | Preview blocked on live | Publish + `previewDate=2026-10-15` (with topology params) | HTTP 400 `preview_not_allowed` |
+| 15 | Author preview | Author + auth + `region=americas&country=us&locale=en-us&previewDate=2026-10-15` | `pcdf-future` |
 | 16 | Author locked down | Author **without** credentials | HTTP 401 |
 | 17 | Isolation | Install **only** the PCDF zip | `/apps/aem-poc/pcdf` present; default site not required |
 
 ## Out of scope (say this up front)
 
-CDN/Akamai, time-of-day schedules, and a test-suite gate are not this POC. Cache key recommendation for a later CDN: `locale|country|brand|promo`.
+CDN/Akamai, time-of-day schedules, and a test-suite gate are not this POC. Cache key recommendation for a later CDN: `region|country|locale|brand|promo`.
