@@ -80,13 +80,28 @@ public class PromotionDeliveryServlet extends SlingSafeMethodsServlet {
             }
         }
 
+        String fragmentName = request.getParameter("name");
+        String promo = request.getParameter("promo");
+        String urlPromo = promo;
+        if ((fragmentName == null || fragmentName.isBlank()) && promo != null && !promo.isBlank()) {
+            fragmentName = promo;
+            urlPromo = null;
+        }
+
         if (!queryService.localeFolderExists(request.getResourceResolver(), region, country, locale)) {
             writeNoMatch(response);
             return;
         }
 
         List<Promotion> published =
-                queryService.listPublished(request.getResourceResolver(), region, country, locale);
+                queryService.listPublished(
+                        request.getResourceResolver(),
+                        region,
+                        country,
+                        locale,
+                        fragmentName,
+                        request.getParameter("brand"),
+                        request.getParameter("tag"));
         List<Promotion> eligible = eligibilityService.filterEligible(published, evaluationDate);
         List<Promotion> targeted = TargetingRules.filter(
                 eligible,
@@ -94,7 +109,7 @@ public class PromotionDeliveryServlet extends SlingSafeMethodsServlet {
                 request.getParameter("market"),
                 request.getParameter("property"),
                 request.getParameter("pageType"),
-                request.getParameter("promo"),
+                urlPromo,
                 request.getParameter("tag"));
         Promotion winner = Ranking.pickWinner(targeted);
         if (winner == null) {

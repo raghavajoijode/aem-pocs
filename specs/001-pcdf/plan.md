@@ -87,7 +87,7 @@ ui.frontend/                     # not used for this POC
 ui.frontend.react/               # not used for this POC
 ```
 
-**Structure Decision**: Keep the archetype tree. Add PCDF-specific modules so the shareable container does not contain `aem-poc.core` or `/apps/aem-poc/components`. Runmode config uses **`ui.config.pcdf`** (constitution `ui.config` split, PCDF-only zip). Logical processing: validate request → region/country/locale DAM path (missing folder = no-match) → load **published** `ProgrammaticPromotion` fragments → ACTIVE status tag + targeting dates → targeting lists / brand tags → highest integer priority / lowest `promotionId` → JSON.
+**Structure Decision**: Keep the archetype tree. Add PCDF-specific modules so the shareable container does not contain `aem-poc.core` or `/apps/aem-poc/components`. Runmode config uses **`ui.config.pcdf`** (constitution `ui.config` split, PCDF-only zip). Logical processing: validate request → QueryBuilder path `{region}/{country}/{locale}` (+ optional CF `name`/`promo` nodename + ACTIVE/brand/topic tags) → missing folder = no-match → load **published** hits → targeting dates → remaining lists → highest integer priority / lowest `promotionId` → JSON.
 
 ## Complexity Tracking
 

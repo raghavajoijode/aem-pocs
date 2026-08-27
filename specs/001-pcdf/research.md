@@ -47,13 +47,13 @@
 
 ## Query and ranking
 
-**Decision**: Resolve candidates with a query limited to the region/country/locale folder and the `ProgrammaticPromotion` model, then apply ACTIVE tag + targeting dates + remaining targeting in Java, then pick max priority and lexicographically lowest `promotionId` on ties. Target “rule evaluation under 100ms” for the **sample set**, not a production query SLA.
+**Decision**: QueryBuilder limited to the region/country/locale folder (`path` + `type=dam:Asset` + CF model), optional CF `nodename`, and tagid predicates for `pcdf:status/ACTIVE` plus optional brand/topic tags. Then apply targeting dates (`startDate`/`endDate`) and remaining list targeting in Java, then pick max priority and lexicographically lowest `promotionId` on ties.
 
 **Rationale**: Sample set is small; in-memory filter keeps matching rules obvious and testable in a demo. Query-only targeting in JCR is brittle for empty-list match-all.
 
 **Alternatives considered**:
 
-- Pure QueryBuilder predicates for every dimension — empty-list match-all is awkward in JCR.
+- Pure QueryBuilder predicates for every dimension including dates — empty-list match-all is awkward in JCR; dates are calendar fields checked in Java after the query.
 - Caching / CDN keys in product — out of scope; document `locale|country|brand|promo` as an external recommendation only.
 
 ## Documentation and tests

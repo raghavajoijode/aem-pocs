@@ -158,7 +158,7 @@ Future proofs of concept follow the same pattern: `/apps/aem-poc/{poc-id}` and `
 - **FR-007**: Promotions MUST NOT be attached to individual pages as the way campaigns are configured.
 - **FR-008**: Creating a new campaign MUST NOT require development support.
 - **FR-009**: The delivery request MUST require region, country, and locale.
-- **FR-010**: The delivery request MAY include brand, market, property, page type, promo, and tag.
+- **FR-010**: The delivery request MAY include Content Fragment `name` (node name under the topology folder; `promo` is the same when `name` is omitted), brand, market, property, page type, promo (urlParameters only when `name` is also sent), and tag.
 - **FR-011**: A promotion is eligible only when it has the ACTIVE status tag AND targeting `startDate` is on or before the evaluation date AND targeting `endDate` is on or after the evaluation date (inclusive calendar dates, no time).
 - **FR-012**: Live delivery on Publish MUST use today’s calendar date as the evaluation date and MUST NOT accept a preview value.
 - **FR-013**: Preview MUST be available only to a signed-in user on Author. Preview MUST accept an optional preview **date** (no time) and use it as the evaluation date; all other rules MUST match live delivery, and only **published** fragments MAY win. Preview MUST NOT change which promotions are eligible on Publish. Unpublished drafts MUST NOT win on Author preview.

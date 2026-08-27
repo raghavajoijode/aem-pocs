@@ -2,7 +2,7 @@
 
 Hypothesis: authors can manage promotions as **one Content Fragment each** under **region/country/locale** folders (no variations, no page campaign wiring). Consumer apps call Publish and receive **one winner** or `{ "contentFound": false }`.
 
-Folders use lowercase codes (`americas/us/en-us`, `emea/gb/en-gb`, …). Request `region`, `country`, and `locale` must match the folder names exactly. Status and brand are **tags** (`pcdf:status/ACTIVE`, `pcdf:brand/TH`). Start and end dates are **targeting** fields.
+Folders use lowercase codes (`americas/us/en-us`, `emea/gb/en-gb`, …). Request `region`, `country`, and `locale` must match the folder names exactly. Optional `name` (or `promo` when `name` is omitted) is the Content Fragment node name. Status and brand are **tags** (`pcdf:status/ACTIVE`, `pcdf:brand/TH`). Start and end dates are **targeting** fields checked after the query.
 
 Stakeholder brief and validation scenarios: [`pcdf-executive.md`](pcdf-executive.md). Slide deck (open in a browser): [`pcdf-brief.html`](pcdf-brief.html).
 
@@ -36,7 +36,13 @@ Authors stay in the stock AEM Content Fragment editor. They do not open pages, c
 3. Create a **Programmatic Promotion** fragment (model `ProgrammaticPromotion`). One fragment = one promotion; **do not** use CF variations for locale.
 4. Fill administration (`promotionId` unique **in this folder**, integer `priority` — larger wins), targeting dates `startDate` / `endDate` (inclusive, date only), content (headline, body, image, CTA), and optional targeting lists (empty = match-all). Apply tags: `pcdf:status/ACTIVE` or `INACTIVE`, optional `pcdf:brand/…`, optional `pcdf:topic/…` for request `tag`.
 5. Publish the fragment. Live Publish and Author preview both consider **published** fragments only. Unpublished drafts never win.
-6. Do **not** put campaign properties on pages. Apps reuse a promotion by calling delivery with region, country, locale, and context.
+6. Do **not** put campaign properties on pages. Apps reuse a promotion by calling delivery with region, country, locale, optional CF `name`, and context.
+
+## How the servlet finds a fragment
+
+1. **QueryBuilder** — `path` = `/content/dam/aem-poc/pcdf/{region}/{country}/{locale}`, `type=dam:Asset`, optional `nodename` from `name` (or `promo` if `name` is omitted), `tagid` for `pcdf:status/ACTIVE` plus optional `pcdf:brand/{brand}` and `pcdf:topic/{tag}`.
+2. **Dates** — in Java, keep hits whose targeting `startDate`/`endDate` include today (or Author `previewDate`).
+3. **Remaining lists** — market, property, page type, and `urlParameters` when `name` and `promo` are both sent. Then highest priority wins.
 
 ## Build and deploy PCDF alone
 
@@ -72,8 +78,8 @@ Base: `http://localhost:4503/services/aem-poc/pcdf`
 | Second experience | `?region=emea&country=fr&locale=fr&pageType=home` | same `pcdf-fr-welcome` |
 | Tag hit | `?region=emea&country=it&locale=it&tag=estate` | `pcdf-it-sale` |
 | Tag miss | `?region=emea&country=it&locale=it&tag=inverno` | `contentFound: false` |
-| Promo hit | `?region=emea&country=de&locale=de&promo=SUMMER` | `pcdf-de-summer` |
-| Promo miss → match-all | `?region=emea&country=de&locale=de&promo=WINTER` | `pcdf-de-always` |
+| Promo by CF name | `?region=emea&country=de&locale=de&promo=pcdf-de-summer` | `pcdf-de-summer` |
+| Promo miss → other CF | `?region=emea&country=de&locale=de&name=pcdf-de-always` | `pcdf-de-always` |
 | Same id, other folder | `?region=apac&country=in&locale=hi` | `pcdf-match-high` (Hindi copy) |
 | Unknown locale | `?region=apac&country=jp&locale=ja` | `contentFound: false` (no fallback) |
 | Missing locale | *(no locale)* | HTTP 400 `locale_required` |

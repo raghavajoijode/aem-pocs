@@ -21,6 +21,7 @@ public final class PromotionTags {
     public static final String STATUS_ACTIVE = "ACTIVE";
     public static final String NS_STATUS = "pcdf:status/";
     public static final String NS_BRAND = "pcdf:brand/";
+    public static final String NS_TOPIC = "pcdf:topic/";
 
     private PromotionTags() {
     }

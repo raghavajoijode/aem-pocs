@@ -56,10 +56,19 @@ paths:
           required: false
           schema: { type: string }
         - in: query
+          name: name
+          required: false
+          schema: { type: string, example: test-promo }
+          description: >
+            Content Fragment node name under the region/country/locale folder.
+            QueryBuilder nodename. If omitted, `promo` is treated as the fragment name.
+        - in: query
           name: promo
           required: false
           schema: { type: string }
-          description: Matched against the promotion urlParameters list
+          description: >
+            When `name` is omitted, this is the CF node name (e.g. test-promo).
+            When `name` is present, matched against the promotion urlParameters list.
         - in: query
           name: tag
           required: false

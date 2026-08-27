@@ -85,7 +85,7 @@ No-match: `region=americas&country=ca&locale=en-us` (folder does not exist).
 | `emea/gb/en-gb` | `pcdf-gb-high` (20), `pcdf-gb-low` (10) | `pcdf:brand/TH` | `brand=TH` → high; `brand=XX` → no-match |
 | `emea/fr/fr` | `pcdf-fr-welcome` | empty lists (match-all) | `locale=fr` and `&pageType=home` same winner |
 | `emea/it/it` | `pcdf-it-sale` (20, `pcdf:topic/estate`), `pcdf-it-evergreen` (5) | topic inclusion | `tag=estate` → sale; `tag=inverno` → no-match |
-| `emea/de/de` | `pcdf-de-summer` (20, `urlParameters=SUMMER`), `pcdf-de-always` (5) | promo | `promo=SUMMER` → summer; `promo=WINTER` → always |
+| `emea/de/de` | `pcdf-de-summer` (20, `urlParameters=SUMMER`), `pcdf-de-always` (5) | CF name | `promo=pcdf-de-summer` or `name=pcdf-de-always` |
 | `apac/in/hi` | `pcdf-match-high` | empty; **same id as en-us** | per-folder uniqueness |
 
 Unknown folder (for example `apac/jp/ja`) → no-match.

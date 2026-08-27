@@ -19,9 +19,9 @@ Authors work only in **Assets / Content Fragments**, not in page properties.
 ## How delivery decides
 
 1. Require `region`, `country`, and `locale`. Missing any → invalid request (HTTP 400).
-2. Load **published** fragments in that folder only. Unknown folder (for example `apac/jp/ja`) → no-match, **no** fallback language.
-3. Keep rows tagged `ACTIVE` whose targeting date window includes today (Author may pass `previewDate` instead; Publish rejects preview).
-4. Apply targeting (brand tags, market, property, page type, promo, topic tag).
+2. **QueryBuilder** in that folder (optional CF `name` / `promo` as node name; tags `ACTIVE` and optional brand/topic). Unknown folder → no-match, **no** fallback.
+3. Keep hits whose targeting date window includes today (Author may pass `previewDate` instead; Publish rejects preview).
+4. Apply remaining targeting lists (market, property, page type, urlParameters when `name` is also sent).
 5. Pick the highest priority; if tied, the lexicographically lower `promotionId`.
 
 `promotionId` is unique **per folder**. Hindi and US English may both use `pcdf-match-high`.
@@ -40,8 +40,8 @@ Run after [PCDF-only install](pcdf.md#build-and-deploy-pcdf-alone). Publish base
 | 6 | France match-all | `region=emea&country=fr&locale=fr` and with `&pageType=home` | `pcdf-fr-welcome` both |
 | 7 | Italy tag | `region=emea&country=it&locale=it&tag=estate` | `pcdf-it-sale` |
 | 8 | Italy tag miss | `region=emea&country=it&locale=it&tag=inverno` | `contentFound: false` |
-| 9 | Germany promo | `region=emea&country=de&locale=de&promo=SUMMER` | `pcdf-de-summer` |
-| 10 | Germany promo fallback list | `region=emea&country=de&locale=de&promo=WINTER` | `pcdf-de-always` |
+| 9 | Germany by CF name | `region=emea&country=de&locale=de&promo=pcdf-de-summer` | `pcdf-de-summer` |
+| 10 | Germany other CF | `region=emea&country=de&locale=de&name=pcdf-de-always` | `pcdf-de-always` |
 | 11 | Hindi, reused id | `region=apac&country=in&locale=hi` | `pcdf-match-high`, Hindi headline |
 | 12 | Unknown locale | `region=apac&country=jp&locale=ja` | `contentFound: false` |
 | 13 | Bad request | no `locale` | HTTP 400 `locale_required` |

@@ -13,6 +13,7 @@ public final class TopologyPath {
 
     private static final Pattern REGION = Pattern.compile("[a-z]{2,16}");
     private static final Pattern COUNTRY = Pattern.compile("[a-z]{2,3}");
+    private static final Pattern FRAGMENT_NAME = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._-]{0,127}");
 
     private TopologyPath() {
     }
@@ -23,6 +24,10 @@ public final class TopologyPath {
 
     public static boolean isSafeCountry(String country) {
         return country != null && COUNTRY.matcher(country).matches();
+    }
+
+    public static boolean isSafeFragmentName(String name) {
+        return name != null && FRAGMENT_NAME.matcher(name).matches();
     }
 
     public static boolean isSafe(String region, String country, String locale) {

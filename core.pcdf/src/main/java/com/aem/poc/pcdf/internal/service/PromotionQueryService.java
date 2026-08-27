@@ -5,12 +5,21 @@ import com.aem.poc.pcdf.internal.model.Promotion;
 import com.aem.poc.pcdf.internal.tags.PromotionTags;
 import com.aem.poc.pcdf.internal.topology.TopologyPath;
 import com.day.cq.replication.ReplicationStatus;
+import com.day.cq.search.PredicateGroup;
+import com.day.cq.search.Query;
+import com.day.cq.search.QueryBuilder;
+import com.day.cq.search.result.Hit;
+import com.day.cq.search.result.SearchResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
@@ -24,8 +33,14 @@ import org.slf4j.LoggerFactory;
 public class PromotionQueryService {
 
     public static final String DAM_ROOT = TopologyPath.DAM_ROOT;
+    public static final String MODEL_PATH =
+            "/conf/aem-poc-pcdf/settings/dam/cfm/models/programmatic-promotion";
+    public static final String TAGS_PROPERTY = "jcr:content/metadata/cq:tags";
 
     private static final Logger LOG = LoggerFactory.getLogger(PromotionQueryService.class);
+
+    @Reference
+    private QueryBuilder queryBuilder;
 
     @Reference
     private SlingSettingsService slingSettings;
@@ -38,32 +53,91 @@ public class PromotionQueryService {
     }
 
     /**
-     * Published fragments only (Author: replication activated; Publish: repository content).
+     * QueryBuilder: path = region/country/locale, optional CF node name, ACTIVE (+ brand/topic)
+     * tags. Start/end dates are not queried here — callers apply {@code DateWindow} next.
      */
-    public List<Promotion> listPublished(ResourceResolver resolver, String region, String country, String locale) {
+    public List<Promotion> listPublished(
+            ResourceResolver resolver,
+            String region,
+            String country,
+            String locale,
+            String fragmentName,
+            String brand,
+            String topicTag) {
         if (!TopologyPath.isSafe(region, country, locale)) {
             return Collections.emptyList();
         }
-        Resource folder = resolver.getResource(TopologyPath.folderPath(region, country, locale));
-        if (folder == null) {
+        if (fragmentName != null && !fragmentName.isBlank() && !TopologyPath.isSafeFragmentName(fragmentName)) {
             return Collections.emptyList();
         }
+        Session session = resolver.adaptTo(Session.class);
+        if (session == null) {
+            LOG.warn("No JCR session; cannot run QueryBuilder");
+            return Collections.emptyList();
+        }
+        Map<String, String> predicates = buildPredicates(region, country, locale, fragmentName, brand, topicTag);
+        Query query = queryBuilder.createQuery(PredicateGroup.create(predicates), session);
+        SearchResult result = query.getResult();
         boolean author = slingSettings.getRunModes().contains("author");
         List<Promotion> out = new ArrayList<>();
-        for (Resource child : folder.getChildren()) {
-            Resource jcrContent = child.getChild("jcr:content");
-            if (jcrContent == null || jcrContent.getChild("data") == null) {
-                continue;
+        try {
+            for (Hit hit : result.getHits()) {
+                Resource asset = resolver.getResource(hit.getPath());
+                if (asset == null) {
+                    continue;
+                }
+                Resource jcrContent = asset.getChild("jcr:content");
+                if (jcrContent == null || jcrContent.getChild("data") == null) {
+                    continue;
+                }
+                if (author && !isActivated(asset)) {
+                    continue;
+                }
+                Promotion p = mapFragment(asset);
+                if (p != null) {
+                    out.add(p);
+                }
             }
-            if (author && !isActivated(child)) {
-                continue;
-            }
-            Promotion p = mapFragment(child);
-            if (p != null) {
-                out.add(p);
-            }
+        } catch (RepositoryException e) {
+            LOG.warn("QueryBuilder hit read failed under {}", TopologyPath.folderPath(region, country, locale), e);
+            return Collections.emptyList();
         }
         return out;
+    }
+
+    Map<String, String> buildPredicates(
+            String region,
+            String country,
+            String locale,
+            String fragmentName,
+            String brand,
+            String topicTag) {
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("path", TopologyPath.folderPath(region, country, locale));
+        map.put("type", "dam:Asset");
+        map.put("p.limit", "-1");
+        map.put("property", "jcr:content/data/cq:model");
+        map.put("property.value", MODEL_PATH);
+        if (fragmentName != null && !fragmentName.isBlank()) {
+            map.put("nodename", fragmentName);
+        }
+        int tagIndex = 1;
+        map.put("group.p.and", "true");
+        tagIndex = putTag(map, tagIndex, PromotionTags.NS_STATUS + PromotionTags.STATUS_ACTIVE);
+        if (brand != null && !brand.isBlank() && TopologyPath.isSafeFragmentName(brand)) {
+            tagIndex = putTag(map, tagIndex, PromotionTags.NS_BRAND + brand);
+        }
+        if (topicTag != null && !topicTag.isBlank() && TopologyPath.isSafeFragmentName(topicTag)) {
+            putTag(map, tagIndex, PromotionTags.NS_TOPIC + topicTag);
+        }
+        return map;
+    }
+
+    private static int putTag(Map<String, String> map, int index, String tagId) {
+        String prefix = "group." + index + "_tagid";
+        map.put(prefix, tagId);
+        map.put(prefix + ".property", TAGS_PROPERTY);
+        return index + 1;
     }
 
     private static boolean isActivated(Resource asset) {
