@@ -72,7 +72,7 @@
         <ul>
           <li>Open a region/country/locale folder under DAM: <code>americas/us/en-us</code>, <code>emea/gb/en-gb</code>, <code>emea/fr/fr</code>, …</li>
           <li>Create one Programmatic Promotion fragment — not a variation set, not a page.</li>
-          <li>Set copy, targeting calendar dates (no time), targeting lists, priority, and tags for status and brand.</li>
+          <li>Set copy, targeting calendar dates (no time), targeting lists, and tags for status and brand.</li>
         </ul>
         <ul>
           <li>Publish. Drafts never win, including on Author preview.</li>
@@ -89,7 +89,7 @@
     </section>
     <section>
       <kicker>Decision</kicker>
-      <h2>Published → active → in date → targeting → highest priority.</h2>
+      <h2>Published → active tag → dates → first exact match.</h2>
       <p>Ties go to the lexicographically lower id. Publish always uses today. Preview date is Author-only and is rejected on live. Dates are targeting fields; status is a tag.</p>
     </section>
     <section>
@@ -104,7 +104,7 @@
       <table>
         <thead><tr><th>Intent</th><th>Query</th><th>Winner</th></tr></thead>
         <tbody>
-          <tr><td>US priority</td><td><code>region=americas&amp;country=us&amp;locale=en-us</code></td><td><code>pcdf-match-high</code></td></tr>
+          <tr><td>US by name</td><td><code>region=americas&amp;country=us&amp;locale=en-us&amp;name=pcdf-match-high</code></td><td><code>pcdf-match-high</code></td></tr>
           <tr><td>No-match</td><td><code>region=americas&amp;country=ca&amp;locale=en-us</code></td><td>empty</td></tr>
           <tr><td>UK brand</td><td><code>region=emea&amp;country=gb&amp;locale=en-gb&amp;brand=TH</code></td><td><code>pcdf-gb-high</code></td></tr>
           <tr><td>France reuse</td><td><code>region=emea&amp;country=fr&amp;locale=fr</code> twice, different pageType</td><td><code>pcdf-fr-welcome</code></td></tr>

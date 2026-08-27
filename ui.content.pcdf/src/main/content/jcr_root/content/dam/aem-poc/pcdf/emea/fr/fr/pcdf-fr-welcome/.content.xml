@@ -27,7 +27,6 @@
                 endDate="{Date}2030-12-31T00:00:00.000Z"
                 headline="Bienvenue"
                 image=""
-                priority="{Long}10"
                 promotionId="pcdf-fr-welcome"
                 startDate="{Date}2020-01-01T00:00:00.000Z"/>
         </data>

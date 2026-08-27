@@ -11,8 +11,7 @@
 
 | Field | Role | Type | Rules |
 | --- | --- | --- | --- |
-| `promotionId` | Administration | String | Required. Tie-break key (lexicographically lower wins). Unique **within a region/country/locale folder**; the same id MAY be used in other folders. |
-| `priority` | Administration | Integer | Required. Higher number wins. |
+| `promotionId` | Administration | String | Required. Unique **within a region/country/locale folder**; the same id MAY be used in other folders. |
 | `headline` | Content | String | Required for a useful demo response. |
 | `body` | Content | Text / String | Optional in storage; included in the match response when present (empty string if blank). |
 | `image` | Content | Content reference (DAM image) | Optional; match response uses the asset path (or empty). |
@@ -67,14 +66,14 @@ No-match: `contentFound=false` and no substitute promotion fields.
 
 Place under `/content/dam/aem-poc/pcdf/{region}/{country}/{locale}/`.
 
-### `americas/us/en-us` — priority, inactive, preview
+### `americas/us/en-us` — match, inactive, preview
 
-| promotionId | status tag | priority | startDate | endDate | Other | Purpose |
-| --- | --- | --- | --- | --- | --- | --- |
-| `pcdf-match-low` | ACTIVE | 10 | 2020-01-01 | 2030-12-31 | | Loses priority contest |
-| `pcdf-match-high` | ACTIVE | 20 | 2020-01-01 | 2030-12-31 | | Winner when `region=americas&country=us&locale=en-us` |
-| `pcdf-future` | ACTIVE | 50 | 2026-10-01 | 2026-10-31 | | Preview-only until October 2026 |
-| `pcdf-inactive` | INACTIVE | 99 | 2020-01-01 | 2030-12-31 | | Never returned |
+| promotionId | status tag | startDate | endDate | Other | Purpose |
+| --- | --- | --- | --- | --- | --- |
+| `pcdf-match-low` | ACTIVE | 2020-01-01 | 2030-12-31 | | Extra eligible sample; request by `name` |
+| `pcdf-match-high` | ACTIVE | 2020-01-01 | 2030-12-31 | | Demo match (`name=pcdf-match-high`) |
+| `pcdf-future` | ACTIVE | 2026-10-01 | 2026-10-31 | | Preview-only until October 2026 |
+| `pcdf-inactive` | INACTIVE | 2020-01-01 | 2030-12-31 | | Never returned |
 
 No-match: `region=americas&country=ca&locale=en-us` (folder does not exist).
 
@@ -82,10 +81,10 @@ No-match: `region=americas&country=ca&locale=en-us` (folder does not exist).
 
 | Folder | promotionId | Targeting / notes | Demo |
 | --- | --- | --- | --- |
-| `emea/gb/en-gb` | `pcdf-gb-high` (20), `pcdf-gb-low` (10) | `pcdf:brand/TH` | `brand=TH` → high; `brand=XX` → no-match |
+| `emea/gb/en-gb` | `pcdf-gb-high`, `pcdf-gb-low` | `pcdf:brand/TH` | `brand=TH&name=pcdf-gb-high` → high; `brand=XX` → no-match |
 | `emea/fr/fr` | `pcdf-fr-welcome` | empty lists (match-all) | `locale=fr` and `&pageType=home` same winner |
-| `emea/it/it` | `pcdf-it-sale` (20, `pcdf:topic/estate`), `pcdf-it-evergreen` (5) | topic inclusion | `tag=estate` → sale; `tag=inverno` → no-match |
-| `emea/de/de` | `pcdf-de-summer` (20, `urlParameters=SUMMER`), `pcdf-de-always` (5) | CF name | `promo=pcdf-de-summer` or `name=pcdf-de-always` |
+| `emea/it/it` | `pcdf-it-sale` (`pcdf:topic/estate`), `pcdf-it-evergreen` | topic inclusion | `tag=estate` → sale; `tag=inverno` → no-match |
+| `emea/de/de` | `pcdf-de-summer` (`urlParameters=SUMMER`), `pcdf-de-always` | CF name | `promo=pcdf-de-summer` or `name=pcdf-de-always` |
 | `apac/in/hi` | `pcdf-match-high` | empty; **same id as en-us** | per-folder uniqueness |
 
 Unknown folder (for example `apac/jp/ja`) → no-match.
@@ -98,4 +97,4 @@ Unknown folder (for example `apac/jp/ja`) → no-match.
 - Request `promo` matches `urlParameters`.
 - Request `tag` requires exact inclusion of a topic tag leaf.
 - Request `brand` requires inclusion of a brand tag leaf when brand tags are present.
-- Ranking: highest integer `priority` (larger wins), then lowest `promotionId` within that folder.
+- Ranking: not in MVP. After exact path/tag/date/list filtering, return the first remaining result.

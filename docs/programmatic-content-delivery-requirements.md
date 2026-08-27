@@ -153,7 +153,7 @@ Promotions live in locale folders and are not attached to individual pages. Many
 - **FR-012**: Live delivery MUST use the current date as the evaluation date.
 - **FR-013**: Preview MUST accept an optional preview date and use it as the evaluation date; all other rules MUST match live delivery.
 - **FR-014**: For each targeting dimension that has a non-empty list on the promotion, the request value for that dimension MUST be present in the list for the promotion to match. Empty list means match-all for that dimension. Omitted request parameters MUST NOT constrain that dimension.
-- **FR-015**: Among eligible matching promotions, the system MUST return the one with the highest priority.
+- **FR-015**: Among eligible matching promotions, the system MUST return the first remaining result after exact filtering (no priority ranking).
 - **FR-016**: If two or more eligible matches share the highest priority, the system MUST return the one with the lexicographically lower promotion id.
 - **FR-017**: If no promotion is eligible and matching, the system MUST return an explicit no-match result (`contentFound` false) and MUST NOT return a substitute promotion.
 - **FR-018**: A successful match response MUST include: content found flag, promotion id, headline, body, image, CTA text, CTA link.

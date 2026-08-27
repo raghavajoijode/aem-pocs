@@ -2,7 +2,6 @@ package com.aem.poc.pcdf.internal.servlet;
 
 import com.aem.poc.pcdf.internal.eligibility.DateWindow;
 import com.aem.poc.pcdf.internal.eligibility.EligibilityService;
-import com.aem.poc.pcdf.internal.eligibility.Ranking;
 import com.aem.poc.pcdf.internal.eligibility.TargetingRules;
 import com.aem.poc.pcdf.internal.model.Promotion;
 import com.aem.poc.pcdf.internal.service.PromotionQueryService;
@@ -111,12 +110,11 @@ public class PromotionDeliveryServlet extends SlingSafeMethodsServlet {
                 request.getParameter("pageType"),
                 urlPromo,
                 request.getParameter("tag"));
-        Promotion winner = Ranking.pickWinner(targeted);
-        if (winner == null) {
+        if (targeted.isEmpty()) {
             writeNoMatch(response);
             return;
         }
-        writeMatch(response, winner);
+        writeMatch(response, targeted.get(0));
     }
 
     private static void writeNoMatch(SlingHttpServletResponse response) throws IOException {

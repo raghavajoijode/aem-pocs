@@ -21,13 +21,12 @@
                 jcr:mixinTypes="[cq:Taggable]"
                 cq:tags="[pcdf:status/ACTIVE]"
                 jcr:primaryType="nt:unstructured"
-                body="Lower priority US promo"
+                body="Alternate US promo; request by name"
                 ctaLink=""
                 ctaText=""
                 endDate="{Date}2030-12-31T00:00:00.000Z"
-                headline="Lower priority welcome"
+                headline="Alternate welcome"
                 image=""
-                priority="{Long}10"
                 promotionId="pcdf-match-low"
                 startDate="{Date}2020-01-01T00:00:00.000Z"/>
         </data>

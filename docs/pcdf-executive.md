@@ -12,7 +12,7 @@ Authors work only in **Assets / Content Fragments**, not in page properties.
 
 - Locale is the **third DAM folder** (`/content/dam/aem-poc/pcdf/{region}/{country}/{locale}`, for example `americas/us/en-us`). Region, country, and locale query values are those folder names (lowercase).
 - One fragment = one promotion. They do **not** create CF variations for language; they put the fragment in the right folder.
-- They set copy (headline, body, image, CTA), targeting **start and end dates** (no time of day), targeting lists (empty means “any” for that dimension), integer **priority** (higher number wins), and **tags** for status (`pcdf:status/ACTIVE` or `INACTIVE`) and optional brand (`pcdf:brand/TH`).
+- They set copy (headline, body, image, CTA), targeting **start and end dates** (no time of day), targeting lists (empty means “any” for that dimension), and **tags** for status (`pcdf:status/ACTIVE` or `INACTIVE`) and optional brand (`pcdf:brand/TH`).
 - They **publish**. Unpublished work is invisible to Publish and to Author preview.
 - They do **not** attach the promotion to a page. Home, PDP, and a mobile app can all request the same locale and targeting and receive the same winner.
 
@@ -22,7 +22,7 @@ Authors work only in **Assets / Content Fragments**, not in page properties.
 2. **QueryBuilder** in that folder (optional CF `name` / `promo` as node name; tags `ACTIVE` and optional brand/topic). Unknown folder → no-match, **no** fallback.
 3. Keep hits whose targeting date window includes today (Author may pass `previewDate` instead; Publish rejects preview).
 4. Apply remaining targeting lists (market, property, page type, urlParameters when `name` is also sent).
-5. Pick the highest priority; if tied, the lexicographically lower `promotionId`.
+5. Return the **first** remaining result. Priority ranking is not in this MVP.
 
 `promotionId` is unique **per folder**. Hindi and US English may both use `pcdf-match-high`.
 
@@ -32,10 +32,10 @@ Run after [PCDF-only install](pcdf.md#build-and-deploy-pcdf-alone). Publish base
 
 | # | Story | Call | Pass if |
 | --- | --- | --- | --- |
-| 1 | US priority | `region=americas&country=us&locale=en-us` | `pcdf-match-high` (not the priority-10 sibling) |
+| 1 | US match by name | `region=americas&country=us&locale=en-us&name=pcdf-match-high` | `pcdf-match-high` |
 | 2 | Explicit no-match | `region=americas&country=ca&locale=en-us` | `contentFound: false` |
 | 3 | Reuse, no page campaign | same as #1 and again with `&pageType=home` | Same `promotionId` both times |
-| 4 | UK brand | `region=emea&country=gb&locale=en-gb&brand=TH` | `pcdf-gb-high` |
+| 4 | UK brand | `region=emea&country=gb&locale=en-gb&brand=TH&name=pcdf-gb-high` | `pcdf-gb-high` |
 | 5 | Brand miss | `region=emea&country=gb&locale=en-gb&brand=XX` | `contentFound: false` |
 | 6 | France match-all | `region=emea&country=fr&locale=fr` and with `&pageType=home` | `pcdf-fr-welcome` both |
 | 7 | Italy tag | `region=emea&country=it&locale=it&tag=estate` | `pcdf-it-sale` |

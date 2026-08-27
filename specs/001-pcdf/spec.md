@@ -29,7 +29,7 @@ This proof of concept proves that hypothesis: Author for authoring, Publish for 
 
 ### User Story 1 - Author a promotion without developers (Priority: P1)
 
-A content author creates a promotion as one Content Fragment in a region/country/locale folder with headline, body, image, call-to-action text, call-to-action link, targeting dates `startDate` and `endDate` (dates only, no time), targeting lists, promotion id, and priority. Brand and status are tags on the fragment. They publish it. No developer is required to launch that campaign.
+A content author creates a promotion as one Content Fragment in a region/country/locale folder with headline, body, image, call-to-action text, call-to-action link, targeting dates `startDate` and `endDate` (dates only, no time), targeting lists, and promotion id. Brand and status are tags on the fragment. They publish it. No developer is required to launch that campaign.
 
 **Why this priority**: This is the core “author once / no development per campaign” value.
 
@@ -38,7 +38,7 @@ A content author creates a promotion as one Content Fragment in a region/country
 **Acceptance Scenarios**:
 
 1. **Given** the author is signed in on Author, **When** they create a promotion under a region/country/locale folder with required content, targeting dates, and tags, **Then** the promotion is stored as a single item for that folder and can be published.
-2. **Given** a published promotion tagged ACTIVE whose `startDate`–`endDate` targeting window includes today’s calendar date, **When** a consumer requests that region, country, and locale with matching context on Publish, **Then** the promotion’s content is returned as the winner if it has the highest priority among matches.
+2. **Given** a published promotion tagged ACTIVE whose `startDate`–`endDate` targeting window includes today’s calendar date, **When** a consumer requests that region, country, and locale with matching context on Publish, **Then** the promotion’s content is returned if it is the first exact match.
 
 ---
 
@@ -48,12 +48,12 @@ A consumer application sends region, country, and locale plus optional context (
 
 **Why this priority**: Delivery correctness is the other half of the hypothesis.
 
-**Independent Test**: Request delivery against sample promotions that match, conflict on priority, and miss—without authoring new items if sample content already covers those cases.
+**Independent Test**: Request delivery against sample promotions that match, miss, and resolve by CF name—without authoring new items if sample content already covers those cases.
 
 **Acceptance Scenarios**:
 
 1. **Given** one eligible matching promotion, **When** the consumer requests with that region, country, locale, and context, **Then** the response indicates content was found and includes promotion id, headline, body, image, call-to-action text, and call-to-action link.
-2. **Given** two eligible matching promotions with different priorities, **When** the consumer requests, **Then** only the higher-priority promotion is returned.
+2. **Given** more than one eligible matching promotion, **When** the consumer requests without a CF name, **Then** the first remaining result after exact path/tag/date filtering is returned (no priority ranking).
 3. **Given** no eligible matching promotion, **When** the consumer requests, **Then** the response indicates content was not found and does not include another campaign as a fallback.
 
 ---
@@ -85,7 +85,7 @@ A marketing or operations reviewer who is signed in on Author previews which pro
 **Acceptance Scenarios**:
 
 1. **Given** a promotion that is ACTIVE but whose `startDate` is in the future, **When** live delivery is requested on Publish today, **Then** it is not returned.
-2. **Given** the same promotion, **When** a signed-in Author user requests preview with a calendar date inside the window and matching context, **Then** it can win according to the same targeting and priority rules.
+2. **Given** the same promotion, **When** a signed-in Author user requests preview with a calendar date inside the window and matching context, **Then** it can win according to the same targeting rules.
 3. **Given** preview on Author, **When** targeting or locale would not match, **Then** the result is no content, same as live.
 4. **Given** an unauthenticated Publish request, **When** a preview value is supplied, **Then** the request is rejected as invalid (Publish does not preview).
 
@@ -118,7 +118,7 @@ Promotions live in region/country/locale folders and are not attached to individ
 - Expired content is never returned on live Publish requests.
 - Preview supplied on Publish (anonymous or otherwise): reject as invalid; do not evaluate as a preview.
 - Preview without a signed-in Author session: reject as invalid.
-- Multiple matches with the same priority: winner is the one with the lexicographically lower promotion id.
+- Multiple matches after exact filtering: return the **first** remaining result. Priority ranking is out of scope for this MVP.
 - Tag filter: if the request includes a topic tag, the promotion must include that topic tag; if tag is omitted, topic tags do not constrain matching.
 - Brand filter: if the request includes `brand`, the promotion must include that brand tag (or have no brand tags).
 - URL parameter promo: if present on the request, the promotion’s URL-parameter targeting must include that value (or the promotion’s list for that dimension must be empty).
@@ -152,7 +152,7 @@ Future proofs of concept follow the same pattern: `/apps/aem-poc/{poc-id}` and `
 - **FR-001**: Authors MUST be able to create and edit a promotion under a region/country/locale folder with content fields: headline, body, image, call-to-action text, call-to-action link.
 - **FR-002**: Authors MUST be able to set targeting date fields `startDate` and `endDate` as **calendar dates only** (no time of day) for this POC.
 - **FR-003**: Authors MUST be able to set targeting lists: markets, properties, page types, URL parameters. Country is not a targeting list; it is a DAM folder. Brand is not a targeting list; it is a tag.
-- **FR-004**: Authors MUST be able to set administration fields: promotion id and priority (integer, **larger number wins**). Status (`ACTIVE` or `INACTIVE`) and brand MUST be tags on the Content Fragment (`pcdf:status/…`, `pcdf:brand/…`). Optional topic tags (`pcdf:topic/…`) MAY be used for request `tag`. `promotionId` MUST be unique within a region/country/locale folder; the same `promotionId` MAY appear in other folders.
+- **FR-004**: Authors MUST be able to set administration field: promotion id. Status (`ACTIVE` or `INACTIVE`) and brand MUST be tags on the Content Fragment (`pcdf:status/…`, `pcdf:brand/…`). Optional topic tags (`pcdf:topic/…`) MAY be used for request `tag`. `promotionId` MUST be unique within a region/country/locale folder; the same `promotionId` MAY appear in other folders. Priority ranking MUST NOT be required for delivery.
 - **FR-005**: The system MUST treat one Content Fragment as one promotion; it MUST NOT require Content Fragment variations (or other variant sets) of the same item for this proof of concept.
 - **FR-006**: Region, country, and locale MUST be expressed by folder topology `/content/dam/aem-poc/pcdf/{region}/{country}/{locale}`, not by variant sets.
 - **FR-007**: Promotions MUST NOT be attached to individual pages as the way campaigns are configured.
@@ -163,14 +163,14 @@ Future proofs of concept follow the same pattern: `/apps/aem-poc/{poc-id}` and `
 - **FR-012**: Live delivery on Publish MUST use today’s calendar date as the evaluation date and MUST NOT accept a preview value.
 - **FR-013**: Preview MUST be available only to a signed-in user on Author. Preview MUST accept an optional preview **date** (no time) and use it as the evaluation date; all other rules MUST match live delivery, and only **published** fragments MAY win. Preview MUST NOT change which promotions are eligible on Publish. Unpublished drafts MUST NOT win on Author preview.
 - **FR-014**: For each targeting dimension that has a non-empty list on the promotion (markets, properties, page types, URL parameters, brand tags), the request value for that dimension MUST be present in the list for the promotion to match. Empty list or empty brand tags means match-all for that dimension. Omitted request parameters MUST NOT constrain that dimension.
-- **FR-015**: Among eligible matching promotions, the system MUST return the one with the **highest integer priority** (larger number wins).
-- **FR-016**: If two or more eligible matches share the highest priority, the system MUST return the one with the lexicographically lower `promotionId` (compared within that folder’s candidates).
+- **FR-015**: Among eligible matching promotions, the system MUST return the **first** remaining result after QueryBuilder path/tag filtering and date/list checks. It MUST NOT rank by a priority field.
+- **FR-016**: A request that includes a Content Fragment `name` (or `promo` as name) MUST return that fragment when it matches, or no-match if it does not.
 - **FR-017**: If no promotion is eligible and matching, **or** the requested region/country/locale folder does not exist, the system MUST return an explicit no-match result and MUST NOT return a substitute promotion or folder.
 - **FR-018**: A successful match result MUST include: an indication that content was found, promotion id, headline, body, image, call-to-action text, and call-to-action link. Optional content fields that are empty MUST still be present as empty strings.
 - **FR-019**: Publish delivery MUST allow anonymous read access.
 - **FR-020**: Author MUST require authenticated access for authoring and Author-side use of the capability.
 - **FR-021**: The public delivery capability MUST be exposed on Publish, not as the primary public surface on Author.
-- **FR-022**: Sample promotions MUST exist under region/country/locale folders sufficient to demo match, priority winner, and no-match.
+- **FR-022**: Sample promotions MUST exist under region/country/locale folders sufficient to demo match, exact CF name, and no-match.
 - **FR-023**: Documentation MUST include hypothesis, non-goals, install and demo steps, paths to look at, how to obtain and install the PCDF-only package, and expected output (visible outcome).
 - **FR-024**: Future targeting dimensions (membership, audience, segment, device, and similar) are out of scope for this proof of concept, but the delivery contract MUST remain usable if those fields are added later via the promotion model and rule configuration without changing the existing request and result fields defined here.
 - **FR-025**: All PCDF application nodes MUST live under `/apps/aem-poc/pcdf`. Sample promotions MUST live under `/content/dam/aem-poc/pcdf/{region}/{country}/{locale}`. Status and brand tags MUST live under `/content/cq:tags/pcdf`. Models MUST live under `/conf/aem-poc-pcdf`. OSGi runmode config MUST live in a dedicated **`ui.config.pcdf`** module (PCDF-only; not default `ui.config`). PCDF Java MUST live in a dedicated `core.pcdf` module whose bundle identity is `com.aem.poc.pcdf`. PCDF MUST NOT be mixed into `/apps/aem-poc/components` or into the default `core` module.
@@ -179,7 +179,7 @@ Future proofs of concept follow the same pattern: `/apps/aem-poc/{poc-id}` and `
 
 ### Key Entities
 
-- **Promotion**: A single campaign item authored as one Content Fragment (no variations) in a region/country/locale folder. Content: headline, body, image, call-to-action text, call-to-action link. Administration: promotion id, priority. Tags: status, brand, optional topic. Targeting: `startDate` and `endDate` as calendar dates (no time), markets, properties, page types, URL parameters.
+- **Promotion**: A single campaign item authored as one Content Fragment (no variations) in a region/country/locale folder. Content: headline, body, image, call-to-action text, call-to-action link. Administration: promotion id. Tags: status, brand, optional topic. Targeting: `startDate` and `endDate` as calendar dates (no time), markets, properties, page types, URL parameters.
 - **Topology folder**: A repository location `/content/dam/aem-poc/pcdf/{region}/{country}/{locale}` (for example `americas/us/en-us`). Delivery resolves candidates from the folder that matches the requested region, country, and locale.
 - **Delivery request**: Region, country, and locale plus optional brand, market, property, page type, promo, and tag. On Author only, an optional preview date (no time) may be supplied by a signed-in user.
 - **Delivery result**: Either one winning promotion’s content fields plus promotion id, or an explicit no-match.
@@ -193,7 +193,7 @@ Future proofs of concept follow the same pattern: `/apps/aem-poc/{poc-id}` and `
 - **SC-002**: For the sample promotion set, a consumer request with a matching locale and context returns the expected single winner; a non-matching request returns no content—demonstrable in one demo pass.
 - **SC-003**: On Author, preview with a calendar date inside a future campaign window returns that campaign when targeting matches; the same request on Publish (no preview) does not return it if `startDate` is still in the future.
 - **SC-004**: Two experiences can reuse the same promotion without any page-level campaign configuration.
-- **SC-005**: For the sample set used in the demo, selecting the winner (eligibility, targeting, and priority) completes in under 100 milliseconds on a local instance used for the demo.
+- **SC-005**: For the sample set used in the demo, selecting the first exact match (path, tags, dates) completes in under 100 milliseconds on a local instance used for the demo.
 - **SC-006**: A teammate can reproduce the demo from written steps (prerequisites, deploy of the PCDF package, Author path, Publish request examples, expected outcomes) without tribal knowledge.
 - **SC-007**: A teammate who installs only the PCDF package (not the default site and not the default `core` bundle) can complete the documented demo; PCDF nodes, sample promotions, and delivery are present, and nothing from this proof of concept lives under the default site apps tree or in the default `core` module.
 - **SC-008**: A reviewer can see `startDate` and `endDate` on Author as dates without a time of day, and a preview date uses that same date-only comparison.
@@ -206,14 +206,14 @@ Future proofs of concept follow the same pattern: `/apps/aem-poc/{poc-id}` and `
 - Implementing or configuring a content delivery network or edge cache keys; edge caching is an external recommendation only.
 - Production hardening, observability stacks, and treating a test suite as acceptance.
 - Redesigning the delivery contract for future targeting dimensions.
-- Time-of-day scheduling and timezone-aware instants (a global product may need them later; this POC uses calendar dates only).
+- Priority ranking (integer “larger wins”) is **out of scope for this MVP**; exact filter match returns the first remaining result.
 - Building PCDF modules/servlet/sample content remains **opt-in** (`/speckit-implement`); this workstream maintains spec, plan, tasks, and repo Java 21 settings.
 
 ## Assumptions
 
 - Empty targeting list for a dimension means match-all for that dimension.
 - Missing optional request parameters mean those dimensions are unconstrained.
-- Priority ties are broken by lexicographically lower promotion id within the region/country/locale folder. The same `promotionId` MAY be used in different folders.
+- Multiple exact matches: the first remaining result is returned. The same `promotionId` MAY be used in different folders.
 - Tag matching is exact inclusion of the requested tag when tag is provided.
 - Promo on the request maps to the promotion’s URL-parameter targeting list.
 - Eligibility compares calendar dates only: `startDate` ≤ evaluation date ≤ `endDate`. Live evaluation date is today’s date on the instance used for the demo (Author preview uses the supplied date). Time of day and per-field timezone are out of scope for this POC.

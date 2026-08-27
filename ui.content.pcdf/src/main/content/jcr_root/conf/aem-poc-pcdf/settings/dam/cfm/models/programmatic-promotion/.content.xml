@@ -17,7 +17,7 @@
             jcr:primaryType="cq:PageContent"
             sling:resourceType="wcm/scaffolding/components/scaffolding"
             dataTypesConfig="/mnt/overlay/settings/dam/cfm/models/formbuilderconfig/datatypes"
-            maxGeneratedOrder="13">
+            maxGeneratedOrder="12">
             <cq:dialog
                 jcr:primaryType="nt:unstructured"
                 jcr:title="Programmatic Promotion"
@@ -37,22 +37,11 @@
                             required="on"
                             showEmptyInReadOnly="{Boolean}true"
                             valueType="string"/>
-                        <priority
-                            jcr:primaryType="nt:unstructured"
-                            sling:resourceType="dam/cfm/models/editor/components/datatypes/field"
-                            fieldLabel="Priority (larger wins)"
-                            listOrder="2"
-                            metaType="number"
-                            name="priority"
-                            renderReadOnly="{Boolean}true"
-                            required="on"
-                            showEmptyInReadOnly="{Boolean}true"
-                            valueType="long"/>
                         <headline
                             jcr:primaryType="nt:unstructured"
                             sling:resourceType="dam/cfm/models/editor/components/datatypes/field"
                             fieldLabel="Headline"
-                            listOrder="3"
+                            listOrder="2"
                             metaType="text-single"
                             name="headline"
                             renderReadOnly="{Boolean}true"

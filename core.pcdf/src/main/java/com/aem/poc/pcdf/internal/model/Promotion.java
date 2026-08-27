@@ -8,7 +8,6 @@ public class Promotion {
 
     private String promotionId = "";
     private String status = "";
-    private int priority;
     private List<String> tags = Collections.emptyList();
     private String headline = "";
     private String body = "";
@@ -37,14 +36,6 @@ public class Promotion {
 
     public void setStatus(String status) {
         this.status = status == null ? "" : status;
-    }
-
-    public int getPriority() {
-        return priority;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
     }
 
     public List<String> getTags() {

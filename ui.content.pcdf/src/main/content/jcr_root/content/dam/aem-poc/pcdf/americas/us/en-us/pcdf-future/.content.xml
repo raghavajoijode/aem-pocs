@@ -27,7 +27,6 @@
                 endDate="{Date}2026-10-31T00:00:00.000Z"
                 headline="October preview promo"
                 image=""
-                priority="{Long}50"
                 promotionId="pcdf-future"
                 startDate="{Date}2026-10-01T00:00:00.000Z"/>
         </data>

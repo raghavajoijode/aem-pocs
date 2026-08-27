@@ -45,16 +45,16 @@ Confirm `/apps/aem-poc/pcdf`, `/conf/aem-poc-pcdf`, `/content/cq:tags/pcdf`, `/c
 ### Publish (live, anonymous)
 
 ```bash
-# Winner (priority 20 beats 10)
-curl -s "http://localhost:4503/services/aem-poc/pcdf?region=americas&country=us&locale=en-us"
+# First exact match (by CF name)
+curl -s "http://localhost:4503/services/aem-poc/pcdf?region=americas&country=us&locale=en-us&name=pcdf-match-high"
 
-# Same winner from a second experience
-curl -s "http://localhost:4503/services/aem-poc/pcdf?region=americas&country=us&locale=en-us&pageType=home"
+# Same fragment from a second experience
+curl -s "http://localhost:4503/services/aem-poc/pcdf?region=americas&country=us&locale=en-us&name=pcdf-match-high&pageType=home"
 
 # No-match (unknown country folder)
 curl -s "http://localhost:4503/services/aem-poc/pcdf?region=americas&country=ca&locale=en-us"
 
-curl -s "http://localhost:4503/services/aem-poc/pcdf?region=emea&country=gb&locale=en-gb&brand=TH"
+curl -s "http://localhost:4503/services/aem-poc/pcdf?region=emea&country=gb&locale=en-gb&brand=TH&name=pcdf-gb-high"
 curl -s "http://localhost:4503/services/aem-poc/pcdf?region=emea&country=fr&locale=fr"
 curl -s "http://localhost:4503/services/aem-poc/pcdf?region=emea&country=it&locale=it&tag=estate"
 curl -s "http://localhost:4503/services/aem-poc/pcdf?region=emea&country=de&locale=de&promo=pcdf-de-summer"
@@ -65,7 +65,7 @@ curl -s -o /dev/stderr -w "%{http_code}" \
   "http://localhost:4503/services/aem-poc/pcdf?region=americas&country=us&locale=en-us&previewDate=2026-10-15"
 ```
 
-**Expected**: `americas/us/en-us` → `pcdf-match-high`; `country=ca` → `contentFound: false`; `emea/gb/en-gb&brand=TH` → `pcdf-gb-high`; `fr` → `pcdf-fr-welcome`; `it&tag=estate` → `pcdf-it-sale`; `de&promo=pcdf-de-summer` → `pcdf-de-summer`; `hi` → `pcdf-match-high` (Hindi). Preview on Publish → HTTP 400 `preview_not_allowed`. Full table: [`docs/pcdf-executive.md`](../../docs/pcdf-executive.md).
+**Expected**: `name=pcdf-match-high` → `pcdf-match-high`; `country=ca` → `contentFound: false`; `emea/gb/en-gb&brand=TH&name=pcdf-gb-high` → `pcdf-gb-high`; `fr` → `pcdf-fr-welcome`; `it&tag=estate` → `pcdf-it-sale`; `de&promo=pcdf-de-summer` → `pcdf-de-summer`; `hi` → `pcdf-match-high` (Hindi). Preview on Publish → HTTP 400 `preview_not_allowed`. Full table: [`docs/pcdf-executive.md`](../../docs/pcdf-executive.md).
 
 ### Author preview (signed in)
 

@@ -91,7 +91,7 @@ Hypothesis: authors manage locale-scoped promotions as one Content Fragment each
 
 - **Modules**: `core.pcdf`, `ui.apps.pcdf`, `ui.content.pcdf`, `ui.config.pcdf`, container `pcdf` (not default `core` / site components / default `ui.config`)
 - **Install**: `mvn clean install -PautoInstallSinglePackage` (embeds PCDF artifacts in `all` at `/apps/aem-poc-packages/pcdf`); PCDF-only: `mvn clean install -pl pcdf -am -PautoInstallPcdf` then `-PautoInstallPcdfPublish`
-- **Demo**: DAM `/content/dam/aem-poc/pcdf/americas/us/en-us`; Publish `GET /services/aem-poc/pcdf?region=americas&country=us&locale=en-us` → `pcdf-match-high`
+- **Demo**: DAM `/content/dam/aem-poc/pcdf/americas/us/en-us`; Publish `GET /services/aem-poc/pcdf?region=americas&country=us&locale=en-us&name=pcdf-match-high` → `pcdf-match-high`
 - **Expected**: `country=ca` → `contentFound: false`; Author `previewDate=2026-10-15` → `pcdf-future`; Publish rejects preview with `preview_not_allowed`
 - **Cleanup**: uninstall the PCDF package (see [`docs/pcdf.md`](docs/pcdf.md))
 

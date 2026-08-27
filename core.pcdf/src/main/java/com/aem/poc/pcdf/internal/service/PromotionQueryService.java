@@ -168,7 +168,6 @@ public class PromotionQueryService {
         Promotion p = new Promotion();
         p.setPromotionId(id);
         p.setStatus(PromotionTags.status(cqTags));
-        p.setPriority(vm.get("priority", 0));
         p.setStartDate(DateWindow.toLocalDate(vm.get("startDate")));
         p.setEndDate(DateWindow.toLocalDate(vm.get("endDate")));
         p.setBrands(PromotionTags.brands(cqTags));

@@ -47,7 +47,7 @@
 
 ## Query and ranking
 
-**Decision**: QueryBuilder limited to the region/country/locale folder (`path` + `type=dam:Asset` + CF model), optional CF `nodename`, and tagid predicates for `pcdf:status/ACTIVE` plus optional brand/topic tags. Then apply targeting dates (`startDate`/`endDate`) and remaining list targeting in Java, then pick max priority and lexicographically lowest `promotionId` on ties.
+**Decision**: QueryBuilder limited to the region/country/locale folder (`path` + `type=dam:Asset` + CF model), optional CF `nodename`, and tagid predicates for `pcdf:status/ACTIVE` plus optional brand/topic tags. Then apply targeting dates (`startDate`/`endDate`) and remaining list targeting in Java, then return the **first** remaining hit. Priority ranking is out of scope for this MVP.
 
 **Rationale**: Sample set is small; in-memory filter keeps matching rules obvious and testable in a demo. Query-only targeting in JCR is brittle for empty-list match-all.
 

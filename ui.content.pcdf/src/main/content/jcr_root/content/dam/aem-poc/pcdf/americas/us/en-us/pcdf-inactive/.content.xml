@@ -27,7 +27,6 @@
                 endDate="{Date}2030-12-31T00:00:00.000Z"
                 headline="Inactive promo"
                 image=""
-                priority="{Long}99"
                 promotionId="pcdf-inactive"
                 startDate="{Date}2020-01-01T00:00:00.000Z"/>
         </data>

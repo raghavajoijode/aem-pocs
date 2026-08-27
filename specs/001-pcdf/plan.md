@@ -28,7 +28,7 @@ Authors would manage locale-scoped promotions as **one Content Fragment each** (
 
 **Constraints**: No PCDF in default `core` or `/apps/aem-poc`; OSGi config in `ui.config.pcdf` not default `ui.config`; no CF variations; date-only schedule; no CDN/Akamai implementation; no test-suite gate; secrets not committed
 
-**Scale/Scope**: Sample promotions for match / priority / no-match / future preview; not a production personalisation platform
+**Scale/Scope**: Sample promotions for match / no-match / future preview; not a production personalisation platform
 
 ## Constitution Check
 
@@ -87,7 +87,7 @@ ui.frontend/                     # not used for this POC
 ui.frontend.react/               # not used for this POC
 ```
 
-**Structure Decision**: Keep the archetype tree. Add PCDF-specific modules so the shareable container does not contain `aem-poc.core` or `/apps/aem-poc/components`. Runmode config uses **`ui.config.pcdf`** (constitution `ui.config` split, PCDF-only zip). Logical processing: validate request → QueryBuilder path `{region}/{country}/{locale}` (+ optional CF `name`/`promo` nodename + ACTIVE/brand/topic tags) → missing folder = no-match → load **published** hits → targeting dates → remaining lists → highest integer priority / lowest `promotionId` → JSON.
+**Structure Decision**: Keep the archetype tree. Add PCDF-specific modules so the shareable container does not contain `aem-poc.core` or `/apps/aem-poc/components`. Runmode config uses **`ui.config.pcdf`** (constitution `ui.config` split, PCDF-only zip). Logical processing: validate request → QueryBuilder path `{region}/{country}/{locale}` (+ optional CF `name`/`promo` nodename + ACTIVE/brand/topic tags) → missing folder = no-match → load **published** hits → targeting dates → remaining lists → **first** remaining result → JSON.
 
 ## Complexity Tracking
 

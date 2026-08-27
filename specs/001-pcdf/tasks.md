@@ -248,3 +248,4 @@ Task: "Add CF-to-promotion mapping already in Phase 2 Promotion.java — extend 
 - [X] T044 Add tag namespace `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/cq:tags/pcdf/` and filter root in `/workspace/ui.content.pcdf/src/main/content/META-INF/vault/filter.xml`
 - [X] T045 Relocate sample fragments under `/workspace/ui.content.pcdf/src/main/content/jcr_root/content/dam/aem-poc/pcdf/{region}/{country}/{locale}/` per `/workspace/specs/001-pcdf/data-model.md`
 - [X] T046 Update `/workspace/docs/pcdf.md`, `/workspace/docs/pcdf-executive.md`, `/workspace/docs/pcdf-brief.html`, `/workspace/README.md`, and `/workspace/specs/001-pcdf/` contract/quickstart for the new request shape
+- [X] T047 Drop priority ranking: first exact match in `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/servlet/PromotionDeliveryServlet.java`; remove `/workspace/core.pcdf/src/main/java/com/aem/poc/pcdf/internal/eligibility/Ranking.java` and the `priority` CF field

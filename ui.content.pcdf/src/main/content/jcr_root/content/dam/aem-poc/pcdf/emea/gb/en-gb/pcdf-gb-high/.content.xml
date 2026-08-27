@@ -21,13 +21,12 @@
                 jcr:mixinTypes="[cq:Taggable]"
                 cq:tags="[pcdf:status/ACTIVE,pcdf:brand/TH]"
                 jcr:primaryType="nt:unstructured"
-                body="Higher-priority TH brand on en-gb"
+                body="TH brand on en-gb"
                 ctaLink="/content/aem-poc/pcdf"
                 ctaText="Shop"
                 endDate="{Date}2030-12-31T00:00:00.000Z"
                 headline="UK brand offer"
                 image=""
-                priority="{Long}20"
                 promotionId="pcdf-gb-high"
                 startDate="{Date}2020-01-01T00:00:00.000Z"/>
         </data>

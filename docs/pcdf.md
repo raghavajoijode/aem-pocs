@@ -34,7 +34,7 @@ Authors stay in the stock AEM Content Fragment editor. They do not open pages, c
 1. Sign in on Author (`http://localhost:4502`).
 2. Open DAM: `/content/dam/aem-poc/pcdf/` and pick a region, country, and locale folder (`americas/us/en-us`, `emea/gb/en-gb`, `emea/fr/fr`, `emea/it/it`, `emea/de/de`, `apac/in/hi`, or new folders with the same lowercase names you will send as `region`, `country`, and `locale`).
 3. Create a **Programmatic Promotion** fragment (model `ProgrammaticPromotion`). One fragment = one promotion; **do not** use CF variations for locale.
-4. Fill administration (`promotionId` unique **in this folder**, integer `priority` — larger wins), targeting dates `startDate` / `endDate` (inclusive, date only), content (headline, body, image, CTA), and optional targeting lists (empty = match-all). Apply tags: `pcdf:status/ACTIVE` or `INACTIVE`, optional `pcdf:brand/…`, optional `pcdf:topic/…` for request `tag`.
+4. Fill administration (`promotionId` unique **in this folder**), targeting dates `startDate` / `endDate` (inclusive, date only), content (headline, body, image, CTA), and optional targeting lists (empty = match-all). Apply tags: `pcdf:status/ACTIVE` or `INACTIVE`, optional `pcdf:brand/…`, optional `pcdf:topic/…` for request `tag`.
 5. Publish the fragment. Live Publish and Author preview both consider **published** fragments only. Unpublished drafts never win.
 6. Do **not** put campaign properties on pages. Apps reuse a promotion by calling delivery with region, country, locale, optional CF `name`, and context.
 
@@ -42,7 +42,7 @@ Authors stay in the stock AEM Content Fragment editor. They do not open pages, c
 
 1. **QueryBuilder** — `path` = `/content/dam/aem-poc/pcdf/{region}/{country}/{locale}`, `type=dam:Asset`, optional `nodename` from `name` (or `promo` if `name` is omitted), `tagid` for `pcdf:status/ACTIVE` plus optional `pcdf:brand/{brand}` and `pcdf:topic/{tag}`.
 2. **Dates** — in Java, keep hits whose targeting `startDate`/`endDate` include today (or Author `previewDate`).
-3. **Remaining lists** — market, property, page type, and `urlParameters` when `name` and `promo` are both sent. Then highest priority wins.
+3. **Remaining lists** — market, property, page type, and `urlParameters` when `name` and `promo` are both sent. Then return the **first** remaining hit (no priority field).
 
 ## Build and deploy PCDF alone
 
@@ -69,10 +69,10 @@ Base: `http://localhost:4503/services/aem-poc/pcdf`
 
 | Flow | Request | Expected |
 | --- | --- | --- |
-| Priority winner | `?region=americas&country=us&locale=en-us` | `pcdf-match-high` |
+| Match by CF name | `?region=americas&country=us&locale=en-us&name=pcdf-match-high` | `pcdf-match-high` |
 | Country miss | `?region=americas&country=ca&locale=en-us` | `contentFound: false` |
 | Reuse (no page wiring) | `?region=americas&country=us&locale=en-us&pageType=home` | same `pcdf-match-high` |
-| Brand winner | `?region=emea&country=gb&locale=en-gb&brand=TH` | `pcdf-gb-high` |
+| Brand winner | `?region=emea&country=gb&locale=en-gb&brand=TH&name=pcdf-gb-high` | `pcdf-gb-high` |
 | Brand miss | `?region=emea&country=gb&locale=en-gb&brand=XX` | `contentFound: false` |
 | Match-all locale | `?region=emea&country=fr&locale=fr` | `pcdf-fr-welcome` |
 | Second experience | `?region=emea&country=fr&locale=fr&pageType=home` | same `pcdf-fr-welcome` |
@@ -98,7 +98,7 @@ Without credentials on Author the path stays authenticated (HTTP 401).
 
 ### Sample-set timing (SC-005)
 
-Winner selection is an in-memory filter/rank after listing the region/country/locale folder. On a local Author/Publish pair that is expected **under 100ms**. Re-check with `curl -s -o /dev/null -w "%{time_total}"` against your `localhost:4503` sample-set request.
+Winner selection is QueryBuilder path/tags then a date/list filter, returning the first remaining hit. On a local Author/Publish pair that is expected **under 100ms**. Re-check with `curl -s -o /dev/null -w "%{time_total}"` against your `localhost:4503` sample-set request.
 
 ## Why `PublishAnonymousAccess` is a separate component
 

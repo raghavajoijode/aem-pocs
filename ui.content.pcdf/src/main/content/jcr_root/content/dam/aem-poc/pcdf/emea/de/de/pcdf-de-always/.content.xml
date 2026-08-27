@@ -27,7 +27,6 @@
                 endDate="{Date}2030-12-31T00:00:00.000Z"
                 headline="Immer da"
                 image=""
-                priority="{Long}5"
                 promotionId="pcdf-de-always"
                 startDate="{Date}2020-01-01T00:00:00.000Z"/>
         </data>
