@@ -91,8 +91,8 @@ Hypothesis: authors manage locale-scoped promotions as one Content Fragment each
 
 - **Modules**: `core.pcdf`, `ui.apps.pcdf`, `ui.content.pcdf`, `ui.config.pcdf`, container `pcdf` (not default `core` / site components / default `ui.config`)
 - **Install**: `mvn clean install -PautoInstallSinglePackage` (embeds PCDF artifacts in `all` at `/apps/aem-poc-packages/pcdf`); PCDF-only: `mvn clean install -pl pcdf -am -PautoInstallPcdf` then `-PautoInstallPcdfPublish`
-- **Demo**: DAM `/content/dam/aem-poc/pcdf/en-us` (also `en-gb`, `fr`, `it`, `de`, `hi`); Publish `GET /services/aem-poc/pcdf?locale=en-us&country=US` → `pcdf-match-high`
-- **Expected**: `country=CA` → `contentFound: false`; Author `previewDate=2026-10-15` → `pcdf-future`; Publish rejects preview with `preview_not_allowed`
+- **Demo**: DAM `/content/dam/aem-poc/pcdf/americas/us/en-us`; Publish `GET /services/aem-poc/pcdf?region=americas&country=us&locale=en-us` → `pcdf-match-high`
+- **Expected**: `country=ca` → `contentFound: false`; Author `previewDate=2026-10-15` → `pcdf-future`; Publish rejects preview with `preview_not_allowed`
 - **Cleanup**: uninstall the PCDF package (see [`docs/pcdf.md`](docs/pcdf.md))
 
 Operator guide: [`docs/pcdf.md`](docs/pcdf.md). Executive brief and validation table: [`docs/pcdf-executive.md`](docs/pcdf-executive.md). Slides: [`docs/pcdf-brief.html`](docs/pcdf-brief.html). Spec: [`specs/001-pcdf/`](specs/001-pcdf/).

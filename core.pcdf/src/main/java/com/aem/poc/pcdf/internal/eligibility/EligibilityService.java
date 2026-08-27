@@ -1,6 +1,7 @@
 package com.aem.poc.pcdf.internal.eligibility;
 
 import com.aem.poc.pcdf.internal.model.Promotion;
+import com.aem.poc.pcdf.internal.tags.PromotionTags;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +11,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = EligibilityService.class)
 public class EligibilityService {
 
-    public static final String STATUS_ACTIVE = "ACTIVE";
+    public static final String STATUS_ACTIVE = PromotionTags.STATUS_ACTIVE;
 
     public List<Promotion> filterEligible(List<Promotion> published, LocalDate evaluationDate) {
         if (published == null || published.isEmpty()) {

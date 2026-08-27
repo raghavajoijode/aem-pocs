@@ -16,7 +16,7 @@ Authors would manage locale-scoped promotions as **one Content Fragment each** (
 
 **Primary Dependencies**: Local **AEM 6.5 LTS SP2**; OSGi DS, Sling servlets, Content Fragments, FileVault
 
-**Storage**: JCR — CF model under `/conf/aem-poc/pcdf`; fragments under `/content/dam/aem-poc/pcdf/{locale}/`
+**Storage**: JCR — CF model under `/conf/aem-poc-pcdf`; fragments under `/content/dam/aem-poc/pcdf/{region}/{country}/{locale}/`; tags under `/content/cq:tags/pcdf`
 
 **Testing**: Optional; not an acceptance gate. Demo via [quickstart.md](./quickstart.md) when implemented
 
@@ -77,7 +77,8 @@ ui.config.pcdf/
   src/main/content/jcr_root/apps/aem-poc/pcdf/config.publish/  # anonymous GET for /services/aem-poc/pcdf
 ui.content.pcdf/
   src/main/content/jcr_root/conf/aem-poc/pcdf/
-  src/main/content/jcr_root/content/dam/aem-poc/pcdf/{locale}/
+  src/main/content/jcr_root/content/cq:tags/pcdf/
+  src/main/content/jcr_root/content/dam/aem-poc/pcdf/{region}/{country}/{locale}/
 pcdf/                            # container package com.aem.poc.pcdf
   embed: core.pcdf + ui.apps.pcdf + ui.content.pcdf + ui.config.pcdf
 all/                             # optional embed of pcdf; not the isolation proof
@@ -86,7 +87,7 @@ ui.frontend/                     # not used for this POC
 ui.frontend.react/               # not used for this POC
 ```
 
-**Structure Decision**: Keep the archetype tree. Add PCDF-specific modules so the shareable container does not contain `aem-poc.core` or `/apps/aem-poc/components`. Runmode config uses **`ui.config.pcdf`** (constitution `ui.config` split, PCDF-only zip). Logical processing: validate request → locale DAM path (missing folder = no-match) → load **published** `ProgrammaticPromotion` fragments → ACTIVE + date → targeting → highest integer priority / lowest `promotionId` → JSON.
+**Structure Decision**: Keep the archetype tree. Add PCDF-specific modules so the shareable container does not contain `aem-poc.core` or `/apps/aem-poc/components`. Runmode config uses **`ui.config.pcdf`** (constitution `ui.config` split, PCDF-only zip). Logical processing: validate request → region/country/locale DAM path (missing folder = no-match) → load **published** `ProgrammaticPromotion` fragments → ACTIVE status tag + targeting dates → targeting lists / brand tags → highest integer priority / lowest `promotionId` → JSON.
 
 ## Complexity Tracking
 

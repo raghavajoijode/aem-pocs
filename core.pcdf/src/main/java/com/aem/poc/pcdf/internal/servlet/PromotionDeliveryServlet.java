@@ -42,6 +42,18 @@ public class PromotionDeliveryServlet extends SlingSafeMethodsServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
+        String region = request.getParameter("region");
+        if (region == null || region.isBlank()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"error\":\"region_required\"}");
+            return;
+        }
+        String country = request.getParameter("country");
+        if (country == null || country.isBlank()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"error\":\"country_required\"}");
+            return;
+        }
         String locale = request.getParameter("locale");
         if (locale == null || locale.isBlank()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -68,16 +80,16 @@ public class PromotionDeliveryServlet extends SlingSafeMethodsServlet {
             }
         }
 
-        if (!queryService.localeFolderExists(request.getResourceResolver(), locale)) {
+        if (!queryService.localeFolderExists(request.getResourceResolver(), region, country, locale)) {
             writeNoMatch(response);
             return;
         }
 
-        List<Promotion> published = queryService.listPublished(request.getResourceResolver(), locale);
+        List<Promotion> published =
+                queryService.listPublished(request.getResourceResolver(), region, country, locale);
         List<Promotion> eligible = eligibilityService.filterEligible(published, evaluationDate);
         List<Promotion> targeted = TargetingRules.filter(
                 eligible,
-                request.getParameter("country"),
                 request.getParameter("brand"),
                 request.getParameter("market"),
                 request.getParameter("property"),

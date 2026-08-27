@@ -1,13 +1,16 @@
 package com.aem.poc.pcdf.internal.service;
 
 import com.aem.poc.pcdf.internal.eligibility.DateWindow;
-import com.aem.poc.pcdf.internal.locale.LocaleFolder;
 import com.aem.poc.pcdf.internal.model.Promotion;
+import com.aem.poc.pcdf.internal.tags.PromotionTags;
+import com.aem.poc.pcdf.internal.topology.TopologyPath;
 import com.day.cq.replication.ReplicationStatus;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
@@ -20,28 +23,28 @@ import org.slf4j.LoggerFactory;
 @Component(service = PromotionQueryService.class)
 public class PromotionQueryService {
 
-    public static final String DAM_ROOT = "/content/dam/aem-poc/pcdf";
+    public static final String DAM_ROOT = TopologyPath.DAM_ROOT;
 
     private static final Logger LOG = LoggerFactory.getLogger(PromotionQueryService.class);
 
     @Reference
     private SlingSettingsService slingSettings;
 
-    public boolean localeFolderExists(ResourceResolver resolver, String locale) {
-        if (!LocaleFolder.isSafe(locale)) {
+    public boolean localeFolderExists(ResourceResolver resolver, String region, String country, String locale) {
+        if (!TopologyPath.isSafe(region, country, locale)) {
             return false;
         }
-        return resolver.getResource(DAM_ROOT + "/" + locale) != null;
+        return resolver.getResource(TopologyPath.folderPath(region, country, locale)) != null;
     }
 
     /**
      * Published fragments only (Author: replication activated; Publish: repository content).
      */
-    public List<Promotion> listPublished(ResourceResolver resolver, String locale) {
-        if (!LocaleFolder.isSafe(locale)) {
+    public List<Promotion> listPublished(ResourceResolver resolver, String region, String country, String locale) {
+        if (!TopologyPath.isSafe(region, country, locale)) {
             return Collections.emptyList();
         }
-        Resource folder = resolver.getResource(DAM_ROOT + "/" + locale);
+        Resource folder = resolver.getResource(TopologyPath.folderPath(region, country, locale));
         if (folder == null) {
             return Collections.emptyList();
         }
@@ -87,25 +90,50 @@ public class PromotionQueryService {
             LOG.debug("Skipping fragment without promotionId: {}", asset.getPath());
             return null;
         }
+        List<String> cqTags = collectCqTags(asset, master);
         Promotion p = new Promotion();
         p.setPromotionId(id);
-        p.setStatus(firstString(vm, "status"));
+        p.setStatus(PromotionTags.status(cqTags));
         p.setPriority(vm.get("priority", 0));
         p.setStartDate(DateWindow.toLocalDate(vm.get("startDate")));
         p.setEndDate(DateWindow.toLocalDate(vm.get("endDate")));
-        p.setCountries(stringList(vm, "countries"));
-        p.setBrands(stringList(vm, "brands"));
+        p.setBrands(PromotionTags.brands(cqTags));
         p.setMarkets(stringList(vm, "markets"));
         p.setProperties(stringList(vm, "properties"));
         p.setPageTypes(stringList(vm, "pageTypes"));
         p.setUrlParameters(stringList(vm, "urlParameters"));
-        p.setTags(stringList(vm, "tags"));
+        p.setTags(cqTags);
         p.setHeadline(firstString(vm, "headline"));
         p.setBody(firstString(vm, "body"));
         p.setImage(firstString(vm, "image"));
         p.setCtaText(firstString(vm, "ctaText"));
         p.setCtaLink(firstString(vm, "ctaLink"));
         return p;
+    }
+
+    private static List<String> collectCqTags(Resource asset, Resource master) {
+        Set<String> tags = new LinkedHashSet<>();
+        addTags(tags, master.getValueMap());
+        Resource jcrContent = asset.getChild("jcr:content");
+        if (jcrContent != null) {
+            addTags(tags, jcrContent.getValueMap());
+            Resource metadata = jcrContent.getChild("metadata");
+            if (metadata != null) {
+                addTags(tags, metadata.getValueMap());
+            }
+        }
+        return new ArrayList<>(tags);
+    }
+
+    private static void addTags(Set<String> tags, ValueMap vm) {
+        String[] arr = vm.get("cq:tags", String[].class);
+        if (arr != null) {
+            for (String tag : arr) {
+                if (tag != null && !tag.isBlank()) {
+                    tags.add(tag);
+                }
+            }
+        }
     }
 
     private static String firstString(ValueMap vm, String name) {

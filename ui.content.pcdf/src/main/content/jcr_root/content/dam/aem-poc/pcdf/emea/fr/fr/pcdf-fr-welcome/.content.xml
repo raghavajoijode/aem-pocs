@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    xmlns:dam="http://www.day.com/dam/1.0" xmlns:dc="http://purl.org/dc/elements/1.1/"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        cq:lastReplicationAction="Activate"
+        cq:lastReplicated="{Date}2020-01-01T00:00:00.000Z"
+        cq:lastReplicatedBy="admin"
+        cq:name="pcdf-fr-welcome"
+        cq:parentPath="/content/dam/aem-poc/pcdf/emea/fr/fr"
+        contentFragment="{Boolean}true"
+        jcr:mixinTypes="[cq:ReplicationStatus]"
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="pcdf-fr-welcome">
+        <data
+            cq:model="/conf/aem-poc-pcdf/settings/dam/cfm/models/programmatic-promotion"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="dam/cfm/components/contentfragment/fragmentdata">
+            <master
+                jcr:mixinTypes="[cq:Taggable]"
+                cq:tags="[pcdf:status/ACTIVE]"
+                jcr:primaryType="nt:unstructured"
+                body="Match-all French promotion reused across experiences"
+                ctaLink="/content/aem-poc/pcdf"
+                ctaText="En savoir plus"
+                endDate="{Date}2030-12-31T00:00:00.000Z"
+                headline="Bienvenue"
+                image=""
+                priority="{Long}10"
+                promotionId="pcdf-fr-welcome"
+                startDate="{Date}2020-01-01T00:00:00.000Z"/>
+        </data>
+        <related
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="dam/cfm/components/contentfragment/related"/>
+        <metadata
+            jcr:primaryType="nt:unstructured"
+            cq:tags="[pcdf:status/ACTIVE]"
+            dc:format="content-fragment"
+            dc:title="pcdf-fr-welcome"/>
+    </jcr:content>
+</jcr:root>

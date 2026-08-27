@@ -17,7 +17,6 @@ public class Promotion {
     private String ctaLink = "";
     private LocalDate startDate;
     private LocalDate endDate;
-    private List<String> countries = Collections.emptyList();
     private List<String> markets = Collections.emptyList();
     private List<String> brands = Collections.emptyList();
     private List<String> properties = Collections.emptyList();
@@ -110,14 +109,6 @@ public class Promotion {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
-    }
-
-    public List<String> getCountries() {
-        return countries;
-    }
-
-    public void setCountries(List<String> countries) {
-        this.countries = countries == null ? Collections.emptyList() : countries;
     }
 
     public List<String> getMarkets() {
